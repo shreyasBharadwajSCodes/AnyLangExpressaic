@@ -2,6 +2,8 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
+![C++](https://img.shields.io/badge/C%2B%2B-17-blue)
+![Java](https://img.shields.io/badge/Java-17-red)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![Status](https://img.shields.io/badge/Status-Active-green)
 ![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen)
@@ -52,7 +54,7 @@ Instead of memorizing syntax, it focuses on:
 
 ### Option 1: Run from Source
 
-```bash id="8z2xj3"
+```bash id="k2z9rt"
 pip install pyyaml
 python outputter/src/gui.py
 ```
@@ -80,7 +82,7 @@ python outputter/src/gui.py
 
 ## Repository Structure
 
-```text id="n3gk1q"
+```text id="y7l8kp"
 knowledge/
   variables.yaml
   loops.yaml
