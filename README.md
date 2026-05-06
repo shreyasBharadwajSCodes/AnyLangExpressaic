@@ -124,6 +124,8 @@ Use these files:
 
 * `templates/compare-template.yaml` - a full reusable Vis2 lesson template
 * `templates/yaml-generation-prompt.md` - a prompt for generating useful YAML lessons with AI
+* `outputter/src/lesson_builder.py` - a visual component builder for creating and editing Vis2 YAML lessons
+* `outputter/src/lesson_builder_vis2.py` - a combined viewer/builder for UI-first lesson editing
 
 The prompt is designed to produce lessons that are actually useful:
 
@@ -134,13 +136,13 @@ The prompt is designed to produce lessons that are actually useful:
 
 Suggested workflow:
 
-1. Copy the prompt from `templates/yaml-generation-prompt.md`
-2. Fill in the topic, audience, languages, and transition paths
-3. Generate the YAML
-4. Save it under `knowledge/`
-5. Open the folder in Vis2
-6. Review the lesson, revision, and transition tabs
-7. Improve the YAML as needed
+1. Open Builder Vis2 from Vis2 or run `python outputter/src/lesson_builder_vis2.py`
+2. View the lesson first, then switch to Builder mode when you want to edit
+3. Use the + controls between cards or the bottom-right + button to add components
+4. Drag card handles to reorder components
+5. Choose Edit on a card to change details inline
+6. Save the lesson under `knowledge/`
+7. Open the folder in Vis2 and review Lesson, Revision, and Transition modes
 
 ---
 
@@ -172,6 +174,7 @@ It includes lesson blocks, code comparisons, revision tables, flashcards, and tr
 Vis2 includes shortcuts for faster study:
 
 * `Ctrl+O` - open YAML folder
+* `Ctrl+B` - open Lesson Builder
 * `Ctrl+R` - reload current YAML
 * `Up` / `Down` - previous or next YAML file
 * `PageUp` / `PageDown` - jump through YAML files
@@ -200,6 +203,8 @@ templates/
 outputter/
   src/
     vis2.py
+    lesson_builder.py
+    lesson_builder_vis2.py
 
 assets/
   icon.ico

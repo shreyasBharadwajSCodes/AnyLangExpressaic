@@ -1,3 +1,5 @@
+import subprocess
+import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -8,6 +10,7 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONCEPT = PROJECT_ROOT / "templates" / "vis2_welcome_template.yaml"
 CONFIG_FILE = PROJECT_ROOT / "vis2_config.yaml"
+LESSON_BUILDER_VIS2 = PROJECT_ROOT / "outputter" / "src" / "lesson_builder_vis2.py"
 
 APP_BG = "#f4f6f8"
 SURFACE = "#ffffff"
@@ -236,6 +239,12 @@ class Vis2App:
             style="Primary.TButton",
         ).pack(fill=tk.X, padx=14, pady=(0, 8))
 
+        ttk.Button(
+            self.sidebar,
+            text="Builder Vis2",
+            command=self.open_builder_vis2,
+        ).pack(fill=tk.X, padx=14, pady=(0, 12))
+
         file_area = tk.Frame(self.sidebar, bg=SURFACE_ALT)
         file_area.pack(fill=tk.X, padx=14, pady=(0, 18))
 
@@ -292,6 +301,8 @@ class Vis2App:
     def bind_shortcuts(self):
         self.root.bind("<Control-o>", lambda _event: self.open_folder())
         self.root.bind("<Control-O>", lambda _event: self.open_folder())
+        self.root.bind("<Control-b>", lambda _event: self.open_builder_vis2())
+        self.root.bind("<Control-B>", lambda _event: self.open_builder_vis2())
         self.root.bind("<Control-r>", lambda _event: self.reload_current_file())
         self.root.bind("<Control-R>", lambda _event: self.reload_current_file())
 
@@ -308,6 +319,17 @@ class Vis2App:
         self.root.bind("<Control-t>", lambda _event: self.show_transition())
         self.root.bind("<Control-T>", lambda _event: self.show_transition())
         self.root.bind("<Control-Shift-T>", lambda _event: self.swap_transition_languages())
+
+    def open_builder_vis2(self):
+        if not LESSON_BUILDER_VIS2.exists():
+            messagebox.showerror("Missing Tool", f"Could not find:\n{LESSON_BUILDER_VIS2}")
+            return "break"
+
+        try:
+            subprocess.Popen([sys.executable, str(LESSON_BUILDER_VIS2)])
+        except Exception as error:
+            messagebox.showerror("Could Not Open Builder Vis2", str(error))
+        return "break"
 
     def load_app_config(self):
         if not CONFIG_FILE.exists():
