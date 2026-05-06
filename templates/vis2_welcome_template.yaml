@@ -1,0 +1,207 @@
+id: vis2_welcome
+title: Welcome To Vis2
+category: onboarding
+level: beginner
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - welcome
+  - onboarding
+  - vis2
+  - language_transition
+
+goal: >
+  Vis2 helps you study programming concepts across languages by showing lessons,
+  revision notes, and transition paths. Pick only the languages you care about,
+  then move between Lesson, Revision, and Transition modes.
+
+assets:
+  welcome_diagram:
+    type: image
+    path: assets/onboarding/vis2-flow.png
+    alt: Lesson, revision, and transition views working from the same YAML file.
+
+lesson:
+  - explain:
+      title: What this app does
+      body: >
+        Vis2 reads structured YAML lessons and turns them into study views. A
+        lesson can explain a concept, compare languages, show examples, and help
+        you change habits when moving from one programming language to another.
+
+  - compare_table:
+      title: Main views
+      columns:
+        - View
+        - What it is for
+        - Best use
+      rows:
+        - [Lesson, Read the concept like a guided lesson, Learn something new]
+        - [Revision, Review tables and flashcards quickly, Prepare or revise]
+        - [Transition, Compare thinking from one language to another, Shift habits]
+        - [Raw Structure, Inspect the filtered YAML, Debug or author lessons]
+
+  - explain:
+      title: Start here
+      body: >
+        Use Open Folder on the left to choose a folder containing YAML lessons.
+        The file list will show every .yaml and .yml file inside that folder.
+        Select a file to load it.
+
+  - compare_table:
+      title: Useful controls
+      columns:
+        - Action
+        - Shortcut
+        - Result
+      rows:
+        - [Open lesson folder, Ctrl+O, Choose a YAML folder]
+        - [Reload current lesson, Ctrl+R, Re-read the current YAML file]
+        - [Previous or next file, Up / Down, Move through YAML files]
+        - [Switch views, Ctrl+1 / Ctrl+2 / Ctrl+3 / Ctrl+4, Lesson / Revision / Transition / Raw]
+        - [Cycle views, Ctrl+Left / Ctrl+Right, Move between modes]
+        - [Swap transition languages, Ctrl+Shift+T, Reverse source and target]
+
+  - language_lens:
+      language: python
+      title: If you are learning from Python
+      body: >
+        Use the language selector to compare Python with C++ or Java. Pay
+        attention to habit swaps: they explain what Python hides and what the
+        target language expects you to notice.
+      default_instincts:
+        - Start with Lesson mode for mental models.
+        - Use Transition mode to see how Python habits change.
+      avoid:
+        - Treating side-by-side code as pure syntax translation.
+
+  - language_lens:
+      language: cpp
+      title: If you are learning from C++
+      body: >
+        Use Transition mode to compare C++ instincts with Python or Java. Look
+        for places where value semantics, memory layout, ownership, or templates
+        no longer match the target language.
+      default_instincts:
+        - Compare C++ examples with the target language examples.
+        - Review false friends in transition paths.
+      avoid:
+        - Assuming similar names imply similar behavior.
+
+  - language_lens:
+      language: java
+      title: If you are learning from Java
+      body: >
+        Use the transition controls to move from Java to Python or C++. Focus on
+        where interface-first design, object references, generics, and contracts
+        map differently.
+      default_instincts:
+        - Use Revision mode for quick reminders.
+        - Use Transition mode for habit changes.
+      avoid:
+        - Expecting every language to organize APIs like Java Collections.
+
+examples:
+  - code_compare:
+      title: What a lesson example looks like
+      idea: The same operation can be shown in only the languages you select.
+      python: |
+        values = [1, 2, 3]
+        values.append(4)
+      cpp: |
+        vector<int> values = {1, 2, 3};
+        values.push_back(4);
+      java: |
+        List<Integer> values = new ArrayList<>();
+        values.add(4);
+      note: >
+        Use the Visible languages dropdown to hide languages you do not want to
+        study right now.
+
+transitions:
+  python_to_cpp:
+    title: Moving from Python to C++
+    mindset_shift:
+      - From direct built-ins to explicit types and container guarantees.
+      - From hidden memory behavior to allocation, copying, and invalidation.
+    habit_swaps:
+      - python: Use the simplest built-in first.
+        cpp: Choose the container that matches access pattern and cost.
+    false_friends:
+      - term: list
+        warning: C++ list is a linked list, not the usual equivalent of Python list.
+
+  cpp_to_python:
+    title: Moving from C++ to Python
+    mindset_shift:
+      - From explicit control to readable built-in expression.
+      - From value/lifetime details to mutation and reference behavior.
+    habit_swaps:
+      - cpp: Choose among containers by guarantees early.
+        python: Start with list, dict, set, tuple, or deque unless a special need appears.
+    false_friends:
+      - term: list
+        warning: Python list is closer to C++ vector than C++ list.
+
+  java_to_python:
+    title: Moving from Java to Python
+    mindset_shift:
+      - From interface-heavy APIs to direct built-in structures.
+      - From compile-time declarations to readable runtime behavior.
+    habit_swaps:
+      - java: Create interfaces and classes for many structured cases.
+        python: Use dicts, lists, tuples, dataclasses, or simple classes as needed.
+    false_friends:
+      - term: list
+        warning: Python list is a concrete built-in, not an interface like Java List.
+
+  python_to_java:
+    title: Moving from Python to Java
+    mindset_shift:
+      - From concise dynamic code to explicit types and contracts.
+      - From direct collection literals to interface and implementation choices.
+    habit_swaps:
+      - python: Use dict or list directly.
+        java: Think in terms of Map, List, Set, Queue, and their implementations.
+    false_friends:
+      - term: map
+        warning: Java Map is an interface with multiple implementations and explicit key equality rules.
+
+revision:
+  quick_summary:
+    - Open a YAML folder from the left panel.
+    - Use Visible languages to strictly filter content.
+    - Lesson mode is for learning.
+    - Revision mode is for quick review.
+    - Transition mode is for changing habits between languages.
+
+  cheat_table:
+    title: First actions
+    columns:
+      - Need
+      - What to do
+    rows:
+      - [Study a concept, Open a folder and choose a lesson YAML]
+      - [Focus on two languages, Use the Visible languages dropdown]
+      - [Move from one language to another, Open Transition mode]
+      - [Create new lessons, Start from templates/compare-template.yaml]
+      - [Generate lesson YAML with AI, Use templates/yaml-generation-prompt.md]
+
+  flashcards:
+    - question: What is Vis2 best at?
+      answer: Showing lessons, revision notes, and language-transition paths from YAML files.
+    - question: What should you use to focus on only Python and C++?
+      answer: The Visible languages dropdown.
+    - question: Where do you learn how habits change from one language to another?
+      answer: Transition mode.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_new_lesson
+    - explain_app_usage
+    - suggest_next_concepts
+  context: >
+    This welcome file teaches the user how to use Vis2 itself. Keep it direct,
+    practical, and focused on the app workflow.

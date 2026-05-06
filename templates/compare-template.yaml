@@ -1,0 +1,217 @@
+id: concept_id_here
+title: Human Friendly Concept Title
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - tag_one
+  - tag_two
+  - language_transition
+
+goal: >
+  Explain what the learner should be able to understand after reading this
+  concept. Focus on how the concept is thought about across languages, not just
+  how syntax changes.
+
+assets:
+  main_diagram:
+    type: image
+    path: assets/category/concept/main-diagram.png
+    alt: A short description of the image for readers.
+
+lesson:
+  - explain:
+      title: Same idea, different instincts
+      body: >
+        Start with the language-independent idea. Explain why the concept exists
+        and what problem it solves before naming language-specific tools.
+
+  - image:
+      asset: main_diagram
+      caption: One useful visual that makes the concept easier to remember.
+
+  - compare_table:
+      title: First mapping
+      columns:
+        - Idea
+        - Python
+        - C++
+        - Java
+      rows:
+        - [Common operation, python form, cpp form, java form]
+        - [Important distinction, python note, cpp note, java note]
+
+  - language_lens:
+      language: python
+      title: How Python wants you to think
+      body: >
+        Describe the natural Python mental model. Mention the default tool,
+        what Python hides, and what Python makes easy.
+      default_instincts:
+        - Use the most direct readable built-in first.
+        - Prefer clarity unless performance pressure is real.
+      avoid:
+        - Carrying over habits that make Python code unnecessarily complex.
+
+  - language_lens:
+      language: cpp
+      title: How C++ wants you to think
+      body: >
+        Describe the natural C++ mental model. Mention explicit types,
+        ownership, layout, performance, and library conventions where relevant.
+      default_instincts:
+        - Choose tools based on guarantees and costs.
+        - Notice lifetime, copying, references, and allocation.
+      avoid:
+        - Assuming the language will hide performance or memory tradeoffs.
+
+  - language_lens:
+      language: java
+      title: How Java wants you to think
+      body: >
+        Describe the natural Java mental model. Mention interfaces, contracts,
+        generics, object references, and standard library conventions.
+      default_instincts:
+        - Think in terms of interfaces and expected behavior.
+        - Pick implementations based on required guarantees.
+      avoid:
+        - Exposing implementation details too early in APIs.
+
+examples:
+  - code_compare:
+      title: Example operation title
+      idea: Explain the shared operation in one sentence.
+      python: |
+        # Python example here
+      cpp: |
+        // C++ example here
+      java: |
+        // Java example here
+      note: >
+        Explain what is truly different in thinking, not just punctuation or
+        method names.
+
+  - code_compare:
+      title: Edge case or common mistake
+      idea: Show a small example that reveals a trap.
+      python: |
+        # Python example here
+      cpp: |
+        // C++ example here
+      java: |
+        // Java example here
+      note: >
+        Explain the trap and what habit prevents it.
+
+transitions:
+  python_to_cpp:
+    title: Moving from Python to C++
+    mindset_shift:
+      - From runtime flexibility to explicit types and compile-time checks.
+      - From convenience first to guarantees, costs, and ownership.
+    habit_swaps:
+      - python: Describe the Python habit.
+        cpp: Describe the C++ habit to replace it with.
+      - python: Describe another Python instinct.
+        cpp: Describe the C++ instinct.
+    false_friends:
+      - term: Shared-looking term or API
+        warning: Explain why it does not mean exactly the same thing.
+
+  cpp_to_python:
+    title: Moving from C++ to Python
+    mindset_shift:
+      - From explicit control to direct expression with built-ins.
+      - From value/lifetime details to mutation and reference behavior.
+    habit_swaps:
+      - cpp: Describe the C++ habit.
+        python: Describe the Python habit to use instead.
+    false_friends:
+      - term: Shared-looking term or API
+        warning: Explain the Python-specific meaning.
+
+  python_to_java:
+    title: Moving from Python to Java
+    mindset_shift:
+      - From dynamic concise code to explicit types, contracts, and APIs.
+      - From direct built-ins to interface-driven library design.
+    habit_swaps:
+      - python: Describe the Python habit.
+        java: Describe the Java habit to use instead.
+    false_friends:
+      - term: Shared-looking term or API
+        warning: Explain the Java-specific meaning.
+
+  java_to_python:
+    title: Moving from Java to Python
+    mindset_shift:
+      - From interface-heavy design to simple direct structures when enough.
+      - From compile-time declarations to readable runtime behavior.
+    habit_swaps:
+      - java: Describe the Java habit.
+        python: Describe the Python habit to use instead.
+    false_friends:
+      - term: Shared-looking term or API
+        warning: Explain the Python-specific meaning.
+
+  cpp_to_java:
+    title: Moving from C++ to Java
+    mindset_shift:
+      - From concrete containers and value semantics to interfaces and references.
+      - From templates and operators to generics, methods, and contracts.
+    habit_swaps:
+      - cpp: Describe the C++ habit.
+        java: Describe the Java habit to use instead.
+    false_friends:
+      - term: Shared-looking term or API
+        warning: Explain the Java-specific meaning.
+
+  java_to_cpp:
+    title: Moving from Java to C++
+    mindset_shift:
+      - From garbage-collected references to ownership, copying, and lifetimes.
+      - From interface-first APIs to concrete guarantees and templates.
+    habit_swaps:
+      - java: Describe the Java habit.
+        cpp: Describe the C++ habit to use instead.
+    false_friends:
+      - term: Shared-looking term or API
+        warning: Explain the C++-specific meaning.
+
+revision:
+  quick_summary:
+    - One sentence that applies to all selected languages.
+    - Python: one compact instinct or warning.
+    - C++: one compact instinct or warning.
+    - Java: one compact instinct or warning.
+
+  cheat_table:
+    title: Revision map
+    columns:
+      - Need
+      - Python instinct
+      - C++ instinct
+      - Java instinct
+    rows:
+      - [Need or task, Python answer, C++ answer, Java answer]
+      - [Common mistake, Python warning, C++ warning, Java warning]
+
+  flashcards:
+    - question: Short useful recall question.
+      answer: Short answer.
+    - question: Transition-focused recall question.
+      answer: Short answer.
+
+tlm_hooks:
+  possible_tasks:
+    - explain_for_source_to_target_language
+    - generate_transition_quiz
+    - suggest_missing_examples
+    - convert_lesson_to_revision_notes
+  context: >
+    This concept teaches language-transition thinking. Generated content should
+    emphasize mental models, habits, false friends, examples, traps, and revision
+    material.
