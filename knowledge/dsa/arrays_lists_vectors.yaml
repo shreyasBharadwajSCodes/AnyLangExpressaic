@@ -1,0 +1,408 @@
+id: arrays_lists_vectors
+title: Arrays / Lists / Vectors
+category: dsa
+level: beginner_to_intermediate
+languages:
+- python
+- cpp
+- java
+tags:
+- arrays
+- lists
+- vectors
+- containers
+- interview
+- language_transition
+goal: Help learners use sequential containers confidently across Python, C++, and
+  Java while understanding indexing, resizing, copying, references, and memory caveats.
+assets:
+  sequence_memory_layout:
+    type: image
+    path: assets/dsa/arrays_lists_vectors/sequence-memory-layout.png
+    alt: Python list references, C++ vector contiguous values, and Java primitive
+      arrays versus ArrayList references.
+lesson:
+- explain:
+    title: Core Idea
+    body: 'Arrays, lists, and vectors solve the same interview need: store ordered
+      values and access them by index. The danger is assuming they have the same memory
+      behavior. Python list stores references, C++ vector stores values contiguously,
+      Java int[] stores primitive values, and Java ArrayList<Integer> stores boxed
+      object references.
+
+      '
+- compare_table:
+    title: First Mapping
+    columns:
+    - Need
+    - Python
+    - C++
+    - Java
+    rows:
+    - - Growable sequence
+      - list
+      - vector<T>
+      - ArrayList<T>
+    - - Fixed primitive array
+      - list by convention
+      - array<T,N> or vector<T>
+      - int[], char[], long[]
+    - - Append
+      - append(x)
+      - push_back(x)
+      - add(x)
+    - - Index read
+      - nums[i]
+      - nums[i]
+      - nums[i] or list.get(i)
+    - - Length
+      - len(nums)
+      - nums.size()
+      - nums.length or list.size()
+    - - Copy
+      - nums.copy() or nums[:]
+      - vector<int> b = a
+      - a.clone() or new ArrayList<>(list)
+- language_lens:
+    language: python
+    title: Python List Thinking
+    body: 'Python list is a dynamic array of references. It feels like a flexible
+      container for everything, but assignment aliases the same list unless you explicitly
+      copy.
+
+      '
+    default_instincts:
+    - Use list for most ordered interview data.
+    - Use append and pop for stack behavior at the end.
+    - Use enumerate when index and value are both needed.
+    - Use slicing carefully when a copy is intended.
+    avoid:
+    - Using list for repeated membership checks when set is intended.
+    - Mutating a list while iterating unless index movement is deliberate.
+    - Treating a nested shallow copy as independent rows.
+- language_lens:
+    language: cpp
+    title: C++ Vector Thinking
+    body: 'vector is the interview default for ordered dynamic data in C++. It stores
+      values contiguously, which gives fast indexing and cache-friendly iteration.
+      The key caveat is that growth can reallocate storage.
+
+      '
+    default_instincts:
+    - Use vector<T> for most arrays.
+    - Pre-size with vector<int> nums(n) when n is known.
+    - Use reserve when many pushes are expected and final size is unknown.
+    - Pass large vectors by const reference when read-only.
+    avoid:
+    - Using list because Python calls its dynamic array list.
+    - Returning references to local vectors.
+    - Holding element references across push_back when growth can happen.
+- language_lens:
+    language: java
+    title: Java Array And ArrayList Thinking
+    body: 'Java splits the idea into primitive arrays and collection lists. int[]
+      is compact and fast for fixed-size numeric data. ArrayList<Integer> is growable
+      but boxes primitives and stores object references.
+
+      '
+    default_instincts:
+    - Use int[] for fixed-size numeric interview arrays.
+    - Use ArrayList<Integer> when size grows dynamically.
+    - Use Arrays.copyOf or clone for primitive array copies.
+    - Use list.get(i) and list.set(i, value) for ArrayList access.
+    avoid:
+    - Writing List<int>; Java generics require boxed Integer.
+    - Printing int[] directly instead of Arrays.toString.
+    - Assuming array length uses length() method.
+- compare_table:
+    title: Interview Costs
+    columns:
+    - Operation
+    - Python list
+    - C++ vector
+    - Java int[] / ArrayList
+    rows:
+    - - Index access
+      - O(1)
+      - O(1)
+      - O(1)
+    - - Append at end
+      - Amortized O(1)
+      - Amortized O(1)
+      - ArrayList amortized O(1)
+    - - Insert front
+      - O(n)
+      - O(n)
+      - O(n)
+    - - Membership scan
+      - O(n)
+      - O(n)
+      - O(n)
+    - - Copy whole container
+      - O(n) shallow
+      - O(n) value copy
+      - O(n) shallow for objects
+examples:
+- code_compare:
+    title: Build And Sum
+    idea: Store n numbers and compute their sum safely.
+    python: 'nums = [1, 2, 3]
+
+      total = sum(nums)
+
+      '
+    cpp: 'vector<int> nums = {1, 2, 3};
+
+      long long total = accumulate(nums.begin(), nums.end(), 0LL);
+
+      '
+    java: 'int[] nums = {1, 2, 3};
+
+      long total = 0;
+
+      for (int x : nums) total += x;
+
+      '
+    note: 'Python avoids integer overflow. C++ needs 0LL so accumulate uses long long.
+      Java should use long for large totals.
+
+      '
+- code_compare:
+    title: Grow Dynamically
+    idea: Append only values that pass a condition.
+    python: "ans = []\nfor x in nums:\n    if x > 0:\n        ans.append(x)\n"
+    cpp: "vector<int> ans;\nfor (int x : nums) {\n    if (x > 0) ans.push_back(x);\n\
+      }\n"
+    java: "List<Integer> ans = new ArrayList<>();\nfor (int x : nums) {\n    if (x\
+      \ > 0) ans.add(x);\n}\n"
+    note: 'Java uses ArrayList because the result size is not known. If size is known,
+      int[] is usually faster and smaller.
+
+      '
+- code_compare:
+    title: Matrix Initialization Trap
+    idea: Create independent rows.
+    python: 'grid = [[0] * cols for _ in range(rows)]
+
+      '
+    cpp: 'vector<vector<int>> grid(rows, vector<int>(cols, 0));
+
+      '
+    java: 'int[][] grid = new int[rows][cols];
+
+      '
+    note: 'Avoid Python [[0] * cols] * rows because every row aliases the same list.
+      Java creates separate row arrays for int[][].
+
+      '
+- code_compare:
+    title: Copy Before Mutating
+    idea: Preserve original order while sorting a copy.
+    python: 'sorted_nums = sorted(nums)
+
+      '
+    cpp: 'vector<int> sortedNums = nums;
+
+      sort(sortedNums.begin(), sortedNums.end());
+
+      '
+    java: 'int[] sortedNums = nums.clone();
+
+      Arrays.sort(sortedNums);
+
+      '
+    note: 'Python sorted returns a new list. C++ and Java need an explicit copy when
+      the original must stay unchanged.
+
+      '
+transitions:
+  python_to_cpp:
+    title: Moving From Python Lists To C++ Vectors
+    mindset_shift:
+    - From reference lists to contiguous typed values.
+    - From flexible integer size to explicit numeric types.
+    - From hidden growth to reallocation and invalidation awareness.
+    habit_swaps:
+    - python: nums2 = nums aliases the list.
+      cpp: vector<int> nums2 = nums copies the elements.
+    - python: append without thinking about references.
+      cpp: push_back may invalidate references into the vector.
+    - python: Use list for queue-like behavior sometimes.
+      cpp: Use deque or queue when front removal matters.
+    false_friends:
+    - term: list
+      warning: C++ list is a linked list, not the usual equivalent of Python list.
+    - term: copy
+      warning: C++ vector copy is a real O(n) element copy.
+  cpp_to_python:
+    title: Moving From C++ Vectors To Python Lists
+    mindset_shift:
+    - From value storage to object references.
+    - From compile-time types to runtime shape checks.
+    - From invalidation concerns to aliasing concerns.
+    habit_swaps:
+    - cpp: vector<int> b = a copies.
+      python: Use b = a.copy() or b = a[:] to copy.
+    - cpp: Use long long for big sums.
+      python: int is arbitrary precision, but memory can be larger.
+    - cpp: Pre-size vectors.
+      python: Use append or comprehensions naturally.
+    false_friends:
+    - term: nested copy
+      warning: A shallow Python copy of a matrix still shares inner rows.
+    - term: front pop
+      warning: list.pop(0) is O(n); use deque.
+  python_to_java:
+    title: Moving From Python Lists To Java Arrays And ArrayLists
+    mindset_shift:
+    - From one default sequence type to fixed arrays versus growable lists.
+    - From dynamic values to primitives and boxed objects.
+    - From direct indexing everywhere to get/set for lists.
+    habit_swaps:
+    - python: nums[i].
+      java: Use nums[i] for int[] and list.get(i) for ArrayList.
+    - python: nums.append(x).
+      java: Use list.add(x), or fill an int[] by index.
+    - python: len(nums).
+      java: Use nums.length for arrays and list.size() for lists.
+    false_friends:
+    - term: List<int>
+      warning: Java generics cannot use primitives; use List<Integer>.
+    - term: array print
+      warning: int[] needs Arrays.toString for readable output.
+  java_to_python:
+    title: Moving From Java Arrays And Lists To Python Lists
+    mindset_shift:
+    - From fixed primitive arrays and boxed lists to one flexible list type.
+    - From method-based list access to bracket indexing.
+    - From null concerns to None and aliasing concerns.
+    habit_swaps:
+    - java: int[] nums = new int[n].
+      python: nums = [0] * n.
+    - java: list.get(i).
+      python: nums[i].
+    - java: Arrays.copyOf(nums, n).
+      python: nums.copy() or nums[:].
+    false_friends:
+    - term: multiplication initialization
+      warning: '[0] * n is fine for numbers; [[0] * c] * r is not fine for matrix
+        rows.'
+    - term: integer storage
+      warning: Python list of ints has more overhead than Java int[].
+  cpp_to_java:
+    title: Moving From C++ Vectors To Java Arrays And Lists
+    mindset_shift:
+    - From vector as default to choosing int[] or ArrayList.
+    - From values and references to primitives and object references.
+    - From STL algorithms to Arrays and Collections utilities.
+    habit_swaps:
+    - cpp: vector<int> nums(n).
+      java: int[] nums = new int[n].
+    - cpp: nums.push_back(x).
+      java: list.add(x) for growable lists.
+    - cpp: nums.size().
+      java: nums.length for arrays, list.size() for lists.
+    false_friends:
+    - term: generic primitives
+      warning: ArrayList<int> is invalid; use ArrayList<Integer>.
+    - term: clone
+      warning: array clone is shallow for object arrays.
+  java_to_cpp:
+    title: Moving From Java Arrays And Lists To C++ Vectors
+    mindset_shift:
+    - From GC-managed references to value storage and lifetimes.
+    - From fixed arrays to flexible vector as a strong default.
+    - From boxed collections to template containers.
+    habit_swaps:
+    - java: int[] for numeric arrays.
+      cpp: vector<int> unless fixed stack array behavior is specifically useful.
+    - java: ArrayList<Integer>.
+      cpp: vector<int> stores ints directly without boxing.
+    - java: Arrays.copyOf.
+      cpp: vector<int> copy = nums.
+    false_friends:
+    - term: reference stability
+      warning: vector growth can invalidate references and iterators.
+    - term: default initialization
+      warning: vector<int>(n) initializes to zero; raw local arrays may not.
+interview_questions:
+- question: Which C++ container is closest to Python list?
+  answer: vector, because both are dynamic arrays with fast indexing and amortized
+    O(1) append.
+- question: Why is Java int[] often better than ArrayList<Integer> for numeric arrays?
+  answer: int[] stores primitives directly and avoids boxing overhead.
+- question: What is the Python matrix initialization trap?
+  answer: '[[0] * cols] * rows aliases the same row. Use a comprehension to create
+    independent rows.'
+- question: When can C++ vector references become invalid?
+  answer: push_back or other growth operations can reallocate the vector and invalidate
+    element references, pointers, and iterators.
+- question: Why is list.pop(0) bad in Python for queues?
+  answer: It shifts all later elements left, making it O(n). Use collections.deque.
+revision:
+  quick_summary:
+  - Python list stores references and aliases easily.
+  - C++ vector stores values contiguously and can reallocate.
+  - Java int[] is fixed and primitive; ArrayList<Integer> is growable and boxed.
+  - Front insertion/removal is O(n) for dynamic arrays.
+  cheat_table:
+    title: Sequence Container Revision
+    columns:
+    - Need
+    - Python
+    - C++
+    - Java
+    - Caveat
+    rows:
+    - - Default ordered data
+      - list
+      - vector
+      - int[] or ArrayList
+      - Java split by fixed/growable
+    - - Append
+      - append
+      - push_back
+      - add
+      - Growth may copy internally
+    - - Copy
+      - copy or slice
+      - assignment copies
+      - clone/copy constructor
+      - Nested/object copies are shallow
+    - - Queue front pop
+      - deque
+      - deque/queue
+      - ArrayDeque
+      - Avoid shifting arrays
+    - - Matrix
+      - row comprehension
+      - vector<vector<int>>
+      - int[][]
+      - Rows can be separate objects
+  flashcards:
+  - question: Is Python nums2 = nums a copy?
+    answer: No, it aliases the same list.
+  - question: What can vector push_back invalidate?
+    answer: References, pointers, and iterators to elements.
+  - question: Can Java use List<int>?
+    answer: No, use List<Integer> or int[].
+  - question: What is Java array length syntax?
+    answer: nums.length.
+  - question: What is ArrayList size syntax?
+    answer: list.size().
+notes:
+- Start with the sequence type that matches the operations, not the name that sounds
+  familiar.
+- The most common interview bugs are aliasing, accidental copying, front removal,
+  and integer overflow.
+tlm_hooks:
+  possible_tasks:
+  - generate_sequence_container_quiz
+  - compare_copy_behavior
+  - create_matrix_initialization_drills
+  - explain_source_to_target_transition
+  context: 'This lesson teaches sequential containers for DSA interviews across Python,
+    C++, and Java with emphasis on memory behavior, copying, aliasing, and language-specific
+    implementation choices.
+
+    '

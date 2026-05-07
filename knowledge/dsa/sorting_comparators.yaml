@@ -1,0 +1,370 @@
+id: sorting_comparators
+title: Sorting Comparator Readiness
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - sorting
+  - comparators
+  - ordering
+  - containers
+  - interview
+  - language_transition
+goal: Help learners sort arrays, lists, pairs, objects, and custom records correctly across Python, C++, and Java while avoiding comparator contract and overflow mistakes.
+
+assets:
+  comparator_contract:
+    type: image
+    path: assets/dsa/sorting_comparators/comparator-contract.png
+    alt: Diagram showing key-based sorting versus pairwise comparators and strict ordering.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Sorting turns messy data into order so greedy, two-pointer, interval, binary
+        search, and grouping patterns become possible. The core idea is simple:
+        define the order clearly. The caveat is that Python usually uses key
+        functions, while C++ and Java use pairwise comparators with stricter rules.
+  - compare_table:
+      title: First Mapping
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Sort ascending", "nums.sort()", "sort(v.begin(), v.end())", "Arrays.sort(a) or list.sort(null)"]
+        - ["Sorted copy", "sorted(nums)", "copy then sort", "clone/copy then sort"]
+        - ["Sort descending", "sort(reverse=True)", "sort with greater<T>()", "Comparator.reverseOrder for objects/list"]
+        - ["Sort by key", "key=lambda x: ...", "lambda comparator", "Comparator.comparing... or lambda"]
+        - ["Pairs by first then second", "tuple default or key", "pair default order", "custom comparator"]
+        - ["Binary search after sort", "bisect", "lower_bound", "Arrays.binarySearch or custom lower_bound"]
+  - language_lens:
+      language: python
+      title: Python Sorting Thinking
+      body: >
+        Python sorting is stable and key-based. A key function maps each element to
+        a comparison value. This is usually easier and safer than writing pairwise
+        comparison logic.
+      default_instincts:
+        - Use nums.sort() to mutate and sorted(nums) to copy.
+        - "Use key=lambda item: (...) for custom ordering."
+        - Use reverse=True for whole-order descending.
+        - Use tuple keys for multi-field sorting.
+      behind_the_scenes:
+        - list.sort and sorted are stable.
+        - list.sort returns None.
+        - Key values are compared, not the original elements directly.
+        - Mixed incomparable types can fail at runtime.
+      avoid:
+        - Expecting nums.sort() to return the list.
+        - Using reverse=True when only one field should be descending unless the key handles it.
+        - Sorting repeatedly inside a loop when one pre-sort is enough.
+  - language_lens:
+      language: cpp
+      title: C++ Sorting Thinking
+      body: >
+        C++ sort works over iterator ranges and mutates the range in place. Custom
+        comparators return true when the first argument should come before the second.
+        The comparator must define a strict weak ordering.
+      default_instincts:
+        - Use sort(v.begin(), v.end()) for vectors.
+        - Use greater<int>() for simple descending numeric sort.
+        - Use lambdas for pair/object custom order.
+        - Use stable_sort only when preserving equal-order matters.
+      behind_the_scenes:
+        - sort requires random-access iterators.
+        - Comparator must return false for equal elements in both directions.
+        - Returning a.first <= b.first is wrong because equal elements compare true.
+        - Sorting invalidates assumptions about previous indices but not vector references by itself.
+      avoid:
+        - Writing non-strict comparators.
+        - Calling sort on unordered_map directly.
+        - Forgetting that lower_bound requires the same sorted order.
+  - language_lens:
+      language: java
+      title: Java Sorting Thinking
+      body: >
+        Java sorting differs between primitive arrays, object arrays, and Lists.
+        Primitive arrays use natural order only. Custom comparators work with object
+        arrays and Lists, not int[] directly.
+      default_instincts:
+        - Use Arrays.sort(int[]) for primitive ascending sort.
+        - Use list.sort(comparator) for lists.
+        - Use Arrays.sort(objectArray, comparator) for object arrays such as int[][].
+        - Use Integer.compare or Long.compare in comparators.
+      behind_the_scenes:
+        - int[] cannot be sorted with Comparator.
+        - int[][] is an array of int[] objects, so Arrays.sort(int[][], comparator) works.
+        - return a - b can overflow.
+        - Comparator must be transitive and consistent.
+      avoid:
+        - Using Collections.sort on primitive arrays.
+        - Using subtraction in comparators with large values.
+        - Assuming Arrays.binarySearch gives lower_bound directly.
+  - compare_table:
+      title: Comparator Rules
+      columns:
+        - Rule
+        - Why It Matters
+        - Bad Sign
+      rows:
+        - ["Equal elements compare equal", "Prevents contradictory order", "a <= b comparator"]
+        - ["Transitive order", "Sort can reason consistently", "A before B, B before C, C before A"]
+        - ["No overflow", "Comparison result stays correct", "return a - b"]
+        - ["Same order for binary search", "Search assumes sorted invariant", "Different comparator/key"]
+
+examples:
+  - code_compare:
+      title: Sort Numbers Descending
+      idea: Put larger numbers first.
+      python: |
+        nums.sort(reverse=True)
+      cpp: |
+        sort(nums.begin(), nums.end(), greater<int>());
+      java: |
+        Integer[] nums = {3, 1, 2};
+        Arrays.sort(nums, Collections.reverseOrder());
+      note: >
+        Java primitive int[] cannot use Collections.reverseOrder directly. Use
+        Integer[] or sort ascending and reverse manually.
+  - code_compare:
+      title: Sort Pairs By First Ascending Then Second Descending
+      idea: Common interval and greedy ordering.
+      python: |
+        pairs.sort(key=lambda p: (p[0], -p[1]))
+      cpp: |
+        sort(pairs.begin(), pairs.end(), [](const auto& a, const auto& b) {
+            if (a.first != b.first) return a.first < b.first;
+            return a.second > b.second;
+        });
+      java: |
+        Arrays.sort(pairs, (a, b) -> {
+            if (a[0] != b[0]) return Integer.compare(a[0], b[0]);
+            return Integer.compare(b[1], a[1]);
+        });
+      note: >
+        Java example assumes pairs is int[][]. Use list.sort for List<int[]>.
+  - code_compare:
+      title: Stable Sort Need
+      idea: Preserve original relative order among equal keys.
+      python: |
+        items.sort(key=lambda x: x.score)
+      cpp: |
+        stable_sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
+            return a.score < b.score;
+        });
+      java: |
+        items.sort(Comparator.comparingInt(a -> a.score));
+      note: >
+        Python list sort and Java object/list sorts are stable. C++ sort is not
+        stable; use stable_sort when equal-order preservation matters.
+  - code_compare:
+      title: Lower Bound After Sorting
+      idea: Find first value at least target.
+      python: |
+        nums.sort()
+        i = bisect_left(nums, target)
+      cpp: |
+        sort(nums.begin(), nums.end());
+        int i = lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+      java: |
+        Arrays.sort(nums);
+        int lo = 0, hi = nums.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] < target) lo = mid + 1;
+            else hi = mid;
+        }
+      note: >
+        Binary search helpers assume the data is sorted under the same order being
+        searched.
+  - code_compare:
+      title: Comparator Overflow Trap
+      idea: Compare safely when values may be large.
+      python: |
+        nums.sort()
+      cpp: |
+        sort(nums.begin(), nums.end(), [](long long a, long long b) {
+            return a < b;
+        });
+      java: |
+        arr.sort((a, b) -> Long.compare(a.value, b.value));
+      note: >
+        Java return a.value - b.value can overflow and break sorting.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Sort Keys To C++ Comparators
+    mindset_shift:
+      - From mapping to key values to pairwise before/after decisions.
+      - From stable default to unstable sort unless stable_sort is chosen.
+      - From reverse flag to explicit comparator logic.
+    habit_swaps:
+      - python: "key=lambda p: (p[0], -p[1])."
+        cpp: Comparator returns first ascending, second descending explicitly.
+      - python: sorted(nums).
+        cpp: Copy vector first, then sort the copy.
+      - python: stable sort by default.
+        cpp: Use stable_sort if equal-order preservation matters.
+    false_friends:
+      - term: comparator
+        warning: C++ comparator returns bool, not negative/zero/positive.
+      - term: <=
+        warning: Returning a <= b violates strict ordering for equal values.
+  cpp_to_python:
+    title: Moving From C++ Comparators To Python Keys
+    mindset_shift:
+      - From pairwise bool decisions to key tuples.
+      - From iterator ranges to direct list methods.
+      - From unstable default to stable default.
+    habit_swaps:
+      - cpp: sort with lambda.
+        python: "Use key=lambda x: (...)."
+      - cpp: greater<int>().
+        python: reverse=True.
+      - cpp: stable_sort when needed.
+        python: sort is already stable.
+    false_friends:
+      - term: sort return
+        warning: Python list.sort returns None.
+      - term: reverse
+        warning: reverse=True reverses the whole key order, not just one field.
+  python_to_java:
+    title: Moving From Python Sorting To Java Sorting
+    mindset_shift:
+      - From key functions to Comparator objects or lambdas.
+      - From one list type to primitive arrays, object arrays, and Lists.
+      - From arbitrary-size ints to overflow-aware comparisons.
+    habit_swaps:
+      - python: nums.sort().
+        java: Arrays.sort(nums) for int[].
+      - python: pairs.sort(key=...).
+        java: Arrays.sort(pairs, cmp) for int[][] or list.sort(cmp) for List<int[]>.
+      - python: "key=lambda x: -x."
+        java: Use reversed comparator or compare b to a safely.
+    false_friends:
+      - term: comparator subtraction
+        warning: a - b can overflow; use Integer.compare or Long.compare.
+      - term: primitive comparator
+        warning: int[] cannot take a Comparator.
+  java_to_python:
+    title: Moving From Java Sorting To Python Sorting
+    mindset_shift:
+      - From comparator methods to key tuples.
+      - From primitive/object array split to one list model.
+      - From compare return values to direct key values.
+    habit_swaps:
+      - java: Arrays.sort(nums).
+        python: nums.sort().
+      - java: Integer.compare(a[0], b[0]).
+        python: "key=lambda p: p[0]."
+      - java: Comparator.thenComparing.
+        python: tuple key.
+    false_friends:
+      - term: descending field
+        warning: Use negative numeric key only when values are numeric and safe to negate.
+      - term: mixed types
+        warning: Python 3 will not sort arbitrary mixed incomparable types.
+  cpp_to_java:
+    title: Moving From C++ Sort To Java Sort
+    mindset_shift:
+      - From iterator ranges to utility methods.
+      - From bool comparator to negative/zero/positive Comparator result.
+      - From vector values to primitive arrays or object references.
+    habit_swaps:
+      - cpp: sort(v.begin(), v.end()).
+        java: Arrays.sort(a) or list.sort(null).
+      - cpp: lambda returns true if a before b.
+        java: Comparator returns negative if a before b.
+      - cpp: pair default ordering.
+        java: Write comparator for int[] pairs.
+    false_friends:
+      - term: comparator return
+        warning: Java Comparator does not return boolean.
+      - term: stable sort
+        warning: Java object/list sorts are stable, but primitive Arrays.sort stability is not meaningful for equal primitive values.
+  java_to_cpp:
+    title: Moving From Java Sort To C++ Sort
+    mindset_shift:
+      - From Arrays/List utilities to iterator ranges.
+      - From Comparator int result to bool before relation.
+      - From boxed objects to values and references.
+    habit_swaps:
+      - java: list.sort(cmp).
+        cpp: sort(v.begin(), v.end(), cmp).
+      - java: Integer.compare(a, b).
+        cpp: return a < b.
+      - java: Arrays.sort(pairs, cmp).
+        cpp: sort(pairs.begin(), pairs.end(), cmp).
+    false_friends:
+      - term: return type
+        warning: C++ comparator returns bool, not int.
+      - term: equal case
+        warning: C++ comparator must return false when values are equal.
+
+interview_questions:
+  - question: What is the difference between Python sort and sorted?
+    answer: list.sort mutates the list and returns None; sorted returns a new sorted list.
+  - question: Why is a <= b wrong in a C++ comparator?
+    answer: Equal elements would compare true, violating strict weak ordering.
+  - question: Why is Java return a - b risky in a comparator?
+    answer: It can overflow and produce the wrong sign. Use Integer.compare or Long.compare.
+  - question: Can Java sort int[] with a custom Comparator?
+    answer: No. Use Integer[], int[][], an object array, or a List when a Comparator is needed.
+  - question: When should C++ stable_sort be used?
+    answer: When equal keys must preserve their original relative order.
+  - question: What must be true before lower_bound or binary search?
+    answer: The data must already be sorted according to the same ordering used by the search.
+
+revision:
+  quick_summary:
+    - Sorting is often the setup for greedy, intervals, two pointers, and binary search.
+    - Python uses stable key-based sorting.
+    - C++ comparators return bool and must be strict.
+    - Java comparators return negative, zero, or positive and must avoid overflow.
+  cheat_table:
+    title: Sorting Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["Ascending", "sort", "sort", "Arrays.sort/list.sort", "Mutates"]
+      - ["Copy sort", "sorted", "copy + sort", "clone/copy + sort", "Copy intentionally"]
+      - ["Custom", "key tuple", "bool comparator", "Comparator", "Contracts matter"]
+      - ["Descending", "reverse=True", "greater", "reverseOrder for objects", "Primitive arrays differ"]
+      - ["Stable", "default", "stable_sort", "object/list sorts stable", "C++ sort not stable"]
+      - ["Lower bound", "bisect_left", "lower_bound", "custom loop", "Needs sorted data"]
+  flashcards:
+    - question: What does a C++ comparator return?
+      answer: true if the first item should come before the second.
+    - question: What does a Java Comparator return?
+      answer: Negative, zero, or positive.
+    - question: Is Python sort stable?
+      answer: Yes.
+    - question: Can int[] use Comparator in Java?
+      answer: No.
+    - question: What is the safe Java numeric comparison helper?
+      answer: Integer.compare or Long.compare.
+
+notes:
+  - State the ordering in words before writing the comparator.
+  - Most comparator bugs are equal-case, overflow, or mixing ascending and descending fields incorrectly.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_comparator_drills
+    - explain_sort_contracts
+    - create_language_sort_transition_quiz
+    - produce_interval_sort_examples
+  context: >
+    This lesson teaches sorting and comparators across Python, C++, and Java with
+    emphasis on stable sorting, custom order, comparator contracts, Java primitive
+    array caveats, and binary-search readiness.

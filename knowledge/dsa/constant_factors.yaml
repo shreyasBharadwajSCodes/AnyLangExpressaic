@@ -1,0 +1,286 @@
+id: constant_factors
+title: Constant Factors In Interviews
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - complexity
+  - constant_factors
+  - performance
+  - interview
+  - foundations
+goal: Help learners understand when two solutions with the same Big-O behave differently because of language constants, data layout, allocation, boxing, hashing, and library choices.
+
+assets:
+  same_big_o_different_runtime:
+    type: image
+    path: assets/dsa/constant_factors/same-big-o-different-runtime.png
+    alt: Two O(n) solutions with different constant factors due to memory layout and operations.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Big-O tells the growth class, but constant factors decide many real interview
+        outcomes after the asymptotic idea is right. Constant factors come from
+        allocation, hashing, object overhead, cache locality, boxing, function calls,
+        and repeated hidden work.
+  - compare_table:
+      title: Constant Factor Sources
+      columns:
+        - Source
+        - Why It Matters
+        - Example
+      rows:
+        - ["Memory layout", "Cache-friendly scans are faster", "vector<int> or int[]"]
+        - ["Boxing", "Objects cost memory/time", "List<Integer> vs int[]"]
+        - ["Hashing", "Key hashing and collisions cost work", "String keys in maps"]
+        - ["Allocation", "New objects inside loops add overhead", "Creating arrays per iteration"]
+        - ["Function calls", "Higher overhead in tight loops", "Python callbacks"]
+        - ["I/O", "Can dominate coding tests", "Scanner vs FastScanner"]
+  - language_lens:
+      language: python
+      title: Python Constant-Factor Thinking
+      body: >
+        Python has higher per-operation overhead, so algorithmic improvements matter
+        a lot. Built-ins are often faster than manual Python loops because they run
+        optimized internal code.
+      default_instincts:
+        - Prefer O(n) built-ins when they express the right work.
+        - Avoid nested Python-level loops when constraints are high.
+        - Use set/dict for lookup.
+        - Use sys.stdin.buffer for heavy input.
+      behind_the_scenes:
+        - Python integers and containers are objects/references.
+        - Function calls and lambdas have noticeable overhead.
+        - list comprehensions are often faster than equivalent append loops.
+        - PyPy versus CPython can change constants on some platforms.
+      avoid:
+        - Micro-optimizing before fixing Big-O.
+        - Creating slices or temporary lists in inner loops.
+        - Using recursion for very deep loops when iterative code is simple.
+  - language_lens:
+      language: cpp
+      title: C++ Constant-Factor Thinking
+      body: >
+        C++ often has low constants and strong memory locality, but poor container
+        choices, copies, and allocation-heavy structures can still lose.
+      default_instincts:
+        - Prefer vector for dense sequential data.
+        - Reserve capacity when many insertions are expected.
+        - Pass large objects by reference.
+        - Use unordered_map only when hashing is worth the overhead.
+      behind_the_scenes:
+        - vector<int> is contiguous and cache-friendly.
+        - map/set allocate nodes and have pointer-chasing overhead.
+        - unordered_map has bucket overhead and hashing cost.
+        - endl flushes output and is slower than '\n'.
+      avoid:
+        - Using map when unordered_map or vector indexing fits.
+        - Copying containers accidentally.
+        - Using linked list structures for normal scans.
+  - language_lens:
+      language: java
+      title: Java Constant-Factor Thinking
+      body: >
+        Java performance depends strongly on primitive arrays versus boxed objects,
+        allocation rate, hashing quality, and input/output choices.
+      default_instincts:
+        - Use int[] and long[] for dense numeric data.
+        - Use ArrayDeque over Stack or LinkedList for queues/stacks.
+        - Use StringBuilder for repeated output or string construction.
+        - Avoid Scanner for large coding-test input.
+      behind_the_scenes:
+        - List<Integer> boxes primitive ints.
+        - HashMap stores object references and table/node overhead.
+        - Arrays.sort(int[]) avoids boxing and comparator overhead.
+        - JIT warmup can affect small benchmarks but not your complexity answer.
+      avoid:
+        - Using streams in performance-sensitive loops without reason.
+        - Sorting primitive data after boxing it unnecessarily.
+        - Creating many temporary objects in inner loops.
+
+examples:
+  - code_compare:
+      title: Same Big-O, Different Constants
+      idea: Count values with dense small range.
+      python: |
+        count = [0] * 101
+        for x in nums:
+            count[x] += 1
+      cpp: |
+        vector<int> count(101);
+        for (int x : nums) count[x]++;
+      java: |
+        int[] count = new int[101];
+        for (int x : nums) count[x]++;
+      note: >
+        A hash map would also be O(n), but fixed arrays are faster when the value
+        range is small and known.
+  - code_compare:
+      title: Avoid Front Removal Constants
+      idea: Use a real queue.
+      python: |
+        from collections import deque
+        q = deque()
+      cpp: |
+        queue<int> q;
+      java: |
+        Deque<Integer> q = new ArrayDeque<>();
+      note: >
+        Dynamic-array front removal is not just a bad constant; it changes complexity
+        to O(n) per removal.
+  - code_compare:
+      title: Output Batching
+      idea: Avoid repeated expensive flushing or printing.
+      python: |
+        out = []
+        for x in ans:
+            out.append(str(x))
+        print("\n".join(out))
+      cpp: |
+        for (int x : ans) {
+            cout << x << '\n';
+        }
+      java: |
+        StringBuilder sb = new StringBuilder();
+        for (int x : ans) {
+            sb.append(x).append('\n');
+        }
+        System.out.print(sb);
+      note: >
+        In C++, avoid endl unless flushing is needed. In Java, batching output often
+        matters for large outputs.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Constants To C++
+    mindset_shift:
+      - From interpreter overhead to memory layout and copying.
+      - From built-in speedups to STL container choice.
+      - From high-level clarity to cache locality when needed.
+    habit_swaps:
+      - python: Use dict for many lookups.
+        cpp: Consider vector indexing if keys are dense small integers.
+      - python: Built-ins are often faster than loops.
+        cpp: STL algorithms and simple loops are both strong.
+      - python: print is convenient.
+        cpp: Use '\n' instead of endl for many lines.
+    false_friends:
+      - term: same O(n)
+        warning: vector scan can be much faster than map traversal.
+      - term: unordered_map
+        warning: Hashing has overhead; vector may win for dense keys.
+  cpp_to_python:
+    title: Moving From C++ Constants To Python
+    mindset_shift:
+      - From low-level loops to built-in operations when possible.
+      - From compact primitive storage to object/reference overhead.
+      - From recursion performance to Python call overhead.
+    habit_swaps:
+      - cpp: Manual nested loops may pass.
+        python: Need stronger pruning or different Big-O for high constraints.
+      - cpp: vector count array.
+        python: list count array works well for dense ranges.
+      - cpp: unordered_map for convenience.
+        python: dict is natural but still memory-heavy.
+    false_friends:
+      - term: translated loop
+        warning: A direct C++ loop translation may time out in Python.
+      - term: recursion
+        warning: Python recursive calls are comparatively expensive.
+  python_to_java:
+    title: Moving From Python Constants To Java
+    mindset_shift:
+      - From object-heavy default values to primitive arrays where possible.
+      - From join patterns to StringBuilder.
+      - From simple input to buffered input for large tests.
+    habit_swaps:
+      - python: list of int.
+        java: int[] for dense numeric data.
+      - python: set lookup.
+        java: HashSet, or boolean[] for dense small keys.
+      - python: sys.stdin.buffer.
+        java: BufferedReader or FastScanner.
+    false_friends:
+      - term: List<Integer>
+        warning: Boxing can dominate memory and runtime.
+      - term: Scanner
+        warning: Scanner can be too slow for large input.
+  java_to_python:
+    title: Moving From Java Constants To Python
+    mindset_shift:
+      - From primitive arrays to Python lists with object overhead.
+      - From JIT-optimized loops to interpreter-level loops.
+      - From StringBuilder to list-plus-join.
+    habit_swaps:
+      - java: int[] count.
+        python: list count when range is dense.
+      - java: StringBuilder.
+        python: append strings to list and join.
+      - java: HashMap.
+        python: dict.
+    false_friends:
+      - term: same algorithm
+        warning: Same Big-O may need more careful implementation in Python.
+      - term: streams
+        warning: Python generator expressions save memory only if not materialized later.
+
+interview_questions:
+  - question: Should constant factors be discussed before Big-O?
+    answer: Usually no. First give the asymptotic complexity, then discuss constants when comparing viable solutions.
+  - question: Why can an array beat a hash map with the same O(n)?
+    answer: Arrays avoid hashing, object nodes, and pointer chasing when keys are dense and bounded.
+  - question: What Java constant-factor issue appears often?
+    answer: Boxing with List<Integer> or Map<Integer, Integer> compared with primitive arrays.
+  - question: What Python constant-factor issue appears often?
+    answer: Hidden allocations from slicing, repeated string concatenation, and Python-level nested loops.
+  - question: What C++ constant-factor issue appears often?
+    answer: Accidental copies or using node-based containers where vector would fit.
+
+revision:
+  quick_summary:
+    - Big-O comes first; constants matter after.
+    - Dense small keys often favor arrays over hash maps.
+    - Python has higher per-operation overhead.
+    - C++ vector and Java primitive arrays are cache-friendly.
+    - Java boxing can be expensive.
+  cheat_table:
+    title: Constant Factor Revision
+    columns:
+      - Choice
+      - Usually Faster
+      - Why
+    rows:
+      - ["Dense integer counts", "array/list counts", "No hashing"]
+      - ["Queue", "deque/ArrayDeque/queue", "No shifting"]
+      - ["Java numbers", "int[] over List<Integer>", "No boxing"]
+      - ["C++ sequence", "vector over list", "Cache locality"]
+      - ["String building", "builder/join", "Avoid repeated copies"]
+  flashcards:
+    - question: What should be fixed before constant factors?
+      answer: The Big-O complexity.
+    - question: What Java structure avoids boxing for ints?
+      answer: int[].
+    - question: What C++ sequence container is usually cache-friendly?
+      answer: vector.
+    - question: What Python operation often creates hidden temporary data?
+      answer: Slicing.
+
+notes:
+  - Constant factors matter most when constraints are near the edge or two approaches have the same Big-O.
+  - Do not use constant-factor talk to defend the wrong asymptotic solution.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_constant_factor_quiz
+    - compare_same_big_o_solutions
+    - identify_hidden_allocations
+    - create_language_performance_drills
+  context: >
+    This lesson teaches constant factors in DSA interviews across Python, C++, and
+    Java with focus on memory layout, boxing, allocation, hashing, I/O, and same-Big-O
+    implementation choices.

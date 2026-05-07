@@ -1,0 +1,279 @@
+id: mutability_traps
+title: Mutability Traps
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - mutability
+  - aliasing
+  - references
+  - side_effects
+  - interview
+goal: Help learners avoid mutation and aliasing bugs across Python, C++, and Java in arrays, lists, maps, recursion, backtracking, and helper functions.
+
+assets:
+  aliasing_mutation:
+    type: image
+    path: assets/dsa/mutability_traps/aliasing-mutation.png
+    alt: Two variables pointing to the same mutable container and observing the same mutation.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Mutability means an object can change after creation. Aliasing means multiple
+        names or references reach the same object. Bugs happen when you mutate shared
+        state accidentally or copy less than you think.
+  - compare_table:
+      title: Common Mutation Traps
+      columns:
+        - Trap
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Assignment alias", "mutable objects alias", "values copy unless referenced", "object references alias"]
+        - ["Matrix rows", "multiplication aliases rows", "vector rows independent", "int[][] rows separate"]
+        - ["Helper mutation", "list/dict mutation visible", "reference mutation visible", "object/array mutation visible"]
+        - ["String mutation", "immutable", "std::string mutable", "String immutable"]
+        - ["Backtracking path", "append/pop or copy", "push/pop", "add/remove or copy"]
+  - language_lens:
+      language: python
+      title: Python Mutability Thinking
+      body: >
+        Python makes mutation easy and concise. The main danger is accidentally
+        sharing lists, dicts, sets, or nested rows.
+      default_instincts:
+        - Use append/pop for backtracking.
+        - Use copy when storing a snapshot of a path.
+        - Use None as default and create mutable values inside functions.
+        - Use tuple for immutable state keys.
+      behind_the_scenes:
+        - "'b = a' aliases mutable objects."
+        - "'path.copy()' is shallow."
+        - "'default=[]' is shared across calls."
+        - Strings and tuples are immutable, but tuples can contain mutable objects.
+      avoid:
+        - Mutable default arguments.
+        - Storing path without copying when future mutation follows.
+        - Matrix row aliasing.
+  - language_lens:
+      language: cpp
+      title: C++ Mutability Thinking
+      body: >
+        C++ makes mutation explicit through non-const references, pointers, and
+        mutable containers. Copies are real value copies unless references/pointers
+        are involved.
+      default_instincts:
+        - Use const references for read-only helpers.
+        - Use non-const references only when mutation is intended.
+        - Use push_back/pop_back for backtracking state.
+        - Copy vectors intentionally for independent branches only when needed.
+      behind_the_scenes:
+        - Passing vector by value copies it.
+        - Passing vector& aliases it.
+        - vector reallocation can invalidate references.
+        - const helps enforce non-mutation.
+      avoid:
+        - Mutating shared state without undoing in backtracking.
+        - Passing huge state by value accidentally.
+        - Returning references to local mutable state.
+  - language_lens:
+      language: java
+      title: Java Mutability Thinking
+      body: >
+        Java arrays and most collections are mutable objects. Methods receive copies
+        of reference values, so they can mutate the object but cannot rebind the
+        caller's variable.
+      default_instincts:
+        - Use int[] for mutable numeric arrays.
+        - Use new ArrayList<>(path) when storing a snapshot.
+        - Use StringBuilder or char[] for mutable string work.
+        - Use final for references that should not be rebound when it helps clarity.
+      behind_the_scenes:
+        - Array and collection mutations are visible through aliases.
+        - String is immutable.
+        - final prevents rebinding, not object mutation.
+        - List<Integer> elements are references to boxed values.
+      avoid:
+        - Adding the same path object to results repeatedly.
+        - Assuming final makes a collection immutable.
+        - Using String concatenation for heavy mutation-like work.
+
+examples:
+  - code_compare:
+      title: Store Backtracking Path Snapshot
+      idea: Store a copy, not the live path.
+      python: |
+        ans.append(path.copy())
+      cpp: |
+        ans.push_back(path);
+      java: |
+        ans.add(new ArrayList<>(path));
+      note: >
+        The current path will keep changing after backtracking. Store a snapshot.
+  - code_compare:
+      title: Mutable Default Trap
+      idea: Avoid shared defaults.
+      python: |
+        def dfs(node, path=None):
+            if path is None:
+                path = []
+      cpp: |
+        void dfs(Node* node, vector<int>& path) {
+            // caller owns the mutable path
+        }
+      java: |
+        private void dfs(Node node, List<Integer> path) {
+            // caller passes the mutable path
+        }
+      note: >
+        Python default arguments are evaluated once, so mutable defaults are shared.
+  - code_compare:
+      title: String Mutation
+      idea: Use mutable representation when changing characters.
+      python: |
+        chars = list(s)
+        chars[i] = 'x'
+        s2 = ''.join(chars)
+      cpp: |
+        string s2 = s;
+        s2[i] = 'x';
+      java: |
+        char[] chars = s.toCharArray();
+        chars[i] = 'x';
+        String s2 = new String(chars);
+      note: >
+        Python and Java strings are immutable. C++ std::string can mutate.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Mutability To C++
+    mindset_shift:
+      - From aliases by assignment to value copies by default.
+      - From mutable object references to explicit references and const.
+      - From list row aliasing to vector row copies.
+    habit_swaps:
+      - python: "b = a aliases."
+        cpp: "vector<int> b = a copies."
+      - python: path.copy for snapshot.
+        cpp: ans.push_back(path) copies current vector.
+      - python: mutable default trap.
+        cpp: No default shared vector unless you create shared/static state.
+    false_friends:
+      - term: reference
+        warning: C++ reference aliasing is explicit but can dangle.
+      - term: copy cost
+        warning: C++ value copies can be expensive in recursion.
+  cpp_to_python:
+    title: Moving From C++ Mutability To Python
+    mindset_shift:
+      - From value-copy default to alias-by-assignment.
+      - From const enforcement to discipline and naming.
+      - From push/pop snapshots to shallow copy awareness.
+    habit_swaps:
+      - cpp: ans.push_back(path) copies vector.
+        python: ans.append(path.copy()).
+      - cpp: vector<int> b = a copies.
+        python: b = a.copy().
+      - cpp: const reference prevents mutation.
+        python: Avoid mutation by convention or copy.
+    false_friends:
+      - term: default argument
+        warning: Python mutable defaults persist across calls.
+      - term: shallow copy
+        warning: Nested mutable objects remain shared.
+  python_to_java:
+    title: Moving From Python Mutability To Java
+    mindset_shift:
+      - From dynamic aliases to reference values and typed mutable objects.
+      - From list snapshots to constructor copies.
+      - From immutable strings to StringBuilder or char[].
+    habit_swaps:
+      - python: path.copy().
+        java: new ArrayList<>(path).
+      - python: list(s).
+        java: s.toCharArray().
+      - python: tuple immutable state.
+        java: record or immutable key object.
+    false_friends:
+      - term: final
+        warning: final prevents rebinding, not mutation of the object.
+      - term: parameter
+        warning: Reassigning a Java parameter does not reassign caller's reference.
+  java_to_python:
+    title: Moving From Java Mutability To Python
+    mindset_shift:
+      - From object references to Python name bindings.
+      - From constructor copies to copy/slice methods.
+      - From final/typing to runtime discipline.
+    habit_swaps:
+      - java: new ArrayList<>(path).
+        python: path.copy().
+      - java: char[] for String mutation.
+        python: list(s) then join.
+      - java: arrays mutate through aliases.
+        python: lists mutate through aliases.
+    false_friends:
+      - term: None default
+        warning: Use None as a safe placeholder, then create a list inside.
+      - term: tuple
+        warning: Tuple is immutable as a container, but can hold mutable objects.
+
+interview_questions:
+  - question: Why should backtracking store a copy of path?
+    answer: The live path will be mutated later, so storing it directly would make all answers point to changing state.
+  - question: What is Python's mutable default argument trap?
+    answer: The default object is created once and reused across calls.
+  - question: Does Java final make a List immutable?
+    answer: No. final prevents rebinding the variable, but the list object can still mutate.
+  - question: How does C++ prevent accidental mutation in helper parameters?
+    answer: Use const references for read-only large objects.
+  - question: Are Python and Java strings mutable?
+    answer: No. Use list/char[] or builder-style approaches for modifications.
+
+revision:
+  quick_summary:
+    - Mutation plus aliasing creates hidden side effects.
+    - Python and Java assignment can alias mutable containers.
+    - C++ value assignment copies containers unless references/pointers are used.
+    - Backtracking usually needs push/pop plus snapshot copy.
+  cheat_table:
+    title: Mutability Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["Snapshot path", "path.copy()", "push_back(path)", "new ArrayList<>(path)"]
+      - ["Mutable string", "list chars", "std::string", "char[] or StringBuilder"]
+      - ["Read-only helper", "convention", "const ref", "do not mutate parameter"]
+      - ["Alias assignment", "yes for mutable", "no for value containers", "yes for objects"]
+  flashcards:
+    - question: What is aliasing?
+      answer: Multiple names or references reaching the same object.
+    - question: What is Python's safe mutable default pattern?
+      answer: Use None, then create the object inside.
+    - question: What Java keyword prevents rebinding?
+      answer: final.
+    - question: What C++ marker helps prevent mutation?
+      answer: const.
+
+notes:
+  - Before mutating, ask who else can see this object.
+  - Backtracking correctness often depends on undoing every mutation.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_mutability_quiz
+    - explain_aliasing_examples
+    - create_backtracking_state_drills
+    - compare_mutation_models
+  context: >
+    This lesson teaches mutability traps across Python, C++, and Java for DSA
+    interviews, focused on aliasing, helper side effects, backtracking snapshots,
+    string mutation, and shallow copies.

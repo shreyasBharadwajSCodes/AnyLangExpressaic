@@ -1,0 +1,288 @@
+id: time_complexity
+title: Time Complexity Discussions
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - complexity
+  - time_complexity
+  - big_o
+  - interview
+  - foundations
+goal: Help learners explain time complexity clearly in interviews while accounting for language-specific costs in Python, C++, and Java.
+
+assets:
+  growth_curves:
+    type: image
+    path: assets/dsa/time_complexity/growth-curves.png
+    alt: Growth curves for O(1), O(log n), O(n), O(n log n), O(n^2), and exponential time.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Time complexity describes how the number of operations grows as input size
+        grows. Interviewers want more than a label like O(n); they want to hear what
+        n means, which loops or recursive states dominate, and which library calls
+        hide real work.
+  - compare_table:
+      title: Common Growth Patterns
+      columns:
+        - Pattern
+        - Typical Source
+        - Interview Explanation
+      rows:
+        - ["O(1)", "Direct access", "Work does not grow with n"]
+        - ["O(log n)", "Binary search, heap height", "Candidate space halves or tree height grows logarithmically"]
+        - ["O(n)", "One pass", "Each element is processed a constant number of times"]
+        - ["O(n log n)", "Sort", "Sorting dominates linear scans"]
+        - ["O(n^2)", "Nested pair loops", "All pairs or grid cells compared"]
+        - ["O(2^n)", "Subsets/backtracking", "Branching choices per element"]
+  - language_lens:
+      language: python
+      title: Python Time-Cost Thinking
+      body: >
+        Python makes code short, but high-level operations can hide loops. A single
+        slice, sort, membership check, or string concatenation may dominate runtime.
+      default_instincts:
+        - Count hidden work in slicing, copying, sorting, and membership checks.
+        - Use set or dict for repeated membership.
+        - Avoid string concatenation inside large loops.
+        - Prefer deque for queue front removal.
+      behind_the_scenes:
+        - "'x in list' is O(n), while 'x in set' is average O(1)."
+        - "'s += piece' repeatedly can create many strings."
+        - "'nums[a:b]' copies O(k) elements."
+        - Python function calls and object operations have larger constants than C++.
+      avoid:
+        - Saying a loop is O(n) while doing O(n) slicing inside it.
+        - Treating list.pop(0) as O(1).
+        - Ignoring sort cost because it is one library call.
+  - language_lens:
+      language: cpp
+      title: C++ Time-Cost Thinking
+      body: >
+        C++ gives low constants, but copying containers or using the wrong STL
+        structure can silently change complexity. Iterator category and container
+        choice matter.
+      default_instincts:
+        - Pass large containers by const reference.
+        - Use vector for cache-friendly scans.
+        - Use unordered_map for average O(1) lookup and map for O(log n) ordered keys.
+        - Count sort as O(n log n).
+      behind_the_scenes:
+        - Passing vector<T> by value is O(n).
+        - std::find over vector is O(n).
+        - map operations are O(log n); unordered_map operations are average O(1).
+        - priority_queue push/pop are O(log n).
+      avoid:
+        - Accidentally copying vectors in recursive helpers.
+        - Using list when vector is the intended dynamic array.
+        - Calling lower_bound on a non-random-access range and assuming vector-like constants.
+  - language_lens:
+      language: java
+      title: Java Time-Cost Thinking
+      body: >
+        Java has strong libraries, but primitive arrays, boxed collections, strings,
+        and streams have different runtime costs. Use the simplest structure that
+        matches the operation.
+      default_instincts:
+        - Use int[] for primitive numeric arrays when possible.
+        - Use HashSet/HashMap for repeated lookup.
+        - Use StringBuilder for repeated string building.
+        - Use ArrayDeque for stack and queue behavior.
+      behind_the_scenes:
+        - ArrayList contains is O(n).
+        - HashMap lookup is average O(1), but custom keys need good hashCode.
+        - String concatenation in loops can be costly.
+        - Streams can add overhead in tight interview loops.
+      avoid:
+        - Using LinkedList by default for queues when ArrayDeque fits.
+        - Treating boxed List<Integer> like primitive int[] in performance discussions.
+        - Forgetting Arrays.sort is O(n log n) for general sorting.
+
+examples:
+  - code_compare:
+      title: Hidden Membership Cost
+      idea: Repeated membership should use a hash set.
+      python: |
+        seen = set(nums)
+        for x in queries:
+            if x in seen:
+                count += 1
+      cpp: |
+        unordered_set<int> seen(nums.begin(), nums.end());
+        for (int x : queries) {
+            if (seen.count(x)) count++;
+        }
+      java: |
+        Set<Integer> seen = new HashSet<>();
+        for (int x : nums) seen.add(x);
+        for (int x : queries) {
+            if (seen.contains(x)) count++;
+        }
+      note: >
+        The set build is O(n), and each query is average O(1), so total is O(n + q).
+  - code_compare:
+      title: Sorting Dominates
+      idea: Sort first, then scan.
+      python: |
+        nums.sort()
+        for x in nums:
+            process(x)
+      cpp: |
+        sort(nums.begin(), nums.end());
+        for (int x : nums) process(x);
+      java: |
+        Arrays.sort(nums);
+        for (int x : nums) process(x);
+      note: >
+        The scan is O(n), but sorting dominates at O(n log n).
+  - code_compare:
+      title: Copy Inside Loop Trap
+      idea: Avoid per-iteration copying.
+      python: |
+        # Risky if done for every i:
+        part = nums[i:j]  # O(j - i)
+      cpp: |
+        // Risky if called repeatedly:
+        vector<int> part(nums.begin() + i, nums.begin() + j);
+      java: |
+        // Risky if called repeatedly:
+        int[] part = Arrays.copyOfRange(nums, i, j);
+      note: >
+        A copy inside an outer loop often turns O(n) reasoning into O(n^2).
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Complexity To C++
+    mindset_shift:
+      - From hidden high-level operation costs to explicit copy and container costs.
+      - From runtime flexibility to compile-time types and STL guarantees.
+      - From bigger constants to faster but easier-to-copy containers.
+    habit_swaps:
+      - python: Count slicing and list membership.
+        cpp: Count vector copies and linear algorithms like find.
+      - python: Use dict for fast lookup.
+        cpp: Choose unordered_map for average O(1), map for O(log n) sorted keys.
+      - python: Function calls are relatively costly.
+        cpp: Container copying is the more common surprise.
+    false_friends:
+      - term: pass parameter
+        warning: C++ pass-by-value can add O(n) to a helper.
+      - term: list
+        warning: C++ list is not a faster Python list replacement for most interview scans.
+  cpp_to_python:
+    title: Moving From C++ Complexity To Python
+    mindset_shift:
+      - From low constants to higher interpreter overhead.
+      - From value copies to reference aliasing and hidden slicing copies.
+      - From STL algorithms to Python built-ins with real costs.
+    habit_swaps:
+      - cpp: "std::find over vector is O(n)."
+        python: "x in list is O(n); x in set is average O(1)."
+      - cpp: substr creates a string copy.
+        python: Slicing strings/lists also copies.
+      - cpp: vector push_back is amortized O(1).
+        python: list append is also amortized O(1).
+    false_friends:
+      - term: one line
+        warning: A one-line Python expression can hide O(n) or O(n log n) work.
+      - term: queue
+        warning: list.pop(0) is O(n).
+  python_to_java:
+    title: Moving From Python Complexity To Java
+    mindset_shift:
+      - From dynamic containers to primitive arrays versus boxed collections.
+      - From easy strings to StringBuilder for repeated building.
+      - From dict/set to HashMap/HashSet with equality contracts.
+    habit_swaps:
+      - python: list of int.
+        java: int[] is often faster than List<Integer>.
+      - python: "''.join(parts)"
+        java: Use StringBuilder in loops.
+      - python: x in set.
+        java: set.contains(x).
+    false_friends:
+      - term: contains
+        warning: ArrayList.contains is O(n), HashSet.contains is average O(1).
+      - term: streams
+        warning: Streams can be clean but may add overhead in tight loops.
+  java_to_python:
+    title: Moving From Java Complexity To Python
+    mindset_shift:
+      - From primitive arrays to reference-heavy lists.
+      - From explicit builders to join patterns.
+      - From method names to operator costs.
+    habit_swaps:
+      - java: StringBuilder append.
+        python: collect pieces and use join.
+      - java: HashSet.contains.
+        python: x in set.
+      - java: int[] scan.
+        python: list scan is still O(n) but has larger constants.
+    false_friends:
+      - term: in
+        warning: Python in depends on container type.
+      - term: len
+        warning: len is O(1) for built-in sequences, not a scan.
+
+interview_questions:
+  - question: How should you explain O(n)?
+    answer: Name n and say each element is processed a constant number of times.
+  - question: Why is sorting plus scanning O(n log n)?
+    answer: Sorting dominates the O(n) scan.
+  - question: What hidden Python operation often changes complexity?
+    answer: Slicing or list membership inside a loop.
+  - question: What hidden C++ operation often changes complexity?
+    answer: Copying a vector by value.
+  - question: What hidden Java choice affects performance?
+    answer: Using boxed collections or ArrayList.contains where primitive arrays or HashSet would fit better.
+
+revision:
+  quick_summary:
+    - Big-O describes growth, not exact runtime.
+    - Name the input size and dominant operation.
+    - Library calls still have costs.
+    - Language constants matter after the algorithmic class is correct.
+  cheat_table:
+    title: Time Complexity Revision
+    columns:
+      - Operation
+      - Python
+      - C++
+      - Java
+      - Cost
+    rows:
+      - ["Append end", "list.append", "vector.push_back", "ArrayList.add", "Amortized O(1)"]
+      - ["Hash lookup", "dict/set", "unordered_map/set", "HashMap/HashSet", "Average O(1)"]
+      - ["Sorted map", "manual/special", "map", "TreeMap", "O(log n)"]
+      - ["Sort", "sort/sorted", "sort", "Arrays.sort", "O(n log n)"]
+      - ["Front queue pop", "deque.popleft", "queue.pop", "ArrayDeque.poll", "O(1)"]
+  flashcards:
+    - question: What is the cost of Python list membership?
+      answer: O(n).
+    - question: What is C++ vector pass-by-value cost?
+      answer: O(n).
+    - question: What is Java HashSet.contains average cost?
+      answer: O(1).
+    - question: What usually dominates sort plus linear scan?
+      answer: The sort, O(n log n).
+
+notes:
+  - Complexity explanations should be precise but not performative.
+  - If two solutions have the same Big-O, then constants, memory, and implementation risk can decide.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_complexity_quiz
+    - analyze_solution_runtime
+    - compare_language_costs
+    - create_hidden_cost_drills
+  context: >
+    This lesson teaches time complexity discussion for DSA interviews across Python,
+    C++, and Java with emphasis on hidden library costs, copying, hashing, sorting,
+    and language-specific constant factors.

@@ -1,0 +1,289 @@
+id: function_signatures
+title: Function Signatures
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - function_signatures
+  - implementation
+  - interviews
+  - helpers
+  - language_transition
+goal: Help learners write interview function signatures and helper signatures correctly across Python, C++, and Java, with clear choices around return types, mutation, references, arrays, generics, and exceptions.
+
+assets:
+  signature_contract:
+    type: image
+    path: assets/dsa/function_signatures/signature-contract.png
+    alt: Function signature as a contract showing inputs, output, mutation, and ownership.
+
+lesson:
+  - explain:
+      title: Signature As Contract
+      body: >
+        A function signature is a contract: what data comes in, what result comes
+        out, and whether the function is allowed to mutate anything. In interviews,
+        the platform often gives the public signature, but you still design helper
+        signatures. Those helpers decide whether your solution copies data, shares
+        state, mutates inputs, or risks overflow.
+  - compare_table:
+      title: Signature Mental Map
+      columns:
+        - Concern
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Input array", "list parameter", "vector<T>& or const vector<T>&", "int[] or List<T>"]
+        - ["Read-only large input", "normal parameter by reference to object", "const reference", "array/list reference, do not mutate"]
+        - ["Mutable helper state", "list/dict/set object", "non-const reference", "array/list/map object"]
+        - ["Multiple return values", "tuple/list", "pair/tuple/struct", "int[], record, class"]
+        - ["No answer", "None or sentinel", "sentinel/optional", "null/sentinel/Optional rarely in platforms"]
+        - ["Large numeric result", "int", "long long", "long"]
+  - language_lens:
+      language: python
+      title: Python Signature Thinking
+      body: >
+        Python signatures are short because types are not required at runtime. The
+        hidden contract is mutability: a helper receiving a list, dict, or set can
+        mutate the same object the caller sees.
+      default_instincts:
+        - Keep public signature exactly as the platform gives it.
+        - Use helper parameters for state that changes across recursion.
+        - Return tuples for small multi-value results.
+        - Use None for absence when 0 or empty values are valid answers.
+      behind_the_scenes:
+        - Parameters are names bound to passed objects.
+        - Rebinding a parameter is local; mutating the object is visible.
+        - Default argument values are evaluated once.
+        - Type hints do not enforce runtime types by default.
+      avoid:
+        - Mutable defaults such as path=[].
+        - Returning None where the judge expects an int/list/string.
+        - Hiding important state in globals across test cases.
+  - language_lens:
+      language: cpp
+      title: C++ Signature Thinking
+      body: >
+        C++ signatures are part of performance and correctness. You must choose value,
+        reference, const reference, pointer, and numeric return types deliberately.
+      default_instincts:
+        - Use const vector<T>& for large read-only inputs.
+        - Use vector<T>& when the helper intentionally mutates.
+        - Use long long for large sums/counts/products.
+        - Use pair, tuple, or a small struct for multi-value returns.
+      behind_the_scenes:
+        - Passing vector<T> by value copies the entire vector.
+        - Returning vector<T> by value is usually okay with move/RVO, but still think about size.
+        - A reference must refer to a live object.
+        - const in a signature communicates and enforces read-only access.
+      avoid:
+        - Returning references to local variables.
+        - Passing adjacency lists or DP tables by value.
+        - Using int return type when answer can exceed int.
+  - language_lens:
+      language: java
+      title: Java Signature Thinking
+      body: >
+        Java signatures are explicit about types but not about mutation. Arrays and
+        collections are objects; methods receive copies of reference values and can
+        mutate the referred objects.
+      default_instincts:
+        - Match platform signature exactly inside class Solution.
+        - Use private helper methods for recursion or repeated logic.
+        - Use int[] for primitive arrays and List<Integer> for growable lists.
+        - Use long for large numeric results.
+      behind_the_scenes:
+        - Java passes all arguments by value, including reference values.
+        - int[] mutation is visible to the caller.
+        - Reassigning a parameter does not reassign the caller variable.
+        - Generics cannot use primitive types directly.
+      avoid:
+        - Claiming Java passes objects by reference.
+        - Using List<int>.
+        - Returning null when the platform expects an empty array/list.
+
+examples:
+  - code_compare:
+      title: Read-Only Sum Helper
+      idea: Avoid copying large input.
+      python: |
+        def total(nums):
+            return sum(nums)
+      cpp: |
+        long long total(const vector<int>& nums) {
+            long long ans = 0;
+            for (int x : nums) ans += x;
+            return ans;
+        }
+      java: |
+        private long total(int[] nums) {
+            long ans = 0;
+            for (int x : nums) ans += x;
+            return ans;
+        }
+      note: >
+        C++ const reference is the visible read-only/no-copy contract. Python and
+        Java pass references to objects by value, so no container copy happens.
+  - code_compare:
+      title: DFS Helper Signature
+      idea: Share visited state and graph input safely.
+      python: |
+        def dfs(node, adj, seen):
+            seen.add(node)
+      cpp: |
+        void dfs(int node, const vector<vector<int>>& adj, vector<int>& seen) {
+            seen[node] = 1;
+        }
+      java: |
+        private void dfs(int node, List<List<Integer>> adj, boolean[] seen) {
+            seen[node] = true;
+        }
+      note: >
+        The graph is read-only; visited is mutable state. C++ shows this distinction
+        directly with const reference versus non-const reference.
+  - code_compare:
+      title: Multiple Return Values
+      idea: Return two pieces of data.
+      python: |
+        return best_len, best_start
+      cpp: |
+        return pair<int, int>{bestLen, bestStart};
+      java: |
+        return new int[]{bestLen, bestStart};
+      note: >
+        Java can use int[] for quick interview pairs, or a record/class when names
+        improve clarity.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Signatures To C++
+    mindset_shift:
+      - From hidden reference behavior to explicit value/reference choices.
+      - From flexible returns to declared return types.
+      - From arbitrary int to fixed numeric types.
+    habit_swaps:
+      - python: "def helper(nums):"
+        cpp: "long long helper(const vector<int>& nums)"
+      - python: Return tuple.
+        cpp: Return pair, tuple, or struct.
+      - python: Mutate list naturally.
+        cpp: Use vector<T>& to make mutation explicit.
+    false_friends:
+      - term: parameter
+        warning: C++ vector<T> parameter copies; Python list parameter does not copy.
+      - term: int
+        warning: C++ int can overflow where Python int would not.
+  cpp_to_python:
+    title: Moving From C++ Signatures To Python
+    mindset_shift:
+      - From type-enforced contracts to naming and discipline.
+      - From const references to convention around not mutating.
+      - From pair/struct returns to tuples.
+    habit_swaps:
+      - cpp: const vector<int>&.
+        python: Normal parameter, but avoid mutation or copy if needed.
+      - cpp: pair<int,int>.
+        python: tuple like (a, b).
+      - cpp: reference output parameter.
+        python: Usually return the value directly.
+    false_friends:
+      - term: default argument
+        warning: Python mutable defaults persist across calls.
+      - term: type hints
+        warning: Type hints do not protect runtime correctness in most judges.
+  python_to_java:
+    title: Moving From Python Signatures To Java
+    mindset_shift:
+      - From function-first code to methods inside class Solution.
+      - From one list type to arrays, Lists, Maps, and Sets.
+      - From implicit absence to null/sentinel/empty container decisions.
+    habit_swaps:
+      - python: def solve(nums).
+        java: public int solve(int[] nums).
+      - python: return [a, b].
+        java: return new int[]{a, b}.
+      - python: dict parameter.
+        java: Map<K,V> parameter.
+    false_friends:
+      - term: reference
+        warning: Java passes reference values by value; mutation visible, rebinding not.
+      - term: List<int>
+        warning: Java generics require Integer, not int.
+  java_to_python:
+    title: Moving From Java Signatures To Python
+    mindset_shift:
+      - From explicit type signatures to concise functions.
+      - From helper methods to nested functions when useful.
+      - From arrays and Lists to Python lists.
+    habit_swaps:
+      - java: int[] nums.
+        python: nums list.
+      - java: boolean[] seen.
+        python: seen list or set.
+      - java: private helper.
+        python: nested def or separate helper.
+    false_friends:
+      - term: None
+        warning: Do not return None unless the expected answer allows it.
+      - term: alias
+        warning: Python list mutation through helper is visible to caller.
+
+interview_questions:
+  - question: Why does C++ const vector<int>& matter?
+    answer: It avoids copying a large vector and guarantees the helper will not mutate it.
+  - question: Does Java pass arrays by reference?
+    answer: Java passes a copy of the reference value; the method can mutate the array object but cannot rebind the caller variable.
+  - question: What is the Python mutable default trap?
+    answer: A default like path=[] is created once and shared across calls.
+  - question: When should a helper return multiple values?
+    answer: When those values logically form the result of the subproblem and using globals would hide state.
+  - question: Why should public platform signatures not be changed?
+    answer: The judge calls the exact expected method/function signature.
+
+revision:
+  quick_summary:
+    - Signatures define input, output, and mutation contract.
+    - Python signatures hide reference and mutability details.
+    - C++ signatures must avoid accidental copies.
+    - Java signatures are typed but mutation still depends on object references.
+  cheat_table:
+    title: Function Signature Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["Read-only array", "nums", "const vector<int>&", "int[]"]
+      - ["Mutable array", "nums", "vector<int>&", "int[]"]
+      - ["Graph helper", "adj, seen", "const adj&, seen&", "List<List<Integer>>, boolean[]"]
+      - ["Pair return", "tuple", "pair/struct", "int[]/record"]
+      - ["Large answer", "int", "long long", "long"]
+  flashcards:
+    - question: What C++ parameter form avoids vector copy?
+      answer: const vector<T>&.
+    - question: Can Java use List<int>?
+      answer: No.
+    - question: What should Python use instead of mutable default list?
+      answer: None, then create the list inside.
+    - question: What Java class usually contains platform methods?
+      answer: Solution.
+
+notes:
+  - Make helper signatures say what mutates and what does not.
+  - A clean signature often prevents half the bugs before the algorithm starts.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_signature_drills
+    - compare_helper_signatures
+    - explain_mutation_contracts
+    - create_source_to_target_templates
+  context: >
+    This lesson teaches function signatures for DSA interviews across Python, C++,
+    and Java, focused on mutation contracts, helper design, copies, return types,
+    arrays, references, and platform method shapes.

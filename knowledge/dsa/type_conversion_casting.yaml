@@ -1,0 +1,288 @@
+id: type_conversion_casting
+title: Type Conversion And Casting
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - type_conversion
+  - casting
+  - parsing
+  - chars
+  - numbers
+  - interview
+goal: Help learners convert between strings, characters, numbers, arrays, lists, and comparable types correctly across Python, C++, and Java without hidden truncation, boxing, parsing, or overflow bugs.
+
+assets:
+  conversion_paths:
+    type: image
+    path: assets/dsa/type_conversion_casting/conversion-paths.png
+    alt: Common conversions among strings, characters, integers, longs, arrays, and lists.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Type conversion turns data into the shape the algorithm needs. Interviews
+        often require parsing strings into numbers, turning characters into indices,
+        converting arrays to lists, or promoting ints before arithmetic. Mistakes
+        usually come from silent truncation, overflow before casting, or confusing
+        character codes with numeric digits.
+  - compare_table:
+      title: Common Conversion Map
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["String to int", "int(s)", "stoi/stoll", "Integer.parseInt/Long.parseLong"]
+        - ["Int to string", "str(x)", "to_string(x)", "String.valueOf(x)"]
+        - ["Char digit to int", "ord(ch) - ord('0')", "ch - '0'", "ch - '0'"]
+        - ["Char index a-z", "ord(ch) - ord('a')", "ch - 'a'", "ch - 'a'"]
+        - ["Int promotion", "automatic big int", "1LL * a", "(long) a"]
+        - ["String to chars", "list(s)", "string mutable", "s.toCharArray()"]
+  - language_lens:
+      language: python
+      title: Python Conversion Thinking
+      body: >
+        Python conversions are explicit and forgiving around integer size. The main
+        issues are value errors, string/bytes distinction, character ordinals, and
+        accidental copies.
+      default_instincts:
+        - Use int(s) for decimal integer parsing.
+        - Use ord for character code logic.
+        - Use str(x) for output conversion.
+        - Use list(s) when mutable characters are needed.
+      behind_the_scenes:
+        - Python int has arbitrary precision.
+        - int("001") works and returns 1.
+        - bytes from sys.stdin.buffer are not str, though int(byte_token) works.
+        - list(s) creates a list of one-character strings.
+      avoid:
+        - Using int(ch) for non-digit characters.
+        - Confusing bytes and str in string algorithms.
+        - Repeatedly converting large substrings inside loops.
+  - language_lens:
+      language: cpp
+      title: C++ Conversion Thinking
+      body: >
+        C++ conversions can be explicit casts, constructors, parsing functions, or
+        arithmetic promotions. The big interview trap is overflow before promotion.
+      default_instincts:
+        - Use stoi for int and stoll for long long parsing.
+        - Use to_string for numeric output.
+        - Use ch - '0' for digit chars.
+        - Use 1LL * a * b to promote before multiplication.
+      behind_the_scenes:
+        - "'long long x = a * b' can overflow if a and b are int before assignment."
+        - static_cast is clearer than C-style casts.
+        - char may be signed, which matters for indexing 256 arrays.
+        - stoi/stoll can throw on invalid input or out-of-range values.
+      avoid:
+        - Casting after overflow has already happened.
+        - Using atoi when error handling matters.
+        - Indexing arrays with signed char values.
+  - language_lens:
+      language: java
+      title: Java Conversion Thinking
+      body: >
+        Java conversions are explicit around parsing and narrowing. Widening from int
+        to long is safe, but arithmetic between ints happens as int unless one operand
+        is promoted first.
+      default_instincts:
+        - Use Integer.parseInt and Long.parseLong.
+        - Use String.valueOf or Integer.toString.
+        - Use ch - '0' for digit chars.
+        - Cast before multiplication: (long) a * b.
+      behind_the_scenes:
+        - "'long x = a * b' can overflow before assignment if a and b are int."
+        - char is an unsigned 16-bit code unit.
+        - Integer.parseInt throws NumberFormatException on invalid input.
+        - Generics box primitives, so List<Integer> conversions add overhead.
+      avoid:
+        - Using Character.getNumericValue when simple ASCII digits are guaranteed and ch - '0' is clearer.
+        - Casting after int multiplication.
+        - Assuming Arrays.asList works as expected on int[].
+
+examples:
+  - code_compare:
+      title: Digit Character To Number
+      idea: Convert '7' to 7.
+      python: |
+        digit = ord(ch) - ord('0')
+      cpp: |
+        int digit = ch - '0';
+      java: |
+        int digit = ch - '0';
+      note: >
+        This assumes ch is an ASCII digit. Validate when input can contain other
+        characters.
+  - code_compare:
+      title: Promote Before Multiplication
+      idea: Avoid overflow before storing in a larger type.
+      python: |
+        area = width * height
+      cpp: |
+        long long area = 1LL * width * height;
+      java: |
+        long area = (long) width * height;
+      note: >
+        In C++ and Java, casting after width * height is too late if both operands
+        are int and overflow happens first.
+  - code_compare:
+      title: Parse String Number
+      idea: Convert numeric text to a number.
+      python: |
+        x = int(s)
+      cpp: |
+        long long x = stoll(s);
+      java: |
+        long x = Long.parseLong(s);
+      note: >
+        Choose the target width based on constraints.
+  - code_compare:
+      title: Java int[] To List Trap
+      idea: Avoid Arrays.asList surprise.
+      python: |
+        nums_list = list(nums)
+      cpp: |
+        vector<int> numsList = nums;
+      java: |
+        List<Integer> numsList = new ArrayList<>();
+        for (int x : nums) numsList.add(x);
+      note: >
+        Arrays.asList(nums) where nums is int[] creates a List<int[]> with one
+        element, not a List<Integer>.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Conversions To C++
+    mindset_shift:
+      - From arbitrary-size ints to fixed widths.
+      - From simple int(s) to stoi/stoll and overflow choices.
+      - From no char type distinction to char arithmetic and signedness.
+    habit_swaps:
+      - python: int(s).
+        cpp: stoi or stoll depending on range.
+      - python: width * height.
+        cpp: 1LL * width * height.
+      - python: ord(ch) - ord('a').
+        cpp: ch - 'a', with char range awareness.
+    false_friends:
+      - term: cast timing
+        warning: Cast before arithmetic, not after overflow.
+      - term: char index
+        warning: signed char can be negative when used outside ASCII assumptions.
+  cpp_to_python:
+    title: Moving From C++ Conversions To Python
+    mindset_shift:
+      - From explicit width types to arbitrary-size int.
+      - From char arithmetic to ord.
+      - From vector/string conversions to list/string operations.
+    habit_swaps:
+      - cpp: stoll(s).
+        python: int(s).
+      - cpp: ch - '0'.
+        python: ord(ch) - ord('0') or int(ch) for digit chars.
+      - cpp: to_string(x).
+        python: str(x).
+    false_friends:
+      - term: bytes
+        warning: Python buffer input returns bytes, not str.
+      - term: int
+        warning: Python int avoids overflow but can be slower for huge values.
+  python_to_java:
+    title: Moving From Python Conversions To Java
+    mindset_shift:
+      - From flexible int to int/long decisions.
+      - From direct list conversions to primitive/boxed split.
+      - From mutable char list to char[] or StringBuilder.
+    habit_swaps:
+      - python: int(s).
+        java: Integer.parseInt or Long.parseLong.
+      - python: list(s).
+        java: s.toCharArray().
+      - python: width * height.
+        java: (long) width * height.
+    false_friends:
+      - term: Arrays.asList
+        warning: Arrays.asList(int[]) does not produce List<Integer>.
+      - term: cast timing
+        warning: Cast before int multiplication.
+  java_to_python:
+    title: Moving From Java Conversions To Python
+    mindset_shift:
+      - From parse methods to constructor-style conversions.
+      - From charAt and char arithmetic to indexing and ord.
+      - From primitive arrays to lists.
+    habit_swaps:
+      - java: Long.parseLong(s).
+        python: int(s).
+      - java: s.toCharArray().
+        python: list(s).
+      - java: String.valueOf(x).
+        python: str(x).
+    false_friends:
+      - term: Unicode
+        warning: Python characters are full string elements; Java char is a UTF-16 code unit.
+      - term: overflow
+        warning: Python hides overflow concerns but not algorithmic constraints.
+
+interview_questions:
+  - question: Why is "long x = a * b" unsafe in Java when a and b are int?
+    answer: The multiplication happens as int first, so it can overflow before assignment to long.
+  - question: What is the C++ equivalent of Python int(s) for large values?
+    answer: stoll(s), if the value fits in long long.
+  - question: How do you convert a digit char to an int in C++ or Java?
+    answer: ch - '0', assuming ch is an ASCII digit.
+  - question: Why is Arrays.asList(int[]) a trap?
+    answer: It treats the entire int[] as one object element, not as individual Integer values.
+  - question: When should conversion be avoided inside a loop?
+    answer: When the same substring/object is repeatedly converted and can be preprocessed or updated incrementally.
+
+revision:
+  quick_summary:
+    - Convert data into the algorithm's natural shape once when possible.
+    - Cast before arithmetic in C++ and Java.
+    - Python int avoids overflow but conversions still cost time.
+    - Java has a primitive versus boxed conversion split.
+  cheat_table:
+    title: Conversion Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["String to int", "int(s)", "stoi/stoll", "parseInt/parseLong"]
+      - ["Int to string", "str(x)", "to_string", "String.valueOf"]
+      - ["Digit char", "ord(ch)-ord('0')", "ch-'0'", "ch-'0'"]
+      - ["Promote multiply", "automatic", "1LL * a * b", "(long) a * b"]
+      - ["String chars", "list(s)", "string mutable", "toCharArray"]
+  flashcards:
+    - question: When should C++ cast for multiplication?
+      answer: Before multiplication, such as 1LL * a * b.
+    - question: What Java cast avoids int multiplication overflow?
+      answer: (long) a * b.
+    - question: What Python function gives a character code?
+      answer: ord.
+    - question: What Java method parses long?
+      answer: Long.parseLong.
+
+notes:
+  - Conversion bugs often look like algorithm bugs; isolate them early.
+  - In string-number problems, write down whether you are holding a character, a digit value, or a whole parsed number.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_conversion_quiz
+    - compare_cast_timing
+    - create_parsing_drills
+    - explain_char_numeric_mapping
+  context: >
+    This lesson teaches type conversion and casting across Python, C++, and Java for
+    DSA interviews, focused on parsing, char arithmetic, numeric promotion, boxing,
+    arrays/lists, and overflow before casting.

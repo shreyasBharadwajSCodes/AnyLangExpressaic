@@ -1,0 +1,299 @@
+id: class_helper_design
+title: Class And Helper Design
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - helper_design
+  - classes
+  - recursion
+  - state
+  - implementation
+  - interview
+goal: Help learners design small helpers, nested functions, classes, structs, and state holders across Python, C++, and Java without hiding algorithm state or creating mutation bugs.
+
+assets:
+  helper_state_boundaries:
+    type: image
+    path: assets/dsa/class_helper_design/helper-state-boundaries.png
+    alt: Helper functions separating read-only input, mutable state, and result state.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Helpers exist to make the algorithm easier to reason about. A good helper has
+        a clear job, clear state boundaries, and no surprising side effects. In DSA
+        interviews, class design should stay minimal: use classes or records when
+        they clarify state, not to decorate a simple loop.
+  - compare_table:
+      title: Helper Choices
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Recursive helper", "nested def or method", "free function/lambda/member", "private method"]
+        - ["Small record", "tuple/dataclass", "pair/struct", "record/class/int[]"]
+        - ["Shared answer", "nonlocal/list/object", "reference/member", "field or return value"]
+        - ["Comparator helper", "key function", "lambda/function object", "Comparator lambda"]
+        - ["Graph node class", "class", "struct/class pointer", "class"]
+  - language_lens:
+      language: python
+      title: Python Helper Design
+      body: >
+        Python supports nested functions naturally, which is useful when helpers need
+        access to local input. Be careful with nonlocal variables and mutable state.
+      default_instincts:
+        - Use nested helper when it simplifies access to nums, graph, or target.
+        - Return values instead of mutating outer variables when simple.
+        - Use nonlocal only when rebinding outer scalar state is clearer.
+        - Use tuple or small dataclass for named records when needed.
+      behind_the_scenes:
+        - Nested functions close over variables by reference-like cell behavior.
+        - nonlocal is needed to rebind an outer variable.
+        - Mutating an outer list/dict does not require nonlocal.
+        - Class attributes can accidentally become shared state if used incorrectly.
+      avoid:
+        - Using global state that leaks across test cases.
+        - Hiding core recurrence in too many helpers.
+        - Mutating closed-over state without a clear undo.
+  - language_lens:
+      language: cpp
+      title: C++ Helper Design
+      body: >
+        C++ helpers need explicit parameter and capture choices. Lambdas are useful,
+        but captures by reference can hide mutation and lifetime assumptions.
+      default_instincts:
+        - Use small functions or lambdas for repeated logic.
+        - Pass read-only data as const references.
+        - Use structs for named multi-field state.
+        - Use class members only when platform style or shared state makes it cleaner.
+      behind_the_scenes:
+        - Lambda capture [&] captures variables by reference.
+        - Lambda capture [=] captures by value.
+        - Recursive lambdas need std::function or self-parameter patterns.
+        - Structs have public members by default; classes private by default.
+      avoid:
+        - Capturing everything by reference without knowing what mutates.
+        - Passing large structs by value repeatedly.
+        - Storing references to local objects that may die.
+  - language_lens:
+      language: java
+      title: Java Helper Design
+      body: >
+        Java interview code usually lives in class Solution. Helpers are private
+        methods; shared state can be fields, but fields must be reset per call.
+      default_instincts:
+        - Use private helper methods.
+        - Prefer passing state explicitly unless fields make recursion much cleaner.
+        - Use records for small immutable key/value carriers when allowed.
+        - Use int[] or small classes for quick pairs.
+      behind_the_scenes:
+        - Fields persist for the Solution object and can leak across calls if not reset.
+        - Inner classes can capture outer instance context.
+        - Records generate constructor, accessors, equals, and hashCode.
+        - Java lambdas cannot freely mutate captured local variables unless the object itself is mutable.
+      avoid:
+        - Leaving field state dirty between test cases.
+        - Creating unnecessary classes for simple pair returns.
+        - Using static mutable state in online judges.
+
+examples:
+  - code_compare:
+      title: DFS Helper With Explicit State
+      idea: Make graph read-only and visited mutable.
+      python: |
+        def dfs(node):
+            seen.add(node)
+            for nei in adj[node]:
+                if nei not in seen:
+                    dfs(nei)
+      cpp: |
+        void dfs(int node, const vector<vector<int>>& adj, vector<int>& seen) {
+            seen[node] = 1;
+            for (int nei : adj[node]) {
+                if (!seen[nei]) dfs(nei, adj, seen);
+            }
+        }
+      java: |
+        private void dfs(int node, List<List<Integer>> adj, boolean[] seen) {
+            seen[node] = true;
+            for (int nei : adj.get(node)) {
+                if (!seen[nei]) dfs(nei, adj, seen);
+            }
+        }
+      note: >
+        Python closure keeps the signature short. C++ and Java often make state
+        explicit through helper parameters.
+  - code_compare:
+      title: Small Pair Or Record
+      idea: Represent two values clearly.
+      python: |
+        state = (row, col)
+      cpp: |
+        struct Cell {
+            int row;
+            int col;
+        };
+      java: |
+        record Cell(int row, int col) {}
+      note: >
+        Java records are useful for immutable keys when the platform supports them.
+        int[] is quicker but less self-documenting.
+  - code_compare:
+      title: Shared Best Answer
+      idea: Avoid unclear global state.
+      python: |
+        best = 0
+        def dfs(node):
+            nonlocal best
+            best = max(best, node.val)
+      cpp: |
+        void dfs(TreeNode* node, int& best) {
+            if (!node) return;
+            best = max(best, node->val);
+        }
+      java: |
+        private int best;
+        public int solve(TreeNode root) {
+            best = 0;
+            dfs(root);
+            return best;
+        }
+      note: >
+        If Java uses fields, reset them at the start of each public solve call.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Helpers To C++
+    mindset_shift:
+      - From closures to explicit parameters or captures.
+      - From dynamic tuples to pair/tuple/struct.
+      - From hidden state to reference and const contracts.
+    habit_swaps:
+      - python: nested dfs closes over adj.
+        cpp: pass adj as const reference or capture it intentionally.
+      - python: nonlocal best.
+        cpp: pass int& best or return result.
+      - python: tuple state.
+        cpp: pair or struct state.
+    false_friends:
+      - term: capture
+        warning: C++ reference captures can outlive or mutate unexpectedly if used carelessly.
+      - term: helper copy
+        warning: Passing containers by value copies them.
+  cpp_to_python:
+    title: Moving From C++ Helpers To Python
+    mindset_shift:
+      - From explicit references to closure and object mutation.
+      - From structs to tuples/dataclasses.
+      - From const contracts to convention.
+    habit_swaps:
+      - cpp: int& best.
+        python: nonlocal best or return best.
+      - cpp: struct Cell.
+        python: tuple or dataclass.
+      - cpp: helper parameters show everything.
+        python: keep closure state readable and limited.
+    false_friends:
+      - term: global
+        warning: Global state can leak across judge test cases.
+      - term: closure mutation
+        warning: Rebinding outer scalar requires nonlocal.
+  python_to_java:
+    title: Moving From Python Helpers To Java
+    mindset_shift:
+      - From nested functions to private methods or fields.
+      - From tuple records to int[]/record/class.
+      - From closure state to explicit fields or parameters.
+    habit_swaps:
+      - python: nested helper.
+        java: private helper method.
+      - python: nonlocal best.
+        java: field best, reset before use, or return values.
+      - python: tuple key.
+        java: record key or encoded key.
+    false_friends:
+      - term: field
+        warning: Field state must be reinitialized for each public call.
+      - term: lambda capture
+        warning: Java captured local variables must be effectively final unless mutating an object.
+  java_to_python:
+    title: Moving From Java Helpers To Python
+    mindset_shift:
+      - From class methods to nested defs.
+      - From records/classes to tuples when simple.
+      - From fields to local closure state.
+    habit_swaps:
+      - java: private dfs.
+        python: nested dfs.
+      - java: field best.
+        python: nonlocal best or return result.
+      - java: record Cell.
+        python: tuple (r, c).
+    false_friends:
+      - term: method state
+        warning: Python default mutable arguments can act like hidden shared state.
+      - term: identity
+        warning: Tuple value equality differs from object identity checks.
+
+interview_questions:
+  - question: When should a helper be created?
+    answer: When it names a repeated subproblem, separates traversal/recurrence logic, or makes state boundaries clearer.
+  - question: Why can Java fields be risky in interview solutions?
+    answer: They may retain old state if not reset before each public method call.
+  - question: What is the C++ lambda capture risk?
+    answer: Capturing by reference can hide mutation or lifetime assumptions.
+  - question: When is returning a value better than mutating shared state?
+    answer: When the helper has a natural subproblem answer and shared state would make correctness harder to follow.
+  - question: Why use a record/struct instead of int[] for state?
+    answer: Names clarify meaning and reduce index confusion, especially for compound keys.
+
+revision:
+  quick_summary:
+    - Helpers should clarify state, not hide it.
+    - Python nested helpers are natural but closure state needs care.
+    - C++ helpers must avoid accidental copies and unsafe captures.
+    - Java helpers are private methods; fields must be reset.
+  cheat_table:
+    title: Helper Design Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["Recursive helper", "nested def", "function/lambda", "private method"]
+      - ["Shared scalar", "nonlocal/return", "reference/return", "field/return"]
+      - ["Small state", "tuple/dataclass", "pair/struct", "record/int[]"]
+      - ["Read-only data", "closure/param", "const ref", "param, no mutation"]
+      - ["Reset risk", "globals/defaults", "static/shared refs", "fields/static"]
+  flashcards:
+    - question: What Python keyword rebinds an outer local variable?
+      answer: nonlocal.
+    - question: What should Java field state do before solve?
+      answer: Reset.
+    - question: What C++ helper parameter avoids copying read-only vectors?
+      answer: const vector<T>&.
+    - question: What Java feature makes small immutable key classes concise?
+      answer: record.
+
+notes:
+  - If a helper's state cannot be explained in one sentence, simplify it.
+  - Prefer explicit state for learning and interviews; clever hidden state is fragile.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_helper_design_drills
+    - compare_state_passing_styles
+    - create_refactor_to_helper_examples
+    - explain_closure_vs_field_state
+  context: >
+    This lesson teaches helper and class design for DSA interviews across Python,
+    C++, and Java, focused on recursion helpers, state boundaries, closures, captures,
+    fields, records, structs, and mutation risk.

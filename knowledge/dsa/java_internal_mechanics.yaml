@@ -1,0 +1,242 @@
+id: java_internal_mechanics
+title: Java Internal Mechanics
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - java
+  - internals
+  - references
+  - generics
+  - collections
+  - hashing
+  - interview
+goal: Help learners reason about Java objects, references, primitives, arrays, generics, collections, equality, hashing, and boxing in DSA interviews.
+
+assets:
+  java_reference_model:
+    type: image
+    path: assets/dsa/java_internal_mechanics/reference-model.png
+    alt: Java variables holding primitive values or object references, with arrays and collections on the heap.
+
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        Java variables either hold primitive values or reference values. Object
+        references are passed by value: a method receives a copy of the reference.
+        It can mutate the object, but rebinding the parameter does not rebind the
+        caller's variable.
+  - compare_table:
+      title: Java Mechanics Map
+      columns:
+        - Topic
+        - Interview Meaning
+        - Common Trap
+      rows:
+        - ["Primitive", "Value stored directly", "int overflow"]
+        - ["Object reference", "Reference value copied", "Misstating pass-by-reference"]
+        - ["int[]", "Fixed primitive array", "Using length()"]
+        - ["ArrayList<Integer>", "Growable boxed collection", "Boxing overhead"]
+        - ["HashMap key", "equals/hashCode", "Using == for value equality"]
+        - ["String", "Immutable object", "Loop concatenation"]
+  - language_lens:
+      language: java
+      title: How Java Wants You To Think
+      body: >
+        Think in primitives, arrays, object references, and interfaces. Use primitive
+        arrays for dense numeric data, collections for dynamic or keyed data, and
+        equality methods for object content.
+      default_instincts:
+        - Use int[] and long[] for numeric arrays.
+        - Use Map, Set, List, and Deque interfaces.
+        - Use ArrayDeque for stack and queue behavior.
+        - Use equals and hashCode for custom keys.
+      behind_the_scenes:
+        - Java passes everything by value, including reference values.
+        - "'List<Integer>' boxes ints."
+        - "'int[][]' is an array of row arrays."
+        - HashMap uses hashCode and equals for key lookup.
+      avoid:
+        - Saying Java passes objects by reference.
+        - Using == for String content.
+        - Using Stack for normal interview stack behavior.
+  - language_lens:
+      language: python
+      title: How This Feels Coming From Python
+      body: >
+        Java is more explicit about types and has a stronger split between primitive
+        arrays and object collections. Python's list maps to different Java choices
+        depending on size and mutability needs.
+      default_instincts:
+        - Choose int[] when Python list holds fixed numeric data.
+        - Choose ArrayList<Integer> when growth is needed.
+        - Choose HashMap for dict-like logic.
+      behind_the_scenes:
+        - Java int can overflow; Python int generally will not.
+        - Java generic collections cannot store primitives directly.
+        - Java arrays expose length as a field, not a method.
+      avoid:
+        - Translating Python tuple keys without planning equals/hashCode or encoding.
+        - Assuming Java collections print arrays nicely.
+  - language_lens:
+      language: cpp
+      title: How This Feels Coming From C++
+      body: >
+        Java removes dangling pointers and manual lifetime concerns, but adds boxing,
+        null, generic restrictions, and method-based collection APIs.
+      default_instincts:
+        - Use int[] instead of vector<int> when size is fixed.
+        - Use ArrayList<Integer> when growth is needed.
+        - Use Comparator for custom sorting.
+      behind_the_scenes:
+        - Java references do not expose addresses.
+        - Objects are garbage-collected.
+        - Generic type information is limited at runtime by type erasure.
+      avoid:
+        - Expecting operator overloading for equality or ordering.
+        - Using comparator subtraction when values can overflow.
+
+examples:
+  - code_compare:
+      title: Reference Value Is Copied
+      idea: Mutating object is visible; rebinding parameter is not.
+      python: |
+        def add_item(a):
+            a.append(3)
+      cpp: |
+        void addItem(vector<int>& a) {
+            a.push_back(3);
+        }
+      java: |
+        void addItem(List<Integer> a) {
+            a.add(3);
+        }
+      note: >
+        Java receives a copy of the reference value, but both references point to
+        the same list object.
+  - code_compare:
+      title: Primitive Array Versus Boxed List
+      idea: Choose storage by operation and size.
+      python: |
+        nums = [1, 2, 3]
+      cpp: |
+        vector<int> nums = {1, 2, 3};
+      java: |
+        int[] nums = {1, 2, 3};
+        List<Integer> growable = new ArrayList<>();
+      note: >
+        int[] avoids boxing. ArrayList<Integer> is growable but stores references
+        to boxed Integer objects.
+  - code_compare:
+      title: HashMap Key Equality
+      idea: Custom keys need equality and hashing.
+      python: |
+        seen = {(r, c)}
+      cpp: |
+        set<pair<int, int>> seen;
+        seen.insert({r, c});
+      java: |
+        record Cell(int r, int c) {}
+        Set<Cell> seen = new HashSet<>();
+        seen.add(new Cell(r, c));
+      note: >
+        Java records provide equals and hashCode automatically, which is useful for
+        small immutable keys.
+
+transitions:
+  java_to_python:
+    title: Moving From Java Internals To Python
+    mindset_shift:
+      - From primitive/object split to object references everywhere.
+      - From method-heavy collections to direct operators.
+      - From int overflow to arbitrary-precision integers.
+    habit_swaps:
+      - java: int[].
+        python: list of int, with higher overhead.
+      - java: map.getOrDefault.
+        python: dict.get.
+      - java: equals.
+        python: "== checks equality; is checks identity."
+    false_friends:
+      - term: identity
+        warning: Python "is" should not be used for value equality.
+      - term: None
+        warning: Python truthiness can confuse empty values with missing values.
+  java_to_cpp:
+    title: Moving From Java Internals To C++
+    mindset_shift:
+      - From GC-managed references to values, references, pointers, and lifetimes.
+      - From generics to templates.
+      - From methods to operators and STL algorithms.
+    habit_swaps:
+      - java: int[].
+        cpp: vector<int> for dynamic arrays or array for fixed sizes.
+      - java: HashMap.
+        cpp: unordered_map.
+      - java: Comparator.
+        cpp: bool comparator lambda.
+    false_friends:
+      - term: reference
+        warning: C++ references can dangle; Java references normally do not.
+      - term: object equality
+        warning: C++ equality depends on operators or comparator logic.
+
+interview_questions:
+  - question: Does Java pass objects by reference?
+    answer: No. Java passes reference values by value; methods can mutate the object but cannot rebind the caller's variable.
+  - question: Why is int[] often better than List<Integer>?
+    answer: int[] stores primitives directly and avoids boxing overhead.
+  - question: What does HashMap require from custom key objects?
+    answer: Consistent equals and hashCode.
+  - question: Why is == wrong for String content?
+    answer: == checks object identity; equals checks content.
+  - question: What is the Java array length syntax?
+    answer: arr.length.
+
+revision:
+  quick_summary:
+    - Java has primitives and object references.
+    - Reference values are passed by value.
+    - int[] is compact; List<Integer> boxes.
+    - HashMap keys need equals and hashCode.
+    - String is immutable.
+  cheat_table:
+    title: Java Mechanics Revision
+    columns:
+      - Idea
+      - Java Rule
+      - Interview Trap
+    rows:
+      - ["Parameter passing", "by value", "misstating references"]
+      - ["Array length", "arr.length", "not length()"]
+      - ["String equality", "equals", "not =="]
+      - ["Numeric collection", "int[] preferred", "boxing"]
+      - ["Custom key", "equals/hashCode", "lookup failure"]
+  flashcards:
+    - question: What is Java's null-like value?
+      answer: null.
+    - question: What does ArrayDeque reject?
+      answer: null elements.
+    - question: Can Java use List<int>?
+      answer: No.
+    - question: What type should large sums use?
+      answer: long.
+
+notes:
+  - Java interview code is strongest when you choose arrays, collections, and equality rules deliberately.
+  - Say "reference value passed by value" when explaining parameter behavior.
+
+tlm_hooks:
+  possible_tasks:
+    - explain_java_reference_model
+    - generate_boxing_quiz
+    - compare_java_to_python_cpp
+    - create_hashmap_key_drills
+  context: >
+    This lesson teaches Java internal mechanics for DSA interviews, focused on
+    primitives, references, arrays, generics, collections, equality, hashing, boxing,
+    and parameter passing.

@@ -1,0 +1,378 @@
+id: hashmap_dictionary
+title: Dictionary / HashMap / unordered_map
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - hashmap
+  - dictionary
+  - unordered_map
+  - hashing
+  - containers
+  - interview
+goal: Help learners use hash maps correctly across Python, C++, and Java, with clear understanding of missing keys, equality, hashing, ordering, mutation, and custom-key caveats.
+
+assets:
+  hash_map_buckets:
+    type: image
+    path: assets/dsa/hashmap_dictionary/hash-map-buckets.png
+    alt: Hash table buckets, keys, values, and collision chains.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Hash maps store key-value pairs for fast average lookup. Interviews use them
+        for frequency counts, first-seen indices, prefix sums, grouping, memoization,
+        and visited-state tracking. The syntax is easy; the real skill is knowing
+        what happens when a key is missing and what makes a key hashable.
+  - compare_table:
+      title: First Mapping
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Hash map", "dict", "unordered_map<K,V>", "HashMap<K,V>"]
+        - ["Insert/update", "mp[k] = v", "mp[k] = v", "mp.put(k, v)"]
+        - ["Read existing", "mp[k]", "mp[k] or at(k)", "mp.get(k)"]
+        - ["Read with default", "mp.get(k, d)", "find/count or mp[k]", "mp.getOrDefault(k, d)"]
+        - ["Contains key", "k in mp", "mp.find(k) != mp.end()", "mp.containsKey(k)"]
+        - ["Delete", "del mp[k]", "mp.erase(k)", "mp.remove(k)"]
+  - language_lens:
+      language: python
+      title: Python Dict Thinking
+      body: >
+        Python dict is direct, expressive, and insertion-ordered. Keys must be
+        hashable, which usually means immutable for interview purposes. Tuple keys
+        are common for coordinates or state.
+      default_instincts:
+        - Use dict for key-value lookup.
+        - Use get for default reads.
+        - Use Counter for frequency counts.
+        - Use defaultdict when missing keys should create containers or counts.
+      behind_the_scenes:
+        - dict preserves insertion order, but it is not sorted by key.
+        - list and dict are unhashable because they are mutable.
+        - tuple is hashable only if all its elements are hashable.
+        - Mutating values stored in a dict mutates the same referenced object.
+      avoid:
+        - Using mp[k] when the key may be absent unless you want KeyError.
+        - Using mutable objects as keys.
+        - Assuming set or dict key order is sorted.
+  - language_lens:
+      language: cpp
+      title: C++ unordered_map Thinking
+      body: >
+        C++ unordered_map gives average O(1) lookup and explicit control over key
+        and value types. The biggest interview trap is operator[]: it inserts a
+        default value when the key is missing.
+      default_instincts:
+        - Use unordered_map for average O(1) lookup.
+        - Use find when checking without insertion.
+        - Use long long keys for large prefix sums.
+        - Use map instead when sorted keys or range queries matter.
+      behind_the_scenes:
+        - operator[] inserts a missing key with a default-constructed value.
+        - Rehashing can invalidate iterators.
+        - Custom keys require equality and hash support.
+        - unordered_map order is not stable or sorted.
+      avoid:
+        - Using mp[k] just to check existence.
+        - Forgetting pair or vector keys need custom hashing.
+        - Using unordered_map when ordered traversal is required.
+  - language_lens:
+      language: java
+      title: Java HashMap Thinking
+      body: >
+        Java HashMap is interface-friendly through Map<K,V>. It is powerful, but
+        missing keys return null from get, and custom key classes must implement
+        equals and hashCode correctly.
+      default_instincts:
+        - Declare Map<K,V> map = new HashMap<>().
+        - Use getOrDefault for counts.
+        - Use containsKey when null can be a real stored value.
+        - Use merge for compact frequency updates when comfortable.
+      behind_the_scenes:
+        - HashMap stores references to key and value objects.
+        - Integer keys are boxed when using Map<Integer, ...>.
+        - Mutating a key object after insertion can make lookup fail.
+        - HashMap order is not insertion order; LinkedHashMap preserves insertion order.
+      avoid:
+        - Using == for String or object key equality.
+        - Forgetting equals and hashCode for custom keys.
+        - Treating get(k) == null as absent when null values are possible.
+  - compare_table:
+      title: Missing-Key Behavior
+      columns:
+        - Operation
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Direct read absent", "KeyError", "operator[] inserts default", "get returns null"]
+        - ["Safe default", "get(k, d)", "find or count", "getOrDefault(k, d)"]
+        - ["Frequency increment", "get + 1 or Counter", "mp[k]++", "put(getOrDefault + 1)"]
+        - ["No-insert existence check", "k in mp", "find/count", "containsKey"]
+
+examples:
+  - code_compare:
+      title: Frequency Count
+      idea: Count occurrences of each value.
+      python: |
+        freq = {}
+        for x in nums:
+            freq[x] = freq.get(x, 0) + 1
+      cpp: |
+        unordered_map<int, int> freq;
+        for (int x : nums) {
+            freq[x]++;
+        }
+      java: |
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : nums) {
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+      note: >
+        C++ operator[] is convenient here because default insertion is exactly what
+        frequency counting needs.
+  - code_compare:
+      title: First Seen Index
+      idea: Store only the first index for each value.
+      python: |
+        first = {}
+        for i, x in enumerate(nums):
+            if x not in first:
+                first[x] = i
+      cpp: |
+        unordered_map<int, int> first;
+        for (int i = 0; i < nums.size(); i++) {
+            if (!first.count(nums[i])) first[nums[i]] = i;
+        }
+      java: |
+        Map<Integer, Integer> first = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            first.putIfAbsent(nums[i], i);
+        }
+      note: >
+        Java putIfAbsent is perfect when the first occurrence should win.
+  - code_compare:
+      title: Compound Key
+      idea: Use row and column as one key.
+      python: |
+        seen = set()
+        seen.add((r, c))
+      cpp: |
+        set<pair<int, int>> seen;
+        seen.insert({r, c});
+      java: |
+        Set<String> seen = new HashSet<>();
+        seen.add(r + "," + c);
+      note: >
+        Python tuple keys are natural. C++ pair works directly in set but needs a
+        custom hash for unordered_set. Java often uses a string, int encoding, or
+        small key class with equals/hashCode.
+  - code_compare:
+      title: Prefix Sum Count
+      idea: Count subarrays with sum k.
+      python: |
+        count = 0
+        pref = 0
+        seen = {0: 1}
+        for x in nums:
+            pref += x
+            count += seen.get(pref - k, 0)
+            seen[pref] = seen.get(pref, 0) + 1
+      cpp: |
+        long long pref = 0;
+        long long count = 0;
+        unordered_map<long long, int> seen;
+        seen[0] = 1;
+        for (int x : nums) {
+            pref += x;
+            if (seen.count(pref - k)) count += seen[pref - k];
+            seen[pref]++;
+        }
+      java: |
+        long pref = 0, count = 0;
+        Map<Long, Integer> seen = new HashMap<>();
+        seen.put(0L, 1);
+        for (int x : nums) {
+            pref += x;
+            count += seen.getOrDefault(pref - k, 0);
+            seen.put(pref, seen.getOrDefault(pref, 0) + 1);
+        }
+      note: >
+        Prefix sums can exceed int. Use long long in C++ and long in Java.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Dict To C++ unordered_map
+    mindset_shift:
+      - From flexible keys to typed keys and custom hash requirements.
+      - From KeyError on absent direct read to default insertion with operator[].
+      - From insertion order to unspecified iteration order.
+    habit_swaps:
+      - python: mp.get(k, 0).
+        cpp: Use find/count when you do not want insertion.
+      - python: tuple key.
+        cpp: Use pair in map/set or define hash for unordered_map/unordered_set.
+      - python: int keys can grow large.
+        cpp: Use long long for large sums or encoded keys.
+    false_friends:
+      - term: mp[k]
+        warning: In C++, this inserts when missing; in Python, it raises KeyError.
+      - term: order
+        warning: unordered_map order is not insertion order.
+  cpp_to_python:
+    title: Moving From C++ unordered_map To Python dict
+    mindset_shift:
+      - From explicit types to hashability and mutability.
+      - From default insertion to explicit get/defaultdict choices.
+      - From custom hashes to tuple keys for common compound state.
+    habit_swaps:
+      - cpp: mp[x]++.
+        python: freq[x] = freq.get(x, 0) + 1 or Counter.
+      - cpp: unordered_map<pair<int,int>, int, Hash>.
+        python: Use (r, c) as a tuple key.
+      - cpp: find before read.
+        python: Use in or get.
+    false_friends:
+      - term: mutable key
+        warning: Python list cannot be a dict key.
+      - term: copy
+        warning: Dict copies are shallow unless explicitly deep-copied.
+  python_to_java:
+    title: Moving From Python dict To Java HashMap
+    mindset_shift:
+      - From direct indexing to get/put methods.
+      - From tuple keys to records, small classes, strings, or encoded integers.
+      - From Python value equality to equals/hashCode contracts.
+    habit_swaps:
+      - python: freq[x] = freq.get(x, 0) + 1.
+        java: freq.put(x, freq.getOrDefault(x, 0) + 1).
+      - python: key in mp.
+        java: map.containsKey(key).
+      - python: (r, c) key.
+        java: Use a stable encoded key or class with equals and hashCode.
+    false_friends:
+      - term: equality
+        warning: Java object keys rely on equals and hashCode, not ==.
+      - term: null
+        warning: get returns null for absent keys, which can collide with stored null values.
+  java_to_python:
+    title: Moving From Java HashMap To Python dict
+    mindset_shift:
+      - From methods to operators and built-ins.
+      - From null checks to KeyError, in, and get.
+      - From custom key classes to immutable tuple keys.
+    habit_swaps:
+      - java: map.getOrDefault(k, 0).
+        python: mp.get(k, 0).
+      - java: map.put(k, v).
+        python: mp[k] = v.
+      - java: containsKey.
+        python: k in mp.
+    false_friends:
+      - term: None
+        warning: Python get can return None, so use in when None is a valid value.
+      - term: ordering
+        warning: Python dict preserves insertion order but is not sorted by key.
+  cpp_to_java:
+    title: Moving From C++ unordered_map To Java HashMap
+    mindset_shift:
+      - From operator access to method access.
+      - From template types to generics and boxing.
+      - From custom hash functors to equals/hashCode.
+    habit_swaps:
+      - cpp: unordered_map<int,int> mp.
+        java: Map<Integer, Integer> mp = new HashMap<>().
+      - cpp: mp[x]++.
+        java: mp.put(x, mp.getOrDefault(x, 0) + 1).
+      - cpp: long long key.
+        java: Long key with Map<Long, ...>.
+    false_friends:
+      - term: primitive generics
+        warning: Map<int,int> is invalid; use Map<Integer,Integer>.
+      - term: hash key mutation
+        warning: Mutating a Java key object after insertion can break lookup.
+  java_to_cpp:
+    title: Moving From Java HashMap To C++ unordered_map
+    mindset_shift:
+      - From references and generics to values and templates.
+      - From get returning null to operator[] insertion or find checks.
+      - From equals/hashCode methods to equality operators and hash functors.
+    habit_swaps:
+      - java: containsKey before get.
+        cpp: Use find/count before at or read.
+      - java: getOrDefault.
+        cpp: Use find, or operator[] when insertion is acceptable.
+      - java: HashMap<Long, Integer>.
+        cpp: unordered_map<long long, int>.
+    false_friends:
+      - term: read
+        warning: unordered_map operator[] is not a pure read.
+      - term: iterator validity
+        warning: rehashing can invalidate unordered_map iterators.
+
+interview_questions:
+  - question: When is C++ unordered_map[x] safe to use?
+    answer: It is safe when you want missing keys to be inserted with a default value, such as frequency counting.
+  - question: Why can Java HashMap fail with a custom key class?
+    answer: If equals and hashCode are not implemented consistently, logically equal keys may not be found.
+  - question: Why is a Python tuple a common compound key?
+    answer: Tuples are immutable and hashable when their elements are hashable, making them good for coordinates or state.
+  - question: What type should prefix sums use as hash keys when values are large?
+    answer: Use Python int, C++ long long, and Java long or Long.
+  - question: Is hash map iteration sorted?
+    answer: No. Use ordered structures or sort keys explicitly when order matters.
+
+revision:
+  quick_summary:
+    - Hash maps give fast average lookup.
+    - Missing-key behavior differs sharply across languages.
+    - Custom keys require correct hashing and equality.
+    - Hash map order is not sorted order.
+  cheat_table:
+    title: Hash Map Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["Map type", "dict", "unordered_map", "HashMap", "Average O(1)"]
+      - ["Safe default", "get", "find/count", "getOrDefault", "C++ [] inserts"]
+      - ["Frequency", "Counter/get", "mp[x]++", "put + getOrDefault", "Boxing in Java"]
+      - ["Compound key", "tuple", "pair + custom hash if unordered", "encoded key/class", "Equality rules matter"]
+      - ["Sorted keys", "sort keys", "map", "TreeMap", "Hash maps are unordered"]
+  flashcards:
+    - question: What does C++ unordered_map operator[] do for a missing key?
+      answer: Inserts the key with a default value.
+    - question: What Java methods must custom HashMap keys implement?
+      answer: equals and hashCode.
+    - question: Can Python list be a dict key?
+      answer: No, because it is mutable and unhashable.
+    - question: Which Java map preserves insertion order?
+      answer: LinkedHashMap.
+    - question: Which C++ map keeps keys sorted?
+      answer: map.
+
+notes:
+  - Hash maps are often the difference between O(n^2) and O(n).
+  - In interviews, always explain what the key represents and why it is safe to hash.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_hashmap_drills
+    - explain_missing_key_behavior
+    - compare_custom_key_strategies
+    - create_frequency_map_quiz
+  context: >
+    This lesson teaches hash maps across Python, C++, and Java with focus on
+    interview patterns, missing-key behavior, equality, hashing, and compound keys.

@@ -1,0 +1,278 @@
+id: space_complexity
+title: Space Complexity Discussions
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - complexity
+  - space_complexity
+  - memory
+  - interview
+  - foundations
+goal: Help learners explain extra space, recursion stack, object overhead, copying, and container memory tradeoffs across Python, C++, and Java.
+
+assets:
+  memory_layers:
+    type: image
+    path: assets/dsa/space_complexity/memory-layers.png
+    alt: Input memory, auxiliary containers, recursion stack, and output memory layers.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Space complexity describes extra memory used as input grows. In interviews,
+        be clear whether you include input and output, and always mention recursion
+        stack when using recursive DFS, backtracking, or memoization.
+  - compare_table:
+      title: What Counts As Extra Space
+      columns:
+        - Memory
+        - Usually Counts
+        - Interview Note
+      rows:
+        - ["Input array", "No", "Unless you copy it"]
+        - ["Output list", "Sometimes", "Depends whether output is required"]
+        - ["Hash map/set", "Yes", "O(number of stored keys)"]
+        - ["Sorting in place", "Maybe small stack", "Implementation-dependent but often treated as O(log n) or O(1)"]
+        - ["Recursion stack", "Yes", "O(depth)"]
+        - ["DP table", "Yes", "O(number of states)"]
+  - language_lens:
+      language: python
+      title: Python Space Thinking
+      body: >
+        Python objects have substantial overhead. Lists store references, not raw
+        values, so a list of ints uses much more memory than a primitive array in
+        Java or a vector<int> in C++.
+      default_instincts:
+        - Count extra dicts, sets, lists, slices, and caches.
+        - Count recursion stack.
+        - Treat list slicing as extra O(k) space.
+        - Use generators only when they truly avoid materializing data.
+      behind_the_scenes:
+        - list stores references to objects.
+        - int objects carry object overhead.
+        - dict and set store hash-table metadata in addition to keys and values.
+        - lru_cache stores memo entries until cleared or evicted.
+      avoid:
+        - Claiming O(1) space while using slicing.
+        - Forgetting memoization cache space.
+        - Ignoring nested list row aliasing.
+  - language_lens:
+      language: cpp
+      title: C++ Space Thinking
+      body: >
+        C++ containers often store values directly and compactly, especially vector.
+        But copies, recursion, allocator overhead, and hash buckets still matter.
+      default_instincts:
+        - Count vector, unordered_map, set, queue, and recursion memory.
+        - Avoid pass-by-value copies of large containers.
+        - Use vector<int> for compact numeric storage.
+        - Use long long only when needed but do not avoid it when correctness requires it.
+      behind_the_scenes:
+        - vector<int> stores ints contiguously.
+        - unordered_map has bucket and node overhead.
+        - map/set are node-based trees with pointer overhead.
+        - Large local arrays can use stack memory and overflow.
+      avoid:
+        - Allocating huge local stack arrays.
+        - Calling a recursive helper with copied vectors.
+        - Treating unordered_map as memory-free because lookup is fast.
+  - language_lens:
+      language: java
+      title: Java Space Thinking
+      body: >
+        Java space depends heavily on primitives versus objects. int[] is compact;
+        ArrayList<Integer> stores references to boxed Integer objects, which costs
+        far more memory.
+      default_instincts:
+        - Use primitive arrays for dense numeric DP and visited states.
+        - Count HashMap/HashSet object and bucket overhead.
+        - Count recursion stack.
+        - Use StringBuilder for building output incrementally.
+      behind_the_scenes:
+        - int[] stores primitive values.
+        - List<Integer> boxes primitives.
+        - int[][] is an array of row arrays.
+        - HashMap stores nodes/references plus table capacity.
+      avoid:
+        - Using boxed collections for large dense numeric tables.
+        - Forgetting String substring/copy behavior can allocate.
+        - Ignoring stack overflow risk from recursion.
+
+examples:
+  - code_compare:
+      title: Hash Set Extra Space
+      idea: Store seen values.
+      python: |
+        seen = set(nums)
+      cpp: |
+        unordered_set<int> seen(nums.begin(), nums.end());
+      java: |
+        Set<Integer> seen = new HashSet<>();
+        for (int x : nums) seen.add(x);
+      note: >
+        All three are O(n) extra space, but Java boxing and hash nodes can be much
+        heavier than a primitive array alternative.
+  - code_compare:
+      title: Slice Or Copy Space
+      idea: Copying a range uses memory proportional to the range length.
+      python: |
+        part = nums[left:right]
+      cpp: |
+        vector<int> part(nums.begin() + left, nums.begin() + right);
+      java: |
+        int[] part = Arrays.copyOfRange(nums, left, right);
+      note: >
+        These are all O(k) extra space for k copied elements.
+  - code_compare:
+      title: Recursion Stack
+      idea: DFS depth contributes memory.
+      python: |
+        def dfs(node):
+            for child in tree[node]:
+                dfs(child)
+      cpp: |
+        void dfs(int node) {
+            for (int child : tree[node]) dfs(child);
+        }
+      java: |
+        private void dfs(int node) {
+            for (int child : tree.get(node)) dfs(child);
+        }
+      note: >
+        If the tree is a chain of n nodes, recursion stack is O(n).
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Space Thinking To C++
+    mindset_shift:
+      - From reference-heavy objects to value storage and explicit copies.
+      - From object overhead to allocator/container overhead.
+      - From recursion limit to stack memory risk.
+    habit_swaps:
+      - python: Count list and object overhead.
+        cpp: Count vector values and copied containers.
+      - python: set uses lots of memory.
+        cpp: unordered_set also has bucket/node overhead.
+      - python: recursion fails by limit.
+        cpp: recursion can overflow the native stack.
+    false_friends:
+      - term: reference
+        warning: C++ references avoid copies only when used in signatures correctly.
+      - term: stack
+        warning: Large local C++ arrays can overflow stack memory.
+  cpp_to_python:
+    title: Moving From C++ Space Thinking To Python
+    mindset_shift:
+      - From compact value arrays to reference-heavy containers.
+      - From copy constructors to slicing and shallow copies.
+      - From manual type sizes to object overhead.
+    habit_swaps:
+      - cpp: vector<int> compact.
+        python: list of ints has larger per-element overhead.
+      - cpp: vector copy obvious in code.
+        python: slicing also copies.
+      - cpp: unordered_map memory overhead.
+        python: dict/set overhead is also significant.
+    false_friends:
+      - term: shallow copy
+        warning: Python nested structures can share inner objects.
+      - term: generator
+        warning: A generator saves materialization only if you do not later convert it to a list.
+  python_to_java:
+    title: Moving From Python Space Thinking To Java
+    mindset_shift:
+      - From one list model to primitive arrays versus boxed collections.
+      - From dict/set to HashMap/HashSet object overhead.
+      - From flexible integers to fixed primitive widths.
+    habit_swaps:
+      - python: list of int.
+        java: Prefer int[] for dense numeric data.
+      - python: dict memo.
+        java: Use arrays for bounded states, HashMap for sparse states.
+      - python: string accumulation list plus join.
+        java: StringBuilder.
+    false_friends:
+      - term: List<Integer>
+        warning: It is much heavier than int[].
+      - term: int[][]
+        warning: It is row-array based, not one flat block.
+  java_to_python:
+    title: Moving From Java Space Thinking To Python
+    mindset_shift:
+      - From primitives to Python objects.
+      - From array copies to slicing copies.
+      - From stack overflow risk to recursion limit plus stack risk.
+    habit_swaps:
+      - java: int[].
+        python: list, but remember object/reference overhead.
+      - java: boolean[] visited.
+        python: list of booleans or set depending on labels.
+      - java: HashMap memo.
+        python: dict or lru_cache.
+    false_friends:
+      - term: integer
+        warning: Python int is an object, not a fixed-width primitive.
+      - term: output
+        warning: Required output often is not counted as auxiliary space, but clarify.
+
+interview_questions:
+  - question: Does recursion stack count as space?
+    answer: Yes. Recursive depth d contributes O(d) stack space.
+  - question: Is output counted in space complexity?
+    answer: Clarify with the interviewer. Often required output is excluded, but extra temporary output buffers are counted.
+  - question: Why is Python list of ints memory-heavy?
+    answer: The list stores references, and each int is an object with overhead.
+  - question: Why is Java int[] more memory-efficient than List<Integer>?
+    answer: int[] stores primitives directly, while List<Integer> stores references to boxed Integer objects.
+  - question: What C++ mistake adds unexpected O(n) space?
+    answer: Passing or returning large containers by value when not intended.
+
+revision:
+  quick_summary:
+    - Space complexity counts extra memory that grows with input.
+    - Recursion stack counts.
+    - Copies and slices count.
+    - Primitive arrays are much more compact than boxed/object containers.
+  cheat_table:
+    title: Space Complexity Revision
+    columns:
+      - Memory
+      - Python
+      - C++
+      - Java
+      - Cost
+    rows:
+      - ["Hash set", "set", "unordered_set", "HashSet", "O(n)"]
+      - ["Dense ints", "list of int", "vector<int>", "int[]", "O(n), constants differ"]
+      - ["2D table", "list of lists", "vector<vector<int>>", "int[][]", "O(r*c)"]
+      - ["Recursion", "call stack", "call stack", "call stack", "O(depth)"]
+      - ["Slice/copy", "slice", "range vector copy", "copyOfRange", "O(k)"]
+  flashcards:
+    - question: Does memoization use space?
+      answer: Yes, O(number of cached states).
+    - question: What is the space of DFS on a chain of n nodes?
+      answer: O(n) recursion stack.
+    - question: Which Java numeric container is compact?
+      answer: int[].
+    - question: Does Python slicing allocate?
+      answer: Yes.
+
+notes:
+  - Say "auxiliary space" when excluding input and required output.
+  - Space tradeoffs are often what separate an accepted solution from an optimized one.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_space_complexity_quiz
+    - analyze_auxiliary_space
+    - compare_memory_overheads
+    - create_recursion_stack_drills
+  context: >
+    This lesson teaches space complexity discussion across Python, C++, and Java
+    with focus on auxiliary memory, copies, recursion stack, object overhead,
+    primitive arrays, and hash-container memory.

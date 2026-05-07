@@ -1,0 +1,347 @@
+id: binary_search
+title: Binary Search
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - binary_search
+  - lower_bound
+  - sorted_arrays
+  - interview
+  - language_transition
+goal: Help learners implement binary search, lower bound, upper bound, and search-on-answer patterns across Python, C++, and Java without off-by-one or overflow mistakes.
+
+assets:
+  binary_search_bounds:
+    type: image
+    path: assets/dsa/binary_search/binary-search-bounds.png
+    alt: Binary search bounds shrinking around the first true position.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Binary search repeatedly discards half the candidate space using a monotonic
+        condition. The safest interview mental model is often first true: find the
+        first index where condition(index) becomes true.
+  - compare_table:
+      title: Search Forms
+      columns:
+        - Form
+        - Goal
+        - Template
+      rows:
+        - ["Exact search", "Find target", "compare nums[mid] to target"]
+        - ["Lower bound", "First >= target", "if nums[mid] < target: left = mid + 1"]
+        - ["Upper bound", "First > target", "if nums[mid] <= target: left = mid + 1"]
+        - ["Answer search", "Minimum feasible answer", "condition(mid) is monotonic"]
+  - language_lens:
+      language: python
+      title: Python Binary Search Thinking
+      body: >
+        Python has bisect_left and bisect_right for sorted lists, but interviews
+        often expect you to write the loop. Python integers do not overflow, so focus
+        on loop invariants and bounds.
+      default_instincts:
+        - Use while left < right for lower-bound style.
+        - Use bisect_left when library use is allowed.
+        - Keep hi exclusive for clean lower-bound loops.
+        - Print left, mid, right when debugging.
+      behind_the_scenes:
+        - mid = (left + right) // 2 is overflow-safe in Python.
+        - bisect only works on sorted data.
+        - Negative indices can hide bugs if right becomes negative accidentally.
+      avoid:
+        - Mixing inclusive and exclusive bounds in one template.
+        - Forgetting to prove monotonicity in answer search.
+        - Using bisect on unsorted data.
+  - language_lens:
+      language: cpp
+      title: C++ Binary Search Thinking
+      body: >
+        C++ offers lower_bound and upper_bound, but manual binary search is still
+        essential. Use safe midpoint calculation and match your search helper to the
+        sorted order.
+      default_instincts:
+        - Use int mid = left + (right - left) / 2.
+        - Use lower_bound for first >= target.
+        - Use upper_bound for first > target.
+        - Use long long for answer ranges that exceed int.
+      behind_the_scenes:
+        - lower_bound requires sorted range under the same comparator.
+        - Iterator subtraction gives an index for random-access iterators.
+        - left + right can overflow for large integer ranges.
+      avoid:
+        - Calling lower_bound on unsorted data.
+        - Using mid = (left + right) / 2 for huge search ranges.
+        - Updating right = mid - 1 in an exclusive-hi template.
+  - language_lens:
+      language: java
+      title: Java Binary Search Thinking
+      body: >
+        Java has Arrays.binarySearch for exact search, but lower_bound is clearer
+        when insertion positions or first-valid answers matter. Use safe midpoint
+        and long for large answer ranges.
+      default_instincts:
+        - Use int mid = left + (right - left) / 2.
+        - Write custom lower_bound for first >= target.
+        - Decode Arrays.binarySearch carefully if used.
+        - Use long left/right for large answer search.
+      behind_the_scenes:
+        - Arrays.binarySearch returns index if found, otherwise -(insertionPoint) - 1.
+        - int addition can overflow.
+        - Primitive arrays and Lists have different search utilities.
+      avoid:
+        - Treating a negative binarySearch result as the insertion point directly.
+        - Using int bounds when answer can exceed int.
+        - Forgetting sorted precondition.
+
+examples:
+  - code_compare:
+      title: Lower Bound
+      idea: First index with nums[i] >= target.
+      python: |
+        left, right = 0, len(nums)
+        while left < right:
+            mid = (left + right) // 2
+            if nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid
+        return left
+      cpp: |
+        int left = 0, right = nums.size();
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < target) left = mid + 1;
+            else right = mid;
+        }
+        return left;
+      java: |
+        int left = 0, right = nums.length;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < target) left = mid + 1;
+            else right = mid;
+        }
+        return left;
+      note: >
+        right is exclusive. The answer can be nums.length if all values are smaller.
+  - code_compare:
+      title: Exact Search
+      idea: Return index of target or -1.
+      python: |
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return -1
+      cpp: |
+        int left = 0, right = (int)nums.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return -1;
+      java: |
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return -1;
+      note: >
+        This is inclusive bounds. Do not mix it with exclusive-hi updates.
+  - code_compare:
+      title: Binary Search On Answer
+      idea: Find minimum capacity that can finish within days.
+      python: |
+        def feasible(cap):
+            days = 1
+            cur = 0
+            for w in weights:
+                if cur + w > cap:
+                    days += 1
+                    cur = 0
+                cur += w
+            return days <= limit
+
+        left, right = max(weights), sum(weights)
+        while left < right:
+            mid = (left + right) // 2
+            if feasible(mid):
+                right = mid
+            else:
+                left = mid + 1
+      cpp: |
+        auto feasible = [&](long long cap) {
+            int days = 1;
+            long long cur = 0;
+            for (int w : weights) {
+                if (cur + w > cap) {
+                    days++;
+                    cur = 0;
+                }
+                cur += w;
+            }
+            return days <= limit;
+        };
+      java: |
+        private boolean feasible(int[] weights, long cap, int limit) {
+            int days = 1;
+            long cur = 0;
+            for (int w : weights) {
+                if (cur + w > cap) {
+                    days++;
+                    cur = 0;
+                }
+                cur += w;
+            }
+            return days <= limit;
+        }
+      note: >
+        Search-on-answer needs a monotonic feasible predicate: if capacity works,
+        every larger capacity also works.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Binary Search To C++
+    mindset_shift:
+      - From overflow-safe arithmetic to safe midpoint habits.
+      - From bisect convenience to iterator-based lower_bound.
+      - From arbitrary int to long long answer ranges.
+    habit_swaps:
+      - python: "mid = (left + right) // 2"
+        cpp: "mid = left + (right - left) / 2"
+      - python: bisect_left(nums, x).
+        cpp: lower_bound(nums.begin(), nums.end(), x) - nums.begin().
+      - python: sum bounds fit naturally.
+        cpp: Use long long when right can be large.
+    false_friends:
+      - term: lower_bound
+        warning: C++ lower_bound requires sorted data and matching comparator.
+      - term: index type
+        warning: size_t with decreasing loops can underflow.
+  cpp_to_python:
+    title: Moving From C++ Binary Search To Python
+    mindset_shift:
+      - From iterator ranges to list indices.
+      - From overflow concerns to invariant clarity.
+      - From lower_bound function to bisect_left.
+    habit_swaps:
+      - cpp: lower_bound.
+        python: bisect_left.
+      - cpp: long long bounds.
+        python: int is fine, but bounds must still be correct.
+      - cpp: explicit comparator.
+        python: bisect works on natural sorted order unless using key-compatible transformed data.
+    false_friends:
+      - term: negative index
+        warning: Python negative indices are valid and can hide bound mistakes.
+      - term: template
+        warning: Do not mix inclusive and exclusive binary-search templates.
+  python_to_java:
+    title: Moving From Python Binary Search To Java
+    mindset_shift:
+      - From bisect to custom lower_bound or Arrays.binarySearch.
+      - From safe integer arithmetic to safe midpoint and long bounds.
+      - From list length to array length.
+    habit_swaps:
+      - python: len(nums).
+        java: nums.length.
+      - python: bisect_left.
+        java: Write lower_bound loop for clarity.
+      - python: big answer sums.
+        java: Use long for bounds.
+    false_friends:
+      - term: Arrays.binarySearch
+        warning: Negative result must be decoded as insertionPoint = -result - 1.
+      - term: integer overflow
+        warning: Java int midpoint and answer bounds can overflow.
+  java_to_python:
+    title: Moving From Java Binary Search To Python
+    mindset_shift:
+      - From arrays and utility methods to direct lists and bisect.
+      - From long bounds to Python int.
+      - From decoded negative results to direct insertion points.
+    habit_swaps:
+      - java: Arrays.binarySearch result decode.
+        python: bisect_left returns insertion point directly.
+      - java: nums.length.
+        python: len(nums).
+      - java: Math mid formula.
+        python: (left + right) // 2 is safe.
+    false_friends:
+      - term: bisect precondition
+        warning: bisect still requires sorted data.
+      - term: list mutation
+        warning: If the list changes after sorting, search results may be invalid.
+
+interview_questions:
+  - question: What is the safest lower-bound loop invariant?
+    answer: Search [left, right), and keep the answer inside that range until left == right.
+  - question: Why use left + (right - left) / 2 in C++ and Java?
+    answer: It avoids overflow from left + right.
+  - question: What does lower_bound return if all values are smaller than target?
+    answer: The length of the array or end iterator.
+  - question: What makes binary search on answer valid?
+    answer: The predicate must be monotonic, such as false false true true.
+  - question: How do you decode Java Arrays.binarySearch when not found?
+    answer: insertionPoint = -result - 1.
+
+revision:
+  quick_summary:
+    - Binary search needs sorted data or a monotonic predicate.
+    - Lower bound means first index where value is at least target.
+    - Keep one template consistent.
+    - C++ and Java need overflow-safe midpoint.
+  cheat_table:
+    title: Binary Search Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["Lower bound", "bisect_left/manual", "lower_bound/manual", "manual", "Sorted data"]
+      - ["Upper bound", "bisect_right", "upper_bound", "manual", "First > target"]
+      - ["Midpoint", "// 2", "safe formula", "safe formula", "Overflow in C++/Java"]
+      - ["Answer search", "predicate", "predicate", "predicate", "Must be monotonic"]
+      - ["Exact helper", "index/manual", "binary_search", "Arrays.binarySearch", "Java negative encoding"]
+  flashcards:
+    - question: What is lower_bound?
+      answer: First index with value >= target.
+    - question: What is upper_bound?
+      answer: First index with value > target.
+    - question: What is Java's not-found binarySearch decode?
+      answer: -result - 1.
+    - question: What pattern is false false true true?
+      answer: First true binary search.
+
+notes:
+  - Debug binary search by printing left, mid, right, and the condition.
+  - Most bugs come from mixing templates or using a non-monotonic condition.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_binary_search_drills
+    - explain_lower_bound
+    - create_off_by_one_quiz
+    - compare_language_templates
+  context: >
+    This lesson teaches binary search across Python, C++, and Java with emphasis
+    on lower bound, upper bound, answer search, overflow-safe midpoint, and
+    Java binarySearch decoding.

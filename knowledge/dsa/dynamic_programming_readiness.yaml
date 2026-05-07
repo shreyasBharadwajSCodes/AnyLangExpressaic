@@ -1,0 +1,319 @@
+id: dynamic_programming_readiness
+title: Dynamic Programming Readiness
+category: dsa
+level: intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - dynamic_programming
+  - memoization
+  - tabulation
+  - interview
+  - language_transition
+goal: Help learners approach dynamic programming interviews by defining state, recurrence, base cases, order of computation, and memory tradeoffs across Python, C++, and Java.
+
+assets:
+  dp_state_transition:
+    type: image
+    path: assets/dsa/dynamic_programming/dp-state-transition.png
+    alt: DP state nodes connected by recurrence transitions.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Dynamic programming is controlled reuse. You define a state, write the answer
+        for that state in terms of smaller states, set base cases, and compute each
+        state once. The interview skill is not memorizing tables; it is explaining
+        what dp[i] or dp[i][j] means.
+  - compare_table:
+      title: DP Decision Map
+      columns:
+        - Question
+        - Choice
+        - Example
+      rows:
+        - ["Can states repeat in recursion?", "Memoization", "Fibonacci, grid paths"]
+        - ["Can order be built bottom-up?", "Tabulation", "Climbing stairs"]
+        - ["State depends only on previous row?", "Space optimize", "Knapsack/LCS variants"]
+        - ["Need choose/take/skip?", "Recurrence branches", "House robber, subsequence"]
+        - ["Need count/min/max?", "Define dp value carefully", "Coin change, LIS"]
+  - language_lens:
+      language: python
+      title: Python DP Thinking
+      body: >
+        Python makes memoization concise with functools.cache or lru_cache. Lists
+        are easy for tables, but nested-list initialization can alias rows.
+      default_instincts:
+        - Use @lru_cache(None) or @cache for recursive memoization.
+        - Use lists for 1D and 2D tabulation.
+        - Use float("inf") for impossible minimum states.
+        - Use tuple parameters for memoized multi-dimensional state.
+      behind_the_scenes:
+        - Cached function arguments must be hashable.
+        - "dp = [[0] * m] * n aliases rows."
+        - Recursion depth can fail for deep state chains.
+        - Python big ints avoid overflow but can grow memory/time.
+      avoid:
+        - Memoizing with mutable list arguments.
+        - Recomputing subproblems without cache.
+        - Forgetting to clear global memo between test cases.
+  - language_lens:
+      language: cpp
+      title: C++ DP Thinking
+      body: >
+        C++ DP is fast and explicit. Use vector tables, choose int versus long long
+        carefully, and initialize impossible states with safe sentinel values.
+      default_instincts:
+        - Use vector<int> or vector<long long> for 1D DP.
+        - Use vector<vector<int>> for 2D DP.
+        - Use -1 for unknown memo states when valid answers are non-negative.
+        - Use long long when counts or sums can overflow int.
+      behind_the_scenes:
+        - vector<vector<int>> has separate row vectors.
+        - Large local arrays can overflow stack; use vector or static/global if needed.
+        - INT_MAX + cost can overflow; use a smaller INF or guard before adding.
+      avoid:
+        - Passing DP tables by value into recursive helpers.
+        - Using int for huge counts.
+        - Updating 1D knapsack in the wrong direction.
+  - language_lens:
+      language: java
+      title: Java DP Thinking
+      body: >
+        Java DP commonly uses int[], long[], int[][], and Arrays.fill. Memoization
+        with arrays is usually cleaner than HashMap when state dimensions are bounded.
+      default_instincts:
+        - Use int[] or long[] for 1D DP.
+        - Use int[][] for 2D DP.
+        - Use Arrays.fill for initialization.
+        - Use long when counts or sums can exceed int.
+      behind_the_scenes:
+        - int[][] is an array of row arrays.
+        - Arrays.fill on int[][] only fills row references if misused.
+        - Integer[][] allows null as unknown but boxes values.
+        - Recursion can stack overflow on deep inputs.
+      avoid:
+        - Filling a 2D primitive array with one shared row.
+        - Using Integer when int with sentinel is enough.
+        - Using int INF and then adding into overflow.
+
+examples:
+  - code_compare:
+      title: 1D Tabulation
+      idea: Climbing stairs style recurrence.
+      python: |
+        if n <= 1:
+            return 1
+        dp = [0] * (n + 1)
+        dp[0] = dp[1] = 1
+        for i in range(2, n + 1):
+            dp[i] = dp[i - 1] + dp[i - 2]
+      cpp: |
+        vector<long long> dp(n + 1);
+        dp[0] = dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+      java: |
+        long[] dp = new long[n + 1];
+        dp[0] = dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+      note: >
+        Use long if the count can exceed int. Some platforms ask for modulo.
+  - code_compare:
+      title: Memoized Recursion
+      idea: Compute each state once.
+      python: |
+        from functools import lru_cache
+
+        @lru_cache(None)
+        def solve(i):
+            if i >= n:
+                return 0
+            return max(solve(i + 1), nums[i] + solve(i + 2))
+      cpp: |
+        int solve(int i, const vector<int>& nums, vector<int>& memo) {
+            if (i >= nums.size()) return 0;
+            if (memo[i] != -1) return memo[i];
+            return memo[i] = max(solve(i + 1, nums, memo),
+                                 nums[i] + solve(i + 2, nums, memo));
+        }
+      java: |
+        private int solve(int i, int[] nums, int[] memo) {
+            if (i >= nums.length) return 0;
+            if (memo[i] != -1) return memo[i];
+            memo[i] = Math.max(solve(i + 1, nums, memo),
+                               nums[i] + solve(i + 2, nums, memo));
+            return memo[i];
+        }
+      note: >
+        Memo tables must be shared across recursive calls, not copied.
+  - code_compare:
+      title: 2D Table Initialization
+      idea: Create independent rows.
+      python: |
+        dp = [[0] * cols for _ in range(rows)]
+      cpp: |
+        vector<vector<int>> dp(rows, vector<int>(cols, 0));
+      java: |
+        int[][] dp = new int[rows][cols];
+      note: >
+        Python [[0] * cols] * rows aliases rows. Java int[][] creates separate
+        row arrays, but filling object rows incorrectly can still alias.
+  - code_compare:
+      title: Minimum DP With INF
+      idea: Avoid overflow when adding costs.
+      python: |
+        INF = 10**18
+        dp = [INF] * (amount + 1)
+        dp[0] = 0
+      cpp: |
+        const int INF = 1e9;
+        vector<int> dp(amount + 1, INF);
+        dp[0] = 0;
+      java: |
+        int INF = 1_000_000_000;
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, INF);
+        dp[0] = 0;
+      note: >
+        Avoid INT_MAX or Integer.MAX_VALUE when you later add 1, unless you guard
+        before adding.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python DP To C++
+    mindset_shift:
+      - From decorator memoization to explicit memo tables.
+      - From arbitrary int to int/long long/modulo choices.
+      - From list convenience to references and avoiding copies.
+    habit_swaps:
+      - python: "@lru_cache(None)"
+        cpp: vector memo passed by reference.
+      - python: "float(\"inf\")"
+        cpp: Use safe INF such as 1e9 for int minimization.
+      - python: tuple state.
+        cpp: Use multidimensional vector or unordered_map with custom key.
+    false_friends:
+      - term: table copy
+        warning: Passing vector DP by value copies the table.
+      - term: overflow
+        warning: C++ int can overflow in counts and INF additions.
+  cpp_to_python:
+    title: Moving From C++ DP To Python
+    mindset_shift:
+      - From explicit tables to cache decorators where natural.
+      - From overflow concerns to recursion depth and memory concerns.
+      - From reference passing to mutable list aliasing.
+    habit_swaps:
+      - cpp: vector<vector<int>> dp.
+        python: Use row comprehension, not multiplied rows.
+      - cpp: memo initialized with -1.
+        python: Use lru_cache or list with sentinel.
+      - cpp: long long.
+        python: int is flexible, but large DP may still be slow.
+    false_friends:
+      - term: matrix init
+        warning: "Python [[0] * m] * n aliases rows."
+      - term: recursion
+        warning: Python recursion depth can fail on large n.
+  python_to_java:
+    title: Moving From Python DP To Java
+    mindset_shift:
+      - From decorators to arrays and helper methods.
+      - From dynamic state keys to bounded primitive tables when possible.
+      - From arbitrary integers to int/long/modulo.
+    habit_swaps:
+      - python: lru_cache.
+        java: int[]/int[][] memo with sentinel or HashMap for sparse state.
+      - python: len(dp).
+        java: dp.length.
+      - python: INF = 10**18.
+        java: long INF or safe int INF depending on recurrence.
+    false_friends:
+      - term: fill
+        warning: Arrays.fill(dp, value) fills one row; loop rows for 2D arrays.
+      - term: boxing
+        warning: Integer[][] allows null but has boxing overhead.
+  java_to_python:
+    title: Moving From Java DP To Python
+    mindset_shift:
+      - From explicit arrays to compact lists and cache.
+      - From sentinel-filled primitive arrays to None/cache patterns.
+      - From long bounds to Python int.
+    habit_swaps:
+      - java: Arrays.fill.
+        python: list multiplication is fine for 1D immutable values.
+      - java: int[][].
+        python: Use list comprehension for rows.
+      - java: HashMap state.
+        python: Use dict or lru_cache with tuple state.
+    false_friends:
+      - term: row alias
+        warning: Python 2D multiplication aliases rows.
+      - term: test cases
+        warning: Clear Python global memo between independent cases.
+
+interview_questions:
+  - question: What should you define first in a DP problem?
+    answer: The state meaning, such as dp[i] = best answer using the first i items.
+  - question: What are the four DP ingredients?
+    answer: State, recurrence, base cases, and computation order.
+  - question: When is memoization easier than tabulation?
+    answer: When the recurrence is natural recursively or many states are unreachable.
+  - question: Why can 1D knapsack updates be direction-sensitive?
+    answer: Updating in the wrong direction can reuse the same item more than once.
+  - question: Why avoid maximum integer INF when adding costs?
+    answer: INF + cost can overflow in C++ and Java.
+
+revision:
+  quick_summary:
+    - DP means compute each repeated state once.
+    - Define state in words before recurrence.
+    - Memoization is top-down; tabulation is bottom-up.
+    - Watch row aliasing, overflow, and recursion depth.
+  cheat_table:
+    title: DP Readiness Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["Memo", "lru_cache/dict", "vector memo", "array memo", "State must be valid key/index"]
+      - ["1D table", "list", "vector", "int[]/long[]", "Initialize base cases"]
+      - ["2D table", "row comprehension", "vector<vector<T>>", "int[][]", "Avoid row aliasing"]
+      - ["Infinity", "float('inf')/large int", "safe INF", "safe INF", "Avoid overflow on add"]
+      - ["Large counts", "int", "long long/mod", "long/mod", "Check constraints"]
+  flashcards:
+    - question: What does dp[i] need?
+      answer: A precise meaning.
+    - question: What is top-down DP?
+      answer: Recursion with memoization.
+    - question: What is bottom-up DP?
+      answer: Filling a table in dependency order.
+    - question: What is Python's 2D DP initialization trap?
+      answer: Row aliasing with multiplied inner lists.
+    - question: What Java method initializes arrays?
+      answer: Arrays.fill.
+
+notes:
+  - If you cannot define the state, do not start coding the recurrence.
+  - Interviewers care more about the state explanation than a memorized table shape.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_dp_state_drills
+    - explain_memo_vs_tabulation
+    - create_space_optimization_quiz
+    - compare_language_dp_templates
+  context: >
+    This lesson teaches dynamic programming readiness across Python, C++, and Java
+    with focus on state definition, recurrence, memoization, tabulation, overflow,
+    row aliasing, and recursion depth.

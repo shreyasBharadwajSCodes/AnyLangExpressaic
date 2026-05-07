@@ -1,0 +1,320 @@
+id: two_pointers
+title: Two Pointers
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - two_pointers
+  - arrays
+  - strings
+  - interview
+  - language_transition
+goal: Help learners recognize and implement two-pointer problems across Python, C++, and Java while staying clear about invariants, sorted input, mutation, and boundary movement.
+
+assets:
+  pointer_movement:
+    type: image
+    path: assets/dsa/two_pointers/pointer-movement.png
+    alt: Left and right pointers moving toward each other over a sorted array.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Two pointers means maintaining two positions that move through a sequence
+        with a reason. The power comes from the invariant: after each move, you know
+        which candidates can be safely ignored. Common forms are opposite ends,
+        same direction, slow/fast, and write/read pointers.
+  - compare_table:
+      title: Recognition Map
+      columns:
+        - Signal
+        - Typical Move
+        - Example
+      rows:
+        - ["Sorted array, target pair", "Move left/right by sum", "Two Sum II"]
+        - ["Palindrome or symmetric check", "Move inward", "Valid Palindrome"]
+        - ["Remove/compact in place", "Read/write pointers", "Remove Duplicates"]
+        - ["Linked list cycle/middle", "Slow/fast pointers", "Cycle detection"]
+        - ["Merge two sorted lists", "Advance smaller side", "Merge arrays"]
+  - language_lens:
+      language: python
+      title: Python Pointer Thinking
+      body: >
+        Python pointer variables are just integer indices for arrays and strings, or
+        object references for linked lists. Indexing is concise, but negative indices
+        can hide bugs if a pointer crosses below zero.
+      default_instincts:
+        - Use left and right names instead of l and r when clarity helps.
+        - Use while left < right for inward scans.
+        - Use write pointers for in-place compaction.
+        - Remember strings are immutable, so build lists for character mutation.
+      behind_the_scenes:
+        - Python list elements are references; swapping swaps references.
+        - nums[-1] is valid, so pointer underflow may not fail loudly.
+        - Slicing creates copies, which can accidentally turn O(1) extra space into O(n).
+      avoid:
+        - Using slicing in a loop for pointer movement.
+        - Forgetting to move a pointer on every loop path.
+        - Depending on negative-index behavior.
+  - language_lens:
+      language: cpp
+      title: C++ Pointer Thinking
+      body: >
+        In interview array problems, C++ two pointers are usually integer indices,
+        not raw pointers. In linked lists, pointers are real addresses, so null checks
+        and ownership/lifetime awareness matter.
+      default_instincts:
+        - Use int left = 0, right = n - 1 for arrays when n fits int.
+        - Use long long for sums that may overflow int.
+        - Check node pointers before dereferencing.
+        - Use references only when mutation should be visible.
+      behind_the_scenes:
+        - vector indexing with a negative int converted to size_t is dangerous if using unchecked access.
+        - left + right can overflow in some binary-search-like formulas; use safe midpoint habits there.
+        - Linked list pointer movement can crash on null dereference.
+      avoid:
+        - Dereferencing fast->next before checking fast.
+        - Using unsigned indices for decreasing loops without care.
+        - Assuming sorted-pointer logic works on unsorted input.
+  - language_lens:
+      language: java
+      title: Java Pointer Thinking
+      body: >
+        Java two pointers are integer indices for arrays and strings, and object
+        references for linked lists. Primitive arrays are fast; strings are immutable,
+        so use char[] when character mutation is needed.
+      default_instincts:
+        - Use int left = 0, right = nums.length - 1.
+        - Use long for large pair sums.
+        - Use char[] arr = s.toCharArray() for mutable string work.
+        - Check fast != null && fast.next != null before advancing linked-list fast pointers.
+      behind_the_scenes:
+        - Java arrays throw on invalid indices, which helps catch pointer mistakes.
+        - Object references are copied by value; moving a local node pointer does not change the caller variable.
+        - String.charAt is O(1), but building many new strings in loops is costly.
+      avoid:
+        - Using == for string content checks.
+        - Forgetting bounds checks in while conditions.
+        - Returning a modified char[] without converting back to String when needed.
+
+examples:
+  - code_compare:
+      title: Pair Sum In Sorted Array
+      idea: Move inward based on current sum.
+      python: |
+        left, right = 0, len(nums) - 1
+        while left < right:
+            total = nums[left] + nums[right]
+            if total == target:
+                return [left, right]
+            if total < target:
+                left += 1
+            else:
+                right -= 1
+      cpp: |
+        int left = 0, right = (int)nums.size() - 1;
+        while (left < right) {
+            long long total = 1LL * nums[left] + nums[right];
+            if (total == target) return {left, right};
+            if (total < target) left++;
+            else right--;
+        }
+      java: |
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            long total = (long) nums[left] + nums[right];
+            if (total == target) return new int[]{left, right};
+            if (total < target) left++;
+            else right--;
+        }
+      note: >
+        This logic requires sorted input. If the array is unsorted, use a hash map
+        or sort with original-index handling.
+  - code_compare:
+      title: In-Place Compaction
+      idea: Keep values not equal to val.
+      python: |
+        write = 0
+        for x in nums:
+            if x != val:
+                nums[write] = x
+                write += 1
+        return write
+      cpp: |
+        int write = 0;
+        for (int x : nums) {
+            if (x != val) nums[write++] = x;
+        }
+        return write;
+      java: |
+        int write = 0;
+        for (int x : nums) {
+            if (x != val) nums[write++] = x;
+        }
+        return write;
+      note: >
+        The write pointer marks the next valid position. The array content after
+        write is irrelevant unless the problem says otherwise.
+  - code_compare:
+      title: Palindrome Check
+      idea: Compare mirrored characters.
+      python: |
+        left, right = 0, len(s) - 1
+        while left < right:
+            if s[left] != s[right]:
+                return False
+            left += 1
+            right -= 1
+        return True
+      cpp: |
+        int left = 0, right = (int)s.size() - 1;
+        while (left < right) {
+            if (s[left] != s[right]) return false;
+            left++;
+            right--;
+        }
+        return true;
+      java: |
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) return false;
+            left++;
+            right--;
+        }
+        return true;
+      note: >
+        If the problem ignores punctuation or case, move pointers past invalid
+        characters before comparing.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Two Pointers To C++
+    mindset_shift:
+      - From flexible indices to explicit signed index choices.
+      - From safe big ints to overflow-aware sums.
+      - From reference-hidden lists to vector mutation and bounds care.
+    habit_swaps:
+      - python: "total = nums[left] + nums[right]"
+        cpp: "long long total = 1LL * nums[left] + nums[right]"
+      - python: "while left < right:"
+        cpp: "while (left < right)"
+      - python: Linked list references fail softly as None checks.
+        cpp: Check pointers before every dereference.
+    false_friends:
+      - term: pointer
+        warning: In array problems, C++ pointers are usually indices, not raw pointers.
+      - term: negative index
+        warning: Python nums[-1] is valid; C++ negative indexing is invalid behavior.
+  cpp_to_python:
+    title: Moving From C++ Two Pointers To Python
+    mindset_shift:
+      - From type and overflow concerns to aliasing and slicing concerns.
+      - From explicit null pointers to None references.
+      - From manual loops to readable index movement.
+    habit_swaps:
+      - cpp: Use long long for pair sums.
+        python: Use int naturally but still preserve O(n) logic.
+      - cpp: Avoid unsigned decreasing loops.
+        python: Avoid accidental negative indexing.
+      - cpp: Pass vector by reference for mutation.
+        python: Mutating list elements is visible through the same list object.
+    false_friends:
+      - term: slice
+        warning: Python slicing copies; it is not pointer movement.
+      - term: loop condition
+        warning: left <= right and left < right mean different candidate sets.
+  python_to_java:
+    title: Moving From Python Two Pointers To Java
+    mindset_shift:
+      - From one sequence type to arrays, strings, and lists.
+      - From arbitrary integer size to int versus long.
+      - From mutable lists to immutable strings.
+    habit_swaps:
+      - python: s[left].
+        java: s.charAt(left).
+      - python: swap list values directly.
+        java: swap array values, or convert String to char[] first.
+      - python: Return [left, right].
+        java: Return new int[]{left, right}.
+    false_friends:
+      - term: string mutation
+        warning: Java String is immutable; use char[] or StringBuilder.
+      - term: equality
+        warning: Use equals for object/string content, not ==.
+  java_to_python:
+    title: Moving From Java Two Pointers To Python
+    mindset_shift:
+      - From length methods split by type to len.
+      - From charAt to bracket indexing.
+      - From bounds exceptions to negative-index caution.
+    habit_swaps:
+      - java: s.charAt(i).
+        python: s[i].
+      - java: nums.length.
+        python: len(nums).
+      - java: new int[]{l, r}.
+        python: "[l, r] or (l, r)."
+    false_friends:
+      - term: bounds
+        warning: Python negative indices are valid, which can hide bugs.
+      - term: char
+        warning: Python characters are one-length strings.
+
+interview_questions:
+  - question: What must be true for the sorted pair-sum two-pointer move to be valid?
+    answer: The array must be sorted, so moving left increases the sum and moving right decreases it.
+  - question: What is the most common infinite-loop bug?
+    answer: A branch that does not move either pointer.
+  - question: Why store indices in some pointer patterns?
+    answer: Indices let you check positions, window bounds, and return locations while values may repeat.
+  - question: Why use long long or long for pair sums?
+    answer: Two int values can overflow when added in C++ or Java.
+  - question: Is slicing a two-pointer solution?
+    answer: Usually no. Slicing copies data and may change the space complexity.
+
+revision:
+  quick_summary:
+    - Two pointers work when each move safely eliminates candidates.
+    - Sorted input often justifies inward movement.
+    - Write pointers compact arrays in place.
+    - Slow/fast pointers are for linked lists and cycle-style patterns.
+  cheat_table:
+    title: Two Pointers Revision
+    columns:
+      - Pattern
+      - Move
+      - Caveat
+    rows:
+      - ["Pair sum sorted", "left/right inward", "Needs sorted input"]
+      - ["Palindrome", "inward compare", "Skip invalid chars if required"]
+      - ["Remove in place", "read/write", "Return new logical length"]
+      - ["Cycle", "slow/fast", "Null checks"]
+      - ["Merge", "advance smaller", "Handle leftovers"]
+  flashcards:
+    - question: What does each pointer move need?
+      answer: A reason tied to the invariant.
+    - question: What is Python's hidden pointer-index trap?
+      answer: Negative indices are valid.
+    - question: What is the Java string access method?
+      answer: charAt.
+    - question: What is the C++ overflow-safe pair sum habit?
+      answer: Cast one operand to long long before addition.
+
+notes:
+  - State the invariant before coding pointer movement.
+  - If you cannot explain why a move is safe, the pattern may not apply.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_two_pointer_drills
+    - explain_pointer_invariant
+    - compare_language_templates
+    - create_edge_case_quiz
+  context: >
+    This lesson teaches two-pointer interview patterns with attention to sorted
+    invariants, in-place compaction, overflow, negative indexing, and linked-list
+    pointer caveats.

@@ -1,0 +1,459 @@
+id: input_parsing_across_languages
+title: Input Parsing Across Languages
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - interview
+  - input_parsing
+  - competitive_programming
+  - quick_revision
+  - language_transition
+goal: Help learners parse interview and coding-test input reliably in Python, C++, and Java without letting scanner mechanics distract from the algorithm.
+
+assets:
+  input_pipeline:
+    type: image
+    path: assets/dsa/input_parsing/input-pipeline.png
+    alt: Input text flowing through token parsing into typed variables and containers.
+  newline_trap:
+    type: image
+    path: assets/dsa/input_parsing/newline-trap.png
+    alt: Diagram showing token-based parsing versus line-based parsing.
+
+prerequisites:
+  - Basic strings
+  - Arrays or lists
+  - Loops
+  - Type conversion
+related_patterns:
+  - syntax_readiness
+  - type_conversion_casting
+  - integer_overflow
+  - strings
+
+lesson:
+  - explain:
+      title: The Interview Goal
+      body: >
+        Input parsing should be invisible once the problem starts. Your goal is to
+        convert raw text into the exact structure the algorithm expects: integers,
+        strings, arrays, matrices, edges, test cases, or mixed records. Most bugs
+        come from mixing token-based and line-based reading without noticing it.
+  - compare_table:
+      title: Parsing Mental Model
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["One integer", "int(input())", "cin >> n", "fs.nextInt() or sc.nextInt()"]
+        - ["Line of ints", "list(map(int, input().split()))", "loop cin >> x", "loop nextInt()"]
+        - ["Fast full input", "sys.stdin.buffer.read()", "ios::sync_with_stdio(false)", "BufferedInputStream parser"]
+        - ["Whole line", "input()", "getline(cin, s)", "br.readLine()"]
+        - ["Matrix", "list comprehension", "nested loops", "nested loops"]
+        - ["Mixed token records", "split or token iterator", "operator>>", "fast scanner methods"]
+  - language_lens:
+      language: python
+      title: How Python Wants You To Parse
+      body: >
+        Python makes parsing short, but large inputs need attention. input() is fine
+        for many interviews. For heavy coding tests, sys.stdin.buffer.read().split()
+        gives fast token parsing. Behind the scenes, split creates many byte/string
+        objects, so full-input parsing is fast but can use more memory.
+      default_instincts:
+        - Use input().split() for simple line-based problems.
+        - Use sys.stdin.buffer.readline for many lines.
+        - Use sys.stdin.buffer.read().split() for token-heavy input.
+        - Convert tokens exactly where the algorithm expects typed values.
+      behind_the_scenes:
+        - input() strips the trailing newline but not other internal spaces.
+        - bytes tokens from buffer input need int(token) for numbers and token.decode() only if text operations require str.
+        - Full read is fast because it reduces per-line overhead, but it stores all tokens in memory.
+        - Python int handles large values, so overflow is not the parsing issue.
+      avoid:
+        - Calling input() repeatedly for very large input when a buffered approach is safer.
+        - Assuming split(" ") and split() behave the same with repeated spaces.
+        - Decoding every token when numeric parsing is enough.
+  - language_lens:
+      language: cpp
+      title: How C++ Wants You To Parse
+      body: >
+        C++ stream extraction with cin is expressive and reliable when sync is disabled.
+        The operator>> reads tokens separated by whitespace, which is perfect for most
+        DSA input. The main caveat is mixing cin >> with getline: after token parsing,
+        the newline may still be waiting in the stream.
+      default_instincts:
+        - Start main with ios::sync_with_stdio(false); cin.tie(nullptr); for speed.
+        - Use cin >> x for whitespace-separated tokens.
+        - Use getline only when spaces inside a line matter.
+        - After cin >> n, consume the leftover newline before getline.
+      behind_the_scenes:
+        - operator>> skips leading whitespace and stops at the next whitespace.
+        - getline reads until newline and can read an empty string if a newline was left behind.
+        - int can overflow while parsing large values; choose long long when needed.
+        - char arrays and string have different memory behavior; prefer string for interview parsing.
+      avoid:
+        - Mixing scanf/printf with cin/cout after disabling sync.
+        - Forgetting that cin >> s cannot read strings with spaces.
+        - Treating failed extraction as a normal value.
+  - language_lens:
+      language: java
+      title: How Java Wants You To Parse
+      body: >
+        Java's Scanner is readable but can be slow on large coding-test input.
+        BufferedReader with StringTokenizer is common, and a custom FastScanner over
+        BufferedInputStream is the strongest interview-ready template. Behind the
+        scenes, Java parsing creates objects unless the scanner is designed carefully.
+      default_instincts:
+        - Use Scanner only for small or clarity-first input.
+        - Use BufferedReader and StringTokenizer for line/token balance.
+        - Use a custom FastScanner for large token streams.
+        - Use long when constraints exceed int.
+      behind_the_scenes:
+        - Scanner uses regex-style tokenization and is slower than buffered custom parsing.
+        - nextInt reads a token, not a line; nextLine after nextInt may read the leftover newline.
+        - Integer.parseInt and Long.parseLong can throw if input is malformed or out of range.
+        - int[] avoids boxing, while List<Integer> boxes every parsed primitive.
+      avoid:
+        - Using Scanner blindly for large input.
+        - Mixing nextInt and nextLine without consuming the newline.
+        - Storing primitive-heavy data in boxed collections when arrays fit naturally.
+  - compare_table:
+      title: Token Versus Line Reading
+      columns:
+        - Choice
+        - Best For
+        - Risk
+      rows:
+        - ["Token reading", "Numbers, words, edges, matrices", "Cannot preserve spaces inside a string"]
+        - ["Line reading", "Sentences, commands, rows with spaces", "Must split and convert manually"]
+        - ["Full input read", "Large token-only tests", "Higher memory use"]
+        - ["Scanner-style APIs", "Small input and readability", "May be too slow in Java"]
+
+examples:
+  - code_compare:
+      title: Read N And An Array
+      idea: Parse an integer n followed by n integers.
+      python: |
+        n = int(input())
+        nums = list(map(int, input().split()))
+      cpp: |
+        int n;
+        cin >> n;
+        vector<int> nums(n);
+        for (int i = 0; i < n; i++) {
+            cin >> nums[i];
+        }
+      java: |
+        int n = fs.nextInt();
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = fs.nextInt();
+        }
+      note: >
+        Python assumes the array is on one line here. C++ and Java token readers do
+        not care whether the numbers are on one line or many lines.
+  - code_compare:
+      title: Read A Matrix
+      idea: Parse rows and columns into a 2D grid.
+      python: |
+        r, c = map(int, input().split())
+        grid = [list(map(int, input().split())) for _ in range(r)]
+      cpp: |
+        int r, c;
+        cin >> r >> c;
+        vector<vector<int>> grid(r, vector<int>(c));
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                cin >> grid[i][j];
+            }
+        }
+      java: |
+        int r = fs.nextInt(), c = fs.nextInt();
+        int[][] grid = new int[r][c];
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                grid[i][j] = fs.nextInt();
+            }
+        }
+      note: >
+        Java int[][] is an array of row arrays. C++ vector<vector<int>> also stores
+        separate inner vectors, not one flat contiguous block.
+  - code_compare:
+      title: Multiple Test Cases
+      idea: Repeat the solve logic t times.
+      python: |
+        t = int(input())
+        for _ in range(t):
+            n = int(input())
+            nums = list(map(int, input().split()))
+            print(solve(nums))
+      cpp: |
+        int t;
+        cin >> t;
+        while (t--) {
+            int n;
+            cin >> n;
+            vector<int> nums(n);
+            for (int& x : nums) cin >> x;
+            cout << solve(nums) << '\n';
+        }
+      java: |
+        int t = fs.nextInt();
+        StringBuilder out = new StringBuilder();
+        while (t-- > 0) {
+            int n = fs.nextInt();
+            int[] nums = new int[n];
+            for (int i = 0; i < n; i++) nums[i] = fs.nextInt();
+            out.append(solve(nums)).append('\n');
+        }
+        System.out.print(out);
+      note: >
+        Java output should often be batched in StringBuilder. C++ '\n' avoids the
+        flush behavior of endl.
+  - code_compare:
+      title: Newline Trap After Token Read
+      idea: Read a number and then a full line with spaces.
+      python: |
+        n = int(input())
+        title = input()
+      cpp: |
+        int n;
+        cin >> n;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        string title;
+        getline(cin, title);
+      java: |
+        int n = sc.nextInt();
+        sc.nextLine();
+        String title = sc.nextLine();
+      note: >
+        The trap is clearest in C++ and Java. Token reads leave the newline behind;
+        the next line read may consume that newline as an empty line.
+  - code_compare:
+      title: Fast Token Parsing Template
+      idea: Use faster input when token volume is high.
+      python: |
+        import sys
+
+        data = sys.stdin.buffer.read().split()
+        it = iter(data)
+        n = int(next(it))
+        nums = [int(next(it)) for _ in range(n)]
+      cpp: |
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+
+        int n;
+        cin >> n;
+        vector<int> nums(n);
+        for (int& x : nums) cin >> x;
+      java: |
+        static class FastScanner {
+            private final InputStream in = System.in;
+            private final byte[] buffer = new byte[1 << 16];
+            private int ptr = 0, len = 0;
+
+            private int read() throws IOException {
+                if (ptr >= len) {
+                    len = in.read(buffer);
+                    ptr = 0;
+                    if (len <= 0) return -1;
+                }
+                return buffer[ptr++];
+            }
+
+            int nextInt() throws IOException {
+                int c, sign = 1, val = 0;
+                do { c = read(); } while (c <= ' ' && c != -1);
+                if (c == '-') { sign = -1; c = read(); }
+                while (c > ' ') {
+                    val = val * 10 + (c - '0');
+                    c = read();
+                }
+                return val * sign;
+            }
+        }
+      note: >
+        This Java template is longer, but it removes Scanner overhead. In a real
+        platform, include throws Exception on main or handle IOException.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Input To C++ Input
+    mindset_shift:
+      - From line splitting to stream token extraction.
+      - From automatic big integers to choosing int or long long.
+      - From concise parsing to explicit container sizing.
+    habit_swaps:
+      - python: Use list(map(int, input().split())).
+        cpp: Allocate vector<int> nums(n) and fill it with cin >> nums[i].
+      - python: Trust input() to consume a line.
+        cpp: Remember cin >> consumes tokens and leaves the newline for getline.
+      - python: Print freely in a loop.
+        cpp: Use '\n' instead of endl unless flushing is required.
+    false_friends:
+      - term: input line
+        warning: C++ cin >> x does not mean read a line; it means read one token.
+      - term: integer
+        warning: C++ int can overflow while Python int usually will not.
+  cpp_to_python:
+    title: Moving From C++ Input To Python Input
+    mindset_shift:
+      - From token extraction loops to split-based or iterator-based parsing.
+      - From pre-sized containers to list construction.
+      - From overflow concerns to runtime and memory concerns.
+    habit_swaps:
+      - cpp: Use cin >> for every token.
+        python: Use input().split() for lines or sys.stdin.buffer.read().split() for heavy token streams.
+      - cpp: Preallocate vector size.
+        python: Build lists from comprehensions or map.
+      - cpp: Use long long for large values.
+        python: Use int but still check algorithmic complexity.
+    false_friends:
+      - term: split
+        warning: split() handles repeated whitespace better than split(" ").
+      - term: full read
+        warning: Reading all input at once is fast but can increase memory pressure.
+  python_to_java:
+    title: Moving From Python Input To Java Input
+    mindset_shift:
+      - From concise parsing to explicit scanner design.
+      - From dynamic lists to primitive arrays when size is known.
+      - From easy printing to batched output for performance.
+    habit_swaps:
+      - python: Use input() for each line.
+        java: Use BufferedReader/StringTokenizer or FastScanner for serious input size.
+      - python: Use list of int.
+        java: Use int[] when the number of values is known.
+      - python: print inside loops.
+        java: Append to StringBuilder and print once for many answers.
+    false_friends:
+      - term: Scanner
+        warning: Scanner is convenient but can time out on large input.
+      - term: nextLine after nextInt
+        warning: nextLine may read only the leftover newline unless you consume it intentionally.
+  java_to_python:
+    title: Moving From Java Input To Python Input
+    mindset_shift:
+      - From parser classes to direct text operations.
+      - From checked exceptions and types to quick conversion.
+      - From StringBuilder output habits to print or joined strings.
+    habit_swaps:
+      - java: Build FastScanner.
+        python: Use sys.stdin.buffer when input is large, otherwise input() is fine.
+      - java: Use int[].
+        python: Use list of int values.
+      - java: Use Long.parseLong for large values.
+        python: int handles large numeric values directly.
+    false_friends:
+      - term: bytes versus str
+        warning: sys.stdin.buffer gives bytes; int(bytes_token) works, but string algorithms may need decode().
+      - term: memory
+        warning: Python lists store references to int objects and can use more memory than Java int[].
+  cpp_to_java:
+    title: Moving From C++ Input To Java Input
+    mindset_shift:
+      - From lightweight stream extraction to a deliberate fast scanner choice.
+      - From vector<int> to int[] when size is fixed.
+      - From cout flushing choices to StringBuilder batching.
+    habit_swaps:
+      - cpp: Add ios::sync_with_stdio(false).
+        java: Avoid Scanner for large input; use buffered parsing.
+      - cpp: Use cin >> s for token strings.
+        java: Use next() token parsing or StringTokenizer.
+      - cpp: Use '\n'.
+        java: Use StringBuilder for many lines.
+    false_friends:
+      - term: array growth
+        warning: Java int[] has fixed length; use ArrayList<Integer> only when growth is needed.
+      - term: parse overflow
+        warning: Integer.parseInt fails if the value is outside int range; use Long.parseLong.
+  java_to_cpp:
+    title: Moving From Java Input To C++ Input
+    mindset_shift:
+      - From scanner templates to standard stream extraction.
+      - From object-heavy parsing concerns to integer size and stream state.
+      - From arrays and collections to vectors and references.
+    habit_swaps:
+      - java: Use FastScanner.nextInt().
+        cpp: Use cin >> x after disabling sync.
+      - java: Use int[] nums = new int[n].
+        cpp: Use vector<int> nums(n).
+      - java: Use StringBuilder.
+        cpp: Use cout with '\n' for normal output.
+    false_friends:
+      - term: getline
+        warning: C++ getline after cin >> needs newline cleanup, just like Java nextLine after nextInt.
+      - term: default values
+        warning: vector<int>(n) initializes ints to 0; a raw local C++ array may not.
+
+interview_questions:
+  - question: When is Python sys.stdin.buffer.read().split() useful?
+    answer: It is useful for large token-only input because it reduces repeated input calls. The tradeoff is that it stores all tokens in memory.
+  - question: Why can C++ getline read an empty string after cin >> n?
+    answer: cin >> n reads the number but leaves the newline in the stream. getline then consumes that newline unless you ignore it first.
+  - question: Why is Java Scanner risky in coding tests?
+    answer: Scanner is convenient but relatively slow because of its parsing overhead. BufferedReader with StringTokenizer or a custom FastScanner is safer for large input.
+  - question: Should Java store a large numeric array in int[] or List<Integer>?
+    answer: Use int[] when the size is known and primitive storage is enough. It avoids boxing overhead and is faster and smaller.
+  - question: Does C++ cin >> nums[i] care whether the numbers are on one line?
+    answer: No. operator>> reads whitespace-separated tokens, so spaces and newlines both separate values.
+  - question: What is the main parsing question before coding?
+    answer: Decide whether the input is token-based or line-based. That choice determines whether you should split tokens or preserve whole lines.
+
+revision:
+  quick_summary:
+    - Parse into the exact shape your algorithm needs.
+    - Token-based input is ideal for most DSA numbers and words.
+    - Line-based input is needed when spaces inside a field matter.
+    - Python is concise, C++ streams are reliable, and Java needs a faster scanner for large input.
+  cheat_table:
+    title: Input Parsing Readiness Table
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["One int", "int(input())", "cin >> n", "nextInt()", "Java Scanner may be slow"]
+      - ["Many ints", "map/split or buffer", "cin loop", "FastScanner loop", "Full Python read uses memory"]
+      - ["Whole line", "input()", "getline", "readLine/nextLine", "Token readers leave newline"]
+      - ["Matrix", "list comprehension", "nested vector loops", "int[][] loops", "Rows may be separate objects"]
+      - ["Large output", "join strings if huge", "cout << '\\n'", "StringBuilder", "endl flushes in C++"]
+      - ["Large number", "int", "long long", "long", "C++/Java int overflow"]
+  flashcards:
+    - question: What does C++ operator>> read?
+      answer: One whitespace-separated token.
+    - question: What Java input tool is readable but often slow?
+      answer: Scanner.
+    - question: What Python split form handles repeated spaces naturally?
+      answer: split() with no argument.
+    - question: What should you call before C++ getline after cin >> n?
+      answer: cin.ignore(...) to consume the leftover newline.
+    - question: What Java output tool helps avoid repeated print overhead?
+      answer: StringBuilder.
+    - question: What is the fixed-size primitive array type in Java?
+      answer: int[].
+
+notes:
+  - For online judge style problems, parsing and output can decide whether an otherwise correct algorithm passes.
+  - In interviews with function signatures already provided, input parsing may not appear, but parsing knowledge still helps in take-home tests and live coding platforms.
+  - The first decision is not language syntax; it is whether the input should be treated as tokens or lines.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_input_template
+    - create_parsing_drills
+    - compare_token_and_line_reading
+    - explain_fast_scanner
+  context: >
+    This lesson supports interview and coding-test readiness. Generated explanations
+    should prioritize reliable parsing, newline traps, speed tradeoffs, and language
+    transition habits.

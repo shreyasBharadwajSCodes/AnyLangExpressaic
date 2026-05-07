@@ -1,0 +1,276 @@
+id: amortized_analysis
+title: Amortized Analysis
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - amortized_analysis
+  - complexity
+  - dynamic_arrays
+  - hashing
+  - interview
+goal: Help learners explain amortized costs for dynamic arrays, hash tables, stacks, queues, and common interview patterns across Python, C++, and Java.
+
+assets:
+  dynamic_array_growth:
+    type: image
+    path: assets/dsa/amortized_analysis/dynamic-array-growth.png
+    alt: Dynamic array capacity doubling and occasional expensive resize operations.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Amortized analysis spreads occasional expensive operations over many cheap
+        operations. A single append may sometimes resize an array and cost O(n), but
+        a long sequence of appends averages O(1) per append.
+  - compare_table:
+      title: Common Amortized Costs
+      columns:
+        - Operation
+        - Worst Single Operation
+        - Amortized Cost
+      rows:
+        - ["Dynamic array append", "O(n) resize", "O(1)"]
+        - ["Hash table insert", "O(n) rehash", "Average O(1)"]
+        - ["Stack push/pop sequence", "O(1) each", "O(1)"]
+        - ["Two-stack queue", "O(n) transfer", "O(1) amortized"]
+        - ["Monotonic stack", "Many pops in one step", "O(n) total"]
+  - language_lens:
+      language: python
+      title: Python Amortized Thinking
+      body: >
+        Python list append is amortized O(1), and dict/set operations are average
+        O(1). Interview explanations should mention occasional resizing but focus on
+        total work over a sequence.
+      default_instincts:
+        - Treat list.append as amortized O(1).
+        - Treat dict/set lookup as average O(1).
+        - Explain monotonic stack by total pushes and pops.
+        - Use deque when both ends need O(1) operations.
+      behind_the_scenes:
+        - Python lists over-allocate capacity.
+        - dict/set may resize and rehash.
+        - list.pop(0) is not amortized O(1); it shifts elements.
+      avoid:
+        - Saying every append is strictly O(1).
+        - Applying amortized reasoning to list front removal.
+        - Forgetting adversarial or collision cases for hashing.
+  - language_lens:
+      language: cpp
+      title: C++ Amortized Thinking
+      body: >
+        C++ vector push_back is amortized O(1) because capacity grows geometrically.
+        unordered_map operations are average O(1), with occasional rehashing.
+      default_instincts:
+        - Say vector push_back is amortized O(1).
+        - Use reserve when many insertions are expected and size is known.
+        - Explain monotonic stack as each element pushed and popped at most once.
+        - Mention unordered_map average-case behavior.
+      behind_the_scenes:
+        - vector reallocation copies or moves existing elements.
+        - Reallocation invalidates references, pointers, and iterators.
+        - unordered_map rehash invalidates iterators.
+      avoid:
+        - Holding vector element references across possible growth.
+        - Claiming unordered_map is worst-case O(1).
+        - Ignoring reserve as a practical constant-factor improvement.
+  - language_lens:
+      language: java
+      title: Java Amortized Thinking
+      body: >
+        Java ArrayList add is amortized O(1), and HashMap operations are average
+        O(1). ArrayDeque also uses resizable internal storage for efficient queue
+        and stack behavior.
+      default_instincts:
+        - Treat ArrayList.add as amortized O(1).
+        - Treat HashMap get/put as average O(1).
+        - Use ArrayDeque for amortized O(1) end operations.
+        - Use initial capacity when large insert counts are known.
+      behind_the_scenes:
+        - ArrayList growth copies references to a larger internal array.
+        - HashMap may resize and redistribute entries.
+        - Boxing costs still exist even when operation count is amortized O(1).
+      avoid:
+        - Using ArrayList.remove(0) as a queue.
+        - Ignoring HashMap collision and custom hashCode quality.
+        - Confusing average-case hashing with guaranteed worst-case time.
+
+examples:
+  - code_compare:
+      title: Dynamic Array Append
+      idea: Many appends average O(1) each.
+      python: |
+        arr = []
+        for x in nums:
+            arr.append(x)
+      cpp: |
+        vector<int> arr;
+        for (int x : nums) {
+            arr.push_back(x);
+        }
+      java: |
+        List<Integer> arr = new ArrayList<>();
+        for (int x : nums) {
+            arr.add(x);
+        }
+      note: >
+        Individual resize steps may be O(n), but total work over n appends is O(n).
+  - code_compare:
+      title: Monotonic Stack Total Work
+      idea: Each element is pushed and popped at most once.
+      python: |
+        st = []
+        for x in nums:
+            while st and st[-1] < x:
+                st.pop()
+            st.append(x)
+      cpp: |
+        vector<int> st;
+        for (int x : nums) {
+            while (!st.empty() && st.back() < x) st.pop_back();
+            st.push_back(x);
+        }
+      java: |
+        Deque<Integer> st = new ArrayDeque<>();
+        for (int x : nums) {
+            while (!st.isEmpty() && st.peek() < x) st.pop();
+            st.push(x);
+        }
+      note: >
+        The inner while can pop many elements once, but across the whole loop each
+        element pops at most once, so total is O(n).
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Amortized Costs To C++
+    mindset_shift:
+      - From list append to vector push_back.
+      - From hidden resizing to reallocation and invalidation.
+      - From dict average O(1) to unordered_map average O(1).
+    habit_swaps:
+      - python: list.append amortized O(1).
+        cpp: vector.push_back amortized O(1).
+      - python: No direct reference invalidation concern.
+        cpp: vector reallocation invalidates references and iterators.
+      - python: set/dict average O(1).
+        cpp: unordered_set/unordered_map average O(1).
+    false_friends:
+      - term: push_back
+        warning: Amortized O(1) does not mean references stay valid.
+      - term: unordered
+        warning: Average O(1) is not worst-case O(1).
+  cpp_to_python:
+    title: Moving From C++ Amortized Costs To Python
+    mindset_shift:
+      - From capacity and reserve to hidden over-allocation.
+      - From iterator invalidation to aliasing and hidden copies.
+      - From unordered_map to dict/set.
+    habit_swaps:
+      - cpp: vector reserve.
+        python: Usually rely on list growth.
+      - cpp: monotonic vector stack.
+        python: list as stack.
+      - cpp: unordered_map insert.
+        python: dict assignment.
+    false_friends:
+      - term: queue
+        warning: Python list.pop(0) is O(n), not amortized O(1).
+      - term: append
+        warning: Append is amortized O(1), not always strict O(1).
+  python_to_java:
+    title: Moving From Python Amortized Costs To Java
+    mindset_shift:
+      - From list append to ArrayList.add.
+      - From dict/set to HashMap/HashSet.
+      - From deque to ArrayDeque.
+    habit_swaps:
+      - python: list append.
+        java: ArrayList.add.
+      - python: deque append/popleft.
+        java: ArrayDeque offer/poll.
+      - python: dict insertion.
+        java: HashMap.put.
+    false_friends:
+      - term: remove front
+        warning: ArrayList.remove(0) is O(n), like Python list.pop(0).
+      - term: boxing
+        warning: Amortized operation count does not remove Integer boxing overhead.
+  java_to_python:
+    title: Moving From Java Amortized Costs To Python
+    mindset_shift:
+      - From ArrayList and HashMap names to list and dict.
+      - From initial capacity options to Python's hidden growth.
+      - From ArrayDeque to collections.deque.
+    habit_swaps:
+      - java: ArrayList.add.
+        python: list.append.
+      - java: HashMap.put.
+        python: dict assignment.
+      - java: ArrayDeque.poll.
+        python: deque.popleft.
+    false_friends:
+      - term: list front removal
+        warning: Python list front removal is O(n).
+      - term: hash average
+        warning: Python dict/set are average O(1), not sorted structures.
+
+interview_questions:
+  - question: What does amortized O(1) append mean?
+    answer: Some appends may be expensive due to resizing, but a sequence of n appends costs O(n) total.
+  - question: Why is monotonic stack O(n) despite a nested while?
+    answer: Each element is pushed once and popped at most once.
+  - question: Is hash table lookup guaranteed O(1)?
+    answer: It is average O(1), with possible worse cases due to collisions or rehashing.
+  - question: What C++ vector caveat comes with amortized push_back?
+    answer: Reallocation can invalidate references, pointers, and iterators.
+  - question: Why is front removal from dynamic arrays not amortized O(1)?
+    answer: It shifts remaining elements, costing O(n) per removal.
+
+revision:
+  quick_summary:
+    - Amortized analysis spreads rare expensive work over many operations.
+    - Dynamic array append is amortized O(1).
+    - Hash operations are average O(1), not guaranteed O(1).
+    - Monotonic stack/deque loops are often O(n) total.
+  cheat_table:
+    title: Amortized Revision
+    columns:
+      - Operation
+      - Python
+      - C++
+      - Java
+      - Cost
+    rows:
+      - ["Append", "list.append", "vector.push_back", "ArrayList.add", "Amortized O(1)"]
+      - ["Hash insert", "dict/set", "unordered_map/set", "HashMap/HashSet", "Average O(1)"]
+      - ["Queue front", "deque", "queue/deque", "ArrayDeque", "O(1)"]
+      - ["Dynamic front remove", "list.pop(0)", "vector erase begin", "ArrayList.remove(0)", "O(n)"]
+      - ["Monotonic stack", "list", "vector", "ArrayDeque", "O(n) total"]
+  flashcards:
+    - question: What does amortized mean?
+      answer: Average cost over a sequence of operations.
+    - question: What operation can make one vector push_back expensive?
+      answer: Reallocation.
+    - question: What operation can make one HashMap put expensive?
+      answer: Resize or rehash.
+    - question: Why is monotonic stack linear?
+      answer: Each element is removed at most once.
+
+notes:
+  - Amortized is not the same as average input case; it is about operation sequences.
+  - In interviews, say both the occasional worst single operation and the total sequence cost.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_amortized_quiz
+    - explain_dynamic_array_growth
+    - create_monotonic_stack_cost_drill
+    - compare_hash_table_costs
+  context: >
+    This lesson teaches amortized analysis for interviews across Python, C++, and
+    Java, focused on dynamic arrays, hash tables, queues, monotonic structures,
+    resizing, and invalidation caveats.

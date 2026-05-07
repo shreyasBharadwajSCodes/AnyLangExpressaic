@@ -1,0 +1,244 @@
+id: cpp_internal_mechanics
+title: C++ Internal Mechanics
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - cpp
+  - internals
+  - values
+  - references
+  - iterators
+  - stl
+  - interview
+goal: Help learners reason about C++ values, references, pointers, STL containers, allocation, iterator invalidation, copying, and numeric overflow in DSA interviews.
+
+assets:
+  cpp_value_reference_model:
+    type: image
+    path: assets/dsa/cpp_internal_mechanics/value-reference-model.png
+    alt: C++ vector values, references to elements, and reallocation invalidating old references.
+
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        C++ makes storage and copying visible. A variable often owns a value. Passing
+        by value copies; passing by reference aliases. STL containers have specific
+        memory layouts and invalidation rules that can affect correctness.
+  - compare_table:
+      title: C++ Mechanics Map
+      columns:
+        - Topic
+        - Interview Meaning
+        - Common Trap
+      rows:
+        - ["Value", "Object stored directly", "Accidental copies"]
+        - ["Reference", "Alias to existing object", "Dangling reference"]
+        - ["Pointer", "Address that may be null", "Null dereference"]
+        - ["vector", "Contiguous dynamic array", "Reallocation invalidates"]
+        - ["unordered_map", "Hash table", "operator[] inserts"]
+        - ["int", "Fixed-width integer", "Overflow"]
+  - language_lens:
+      language: cpp
+      title: How C++ Wants You To Think
+      body: >
+        Think about ownership, copies, references, lifetimes, and container guarantees.
+        This does not mean overengineering; it means making helper signatures and
+        container choices intentional.
+      default_instincts:
+        - Use vector for most ordered dynamic data.
+        - Pass large read-only containers as const references.
+        - Use long long for large sums and products.
+        - Use unordered_map for average O(1), map for sorted keys.
+      behind_the_scenes:
+        - "'vector<int> b = a' copies all elements."
+        - "'const vector<int>&' avoids copy and prevents mutation."
+        - "'unordered_map[key]' inserts a default value if absent."
+        - vector growth can invalidate references, pointers, and iterators.
+      avoid:
+        - Returning references to local variables.
+        - Holding vector element references across push_back.
+        - Using int when constraints imply overflow.
+  - language_lens:
+      language: python
+      title: How This Feels Coming From Python
+      body: >
+        C++ will not silently manage all object and lifetime decisions for you. The
+        same algorithm often needs explicit types, helper signatures, and overflow
+        checks.
+      default_instincts:
+        - Translate Python list to vector, not list.
+        - Translate Python dict to unordered_map or map based on ordering need.
+        - Watch copies when passing containers to helpers.
+      behind_the_scenes:
+        - C++ values can live on stack or heap depending on how they are created.
+        - References and pointers can become invalid.
+        - Integer overflow is a correctness bug.
+      avoid:
+        - Assuming assignment aliases like Python.
+        - Assuming all containers are reference-like.
+  - language_lens:
+      language: java
+      title: How This Feels Coming From Java
+      body: >
+        C++ has no automatic garbage collection in the same style, and containers
+        store values directly by default. You choose when to copy, reference, or own.
+      default_instincts:
+        - Replace Java primitive arrays with vector when dynamic size helps.
+        - Replace Java references with C++ references/pointers carefully.
+        - Use structs or pairs for small records.
+      behind_the_scenes:
+        - C++ templates are compile-time, unlike Java generics with type erasure.
+        - vector<int> stores ints directly, not boxed references.
+        - Destructors clean up owned resources for standard containers.
+      avoid:
+        - Expecting null-safe object references.
+        - Forgetting pointer null checks.
+
+examples:
+  - code_compare:
+      title: Avoid Copying A Vector
+      idea: Helper reads a vector without copying it.
+      python: |
+        def total(nums):
+            return sum(nums)
+      cpp: |
+        long long total(const vector<int>& nums) {
+            long long ans = 0;
+            for (int x : nums) ans += x;
+            return ans;
+        }
+      java: |
+        long total(int[] nums) {
+            long ans = 0;
+            for (int x : nums) ans += x;
+            return ans;
+        }
+      note: >
+        C++ const reference is the important performance and intent signal.
+  - code_compare:
+      title: Missing Key Behavior
+      idea: Count frequency.
+      python: |
+        freq[x] = freq.get(x, 0) + 1
+      cpp: |
+        unordered_map<int, int> freq;
+        freq[x]++;
+      java: |
+        freq.put(x, freq.getOrDefault(x, 0) + 1);
+      note: >
+        C++ operator[] inserts the key when absent, which is useful for counts but
+        dangerous for pure reads.
+  - code_compare:
+      title: Vector Reallocation Caveat
+      idea: Do not keep references across growth.
+      python: |
+        nums.append(10)
+      cpp: |
+        vector<int> nums = {1, 2};
+        int& first = nums[0];
+        nums.push_back(3); // first may now be invalid
+      java: |
+        List<Integer> nums = new ArrayList<>();
+        nums.add(1);
+      note: >
+        vector growth can move storage. Avoid storing element references when the
+        vector may grow.
+
+transitions:
+  cpp_to_python:
+    title: Moving From C++ Internals To Python
+    mindset_shift:
+      - From values and references to names bound to objects.
+      - From overflow and lifetimes to aliasing and hidden copies.
+      - From templates to dynamic typing.
+    habit_swaps:
+      - cpp: vector copy is explicit value copy.
+        python: "b = a aliases; use b = a.copy() to copy."
+      - cpp: long long for big sums.
+        python: int is arbitrary precision.
+      - cpp: lower-level memory control.
+        python: Count object overhead and slicing copies.
+    false_friends:
+      - term: reference
+        warning: Python references cannot dangle, but aliases still mutate the same object.
+      - term: list
+        warning: Python list is closer to vector than C++ list.
+  cpp_to_java:
+    title: Moving From C++ Internals To Java
+    mindset_shift:
+      - From value containers to primitive arrays and object references.
+      - From references/pointers to reference values managed by GC.
+      - From templates to generics and boxing.
+    habit_swaps:
+      - cpp: vector<int>.
+        java: int[] for fixed numeric data or ArrayList<Integer> for growable data.
+      - cpp: unordered_map<int,int>.
+        java: Map<Integer,Integer>.
+      - cpp: comparator returns bool.
+        java: Comparator returns negative, zero, or positive.
+    false_friends:
+      - term: generic primitive
+        warning: Java cannot use List<int>; use List<Integer>.
+      - term: object lifetime
+        warning: Java references do not dangle in normal managed code.
+
+interview_questions:
+  - question: When should a C++ helper take const vector<int>&?
+    answer: When it only reads a potentially large vector and should avoid copying it.
+  - question: What does unordered_map[key] do if key is absent?
+    answer: It inserts the key with a default-constructed value.
+  - question: What can vector push_back invalidate?
+    answer: References, pointers, and iterators to elements if reallocation happens.
+  - question: Why can int overflow be silent in C++?
+    answer: Fixed-width integer arithmetic can exceed its range, producing incorrect behavior without a Python-style big integer.
+  - question: Why is returning a local reference wrong?
+    answer: The local object is destroyed when the function returns, so the reference dangles.
+
+revision:
+  quick_summary:
+    - C++ values copy unless referenced or moved.
+    - References alias existing objects and must not dangle.
+    - vector is contiguous and can reallocate.
+    - unordered_map operator[] inserts missing keys.
+    - int overflow matters.
+  cheat_table:
+    title: C++ Mechanics Revision
+    columns:
+      - Idea
+      - C++ Rule
+      - Interview Trap
+    rows:
+      - ["Pass vector", "by const ref for read", "copy by value"]
+      - ["Dynamic array", "vector", "reallocation invalidates"]
+      - ["Hash read", "find/count", "operator[] inserts"]
+      - ["Large sum", "long long", "int overflow"]
+      - ["Pointer", "can be null", "dereference crash"]
+  flashcards:
+    - question: What is vector's memory layout?
+      answer: Contiguous element storage.
+    - question: What avoids copying a read-only vector?
+      answer: const vector<T>&.
+    - question: What C++ type is common for large sums?
+      answer: long long.
+    - question: What is a dangling reference?
+      answer: A reference to an object that no longer exists.
+
+notes:
+  - In C++, helper signatures are part of algorithm correctness and complexity.
+  - Know when a container operation changes addresses, iterators, or default values.
+
+tlm_hooks:
+  possible_tasks:
+    - explain_cpp_reference_lifetime
+    - generate_iterator_invalidation_quiz
+    - compare_cpp_to_python_java
+    - create_overflow_drills
+  context: >
+    This lesson teaches C++ internal mechanics for DSA interviews, focused on
+    values, references, pointers, STL containers, copying, invalidation, allocation,
+    and overflow.

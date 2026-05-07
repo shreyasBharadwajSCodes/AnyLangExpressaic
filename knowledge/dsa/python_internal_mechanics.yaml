@@ -1,0 +1,240 @@
+id: python_internal_mechanics
+title: Python Internal Mechanics
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - python
+  - internals
+  - references
+  - mutability
+  - hashing
+  - interview
+goal: Help learners reason about Python's reference model, mutability, hashing, lists, dicts, sets, iteration, and performance costs when solving DSA interview problems.
+
+assets:
+  python_reference_model:
+    type: image
+    path: assets/dsa/python_internal_mechanics/reference-model.png
+    alt: Python names pointing to objects, with lists storing references to element objects.
+
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        In Python, variables are names bound to objects. Assignment binds a name; it
+        does not copy the object. Containers usually store references to objects.
+        This is the source of Python's power and many interview bugs.
+  - compare_table:
+      title: Python Mechanics Map
+      columns:
+        - Topic
+        - Interview Meaning
+        - Common Trap
+      rows:
+        - ["Names", "References to objects", "Assuming assignment copies"]
+        - ["Lists", "Dynamic arrays of references", "Aliasing nested rows"]
+        - ["Dict/set", "Hash tables", "Using mutable keys"]
+        - ["Integers", "Immutable arbitrary-precision objects", "Ignoring speed/memory"]
+        - ["Strings", "Immutable sequences", "Repeated concatenation"]
+        - ["Iteration", "Object-level loop overhead", "Mutating while iterating"]
+  - language_lens:
+      language: python
+      title: How Python Wants You To Think
+      body: >
+        Think in objects and references. Mutating an object through one name is visible
+        through every alias to that object. Rebinding a name is local to that name.
+      default_instincts:
+        - Use lists, dicts, sets, tuples, deque, Counter, and heapq naturally.
+        - Use tuple keys for compound immutable state.
+        - Use list append/pop for stack behavior.
+        - Use comprehensions for clear construction.
+      behind_the_scenes:
+        - "'b = a' aliases the same object."
+        - "'a.copy()' and 'a[:]' make shallow list copies."
+        - "'dict' and 'set' require hashable keys/elements."
+        - "'list.pop(0)' shifts elements and costs O(n)."
+      avoid:
+        - Using mutable default arguments.
+        - Using list as a queue.
+        - Creating matrix rows with repeated inner-list references.
+  - language_lens:
+      language: cpp
+      title: How This Feels Coming From C++
+      body: >
+        Python removes explicit value/reference syntax. There is no ampersand in a
+        parameter list to announce sharing; object mutation is visible because names
+        refer to the same object.
+      default_instincts:
+        - Replace value-copy assumptions with alias checks.
+        - Use copy explicitly when independent mutation is needed.
+        - Trust built-ins for clarity, but count hidden work.
+      behind_the_scenes:
+        - Python list is closer to C++ vector of object references than C++ list.
+        - Python int will not overflow like C++ int.
+        - Python recursion is more limited than typical C++ recursion.
+      avoid:
+        - Translating every loop manually when a built-in is clearer.
+        - Expecting compile-time type errors.
+  - language_lens:
+      language: java
+      title: How This Feels Coming From Java
+      body: >
+        Python references may feel familiar, but Python has fewer type declarations
+        and more runtime flexibility. Equality, hashing, and mutability still matter.
+      default_instincts:
+        - Use dict where Java would use HashMap.
+        - Use list where Java might use int[] or ArrayList.
+        - Use tuple for simple compound keys.
+      behind_the_scenes:
+        - Python "is" checks identity; "==" checks equality.
+        - Python None is the null-like value.
+        - Python list of ints has more overhead than Java int[].
+      avoid:
+        - Treating Python "is" like Java equals.
+        - Assuming all container operations are cheap because syntax is short.
+
+examples:
+  - code_compare:
+      title: Assignment Aliases
+      idea: Assignment does not copy a list.
+      python: |
+        a = [1, 2]
+        b = a
+        b.append(3)
+        print(a)  # [1, 2, 3]
+      cpp: |
+        vector<int> a = {1, 2};
+        vector<int> b = a;
+        b.push_back(3);
+        // a is still {1, 2}
+      java: |
+        List<Integer> a = new ArrayList<>(List.of(1, 2));
+        List<Integer> b = a;
+        b.add(3);
+        // a also sees 3
+      note: >
+        Python assignment aliases like Java object references. C++ vector assignment
+        copies values.
+  - code_compare:
+      title: Safe Matrix Creation
+      idea: Create independent rows.
+      python: |
+        grid = [[0] * cols for _ in range(rows)]
+      cpp: |
+        vector<vector<int>> grid(rows, vector<int>(cols, 0));
+      java: |
+        int[][] grid = new int[rows][cols];
+      note: >
+        Python "[[0] * cols] * rows" aliases the same row.
+  - code_compare:
+      title: Hashable Compound Key
+      idea: Store a coordinate in a visited set.
+      python: |
+        seen = set()
+        seen.add((r, c))
+      cpp: |
+        set<pair<int, int>> seen;
+        seen.insert({r, c});
+      java: |
+        Set<String> seen = new HashSet<>();
+        seen.add(r + "," + c);
+      note: >
+        Python tuple is hashable if its elements are hashable. Python list is not.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Internals To C++
+    mindset_shift:
+      - From names bound to objects to values, references, pointers, and lifetimes.
+      - From hidden object memory to explicit storage choices.
+      - From no integer overflow to fixed-width numeric types.
+    habit_swaps:
+      - python: "b = a aliases a list."
+        cpp: "vector<int> b = a copies elements."
+      - python: tuple key in dict.
+        cpp: pair key works in map, but unordered_map needs custom hash.
+      - python: list append hides reallocation.
+        cpp: vector push_back may invalidate references.
+    false_friends:
+      - term: reference
+        warning: Python references do not have C++ lifetime and dangling-reference issues.
+      - term: list
+        warning: Python list is not C++ list.
+  python_to_java:
+    title: Moving From Python Internals To Java
+    mindset_shift:
+      - From dynamic names to typed variables.
+      - From one list type to primitive arrays and boxed collections.
+      - From tuple keys to objects, records, strings, or encoded keys.
+    habit_swaps:
+      - python: list of int.
+        java: int[] when fixed numeric data is enough.
+      - python: dict.get(k, d).
+        java: map.getOrDefault(k, d).
+      - python: "'x' == 'x' for strings."
+        java: Use equals for String content.
+    false_friends:
+      - term: identity
+        warning: Python "is" and Java "==" are identity-style checks for objects.
+      - term: integer
+        warning: Python int is arbitrary precision; Java int can overflow.
+
+interview_questions:
+  - question: What does Python assignment do?
+    answer: It binds a name to an object; it does not copy the object.
+  - question: Why is "nums2 = nums" dangerous before mutation?
+    answer: Both names point to the same list, so mutations through one are visible through the other.
+  - question: Why can tuple be a dict key but list cannot?
+    answer: Tuples are immutable and hashable when their elements are hashable; lists are mutable and unhashable.
+  - question: What is the cost of list.pop(0)?
+    answer: O(n), because elements shift left.
+  - question: Why can Python pass hidden tests despite integer overflow concerns elsewhere?
+    answer: Python int is arbitrary precision, though large integers can still cost time and memory.
+
+revision:
+  quick_summary:
+    - Python names refer to objects.
+    - Assignment aliases; explicit copy is needed for independence.
+    - Lists are dynamic arrays of references.
+    - Dict and set are hash tables requiring hashable keys.
+    - Syntax can hide copying and O(n) work.
+  cheat_table:
+    title: Python Mechanics Revision
+    columns:
+      - Idea
+      - Python Rule
+      - Interview Trap
+    rows:
+      - ["Assignment", "binds name", "aliases mutable object"]
+      - ["List copy", "copy/slice shallow", "nested rows shared"]
+      - ["Hash key", "must be hashable", "list key fails"]
+      - ["Queue", "deque", "list.pop(0) O(n)"]
+      - ["String", "immutable", "loop concat copies"]
+  flashcards:
+    - question: What does "is" check?
+      answer: Identity.
+    - question: What does "==" check?
+      answer: Equality.
+    - question: What Python type is natural for coordinate keys?
+      answer: tuple.
+    - question: What is the safe Python BFS queue?
+      answer: collections.deque.
+
+notes:
+  - Python interview confidence comes from knowing when concise syntax hides memory or time.
+  - Always ask whether your variable is a new object or another name for the same object.
+
+tlm_hooks:
+  possible_tasks:
+    - explain_python_reference_model
+    - generate_aliasing_drills
+    - compare_python_to_cpp_java
+    - create_hashability_quiz
+  context: >
+    This lesson teaches Python internal mechanics for DSA interviews, focused on
+    references, mutability, hashing, containers, iteration costs, and language
+    transitions.

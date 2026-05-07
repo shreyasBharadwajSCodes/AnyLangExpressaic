@@ -1,0 +1,342 @@
+id: print_debug_quickly
+title: Print And Debug Quickly
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - interview
+  - debugging
+  - quick_revision
+  - language_transition
+goal: Help learners inspect values, containers, nested structures, and custom objects quickly during interviews without confusing debugging output with algorithm logic.
+
+assets:
+  debug_output_map:
+    type: image
+    path: assets/dsa/print_debug_quickly/debug-output-map.png
+    alt: Examples of arrays, maps, sets, queues, and objects printed across Python, C++, and Java.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Fast debugging is an interview skill. The goal is not to flood the screen;
+        it is to check one assumption at the exact point where the algorithm can go
+        wrong. Print the state, verify the invariant, then remove or mentally ignore
+        the debug line before explaining final complexity.
+  - compare_table:
+      title: What Prints Easily
+      columns:
+        - Structure
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Array/list", "print(nums)", "loop or helper", "Arrays.toString(nums)"]
+        - ["2D array", "print(grid) or loop rows", "nested loops", "Arrays.deepToString(grid)"]
+        - ["Map", "print(freq)", "loop key-value pairs", "System.out.println(map)"]
+        - ["Set", "print(seen)", "loop values", "System.out.println(set)"]
+        - ["Pair", "print((a, b))", "cout << p.first << p.second", "Arrays.toString(pair) or custom class"]
+        - ["Object", "__repr__ helps", "operator<< or manual fields", "toString helps"]
+  - language_lens:
+      language: python
+      title: Python Debugging Instinct
+      body: >
+        Python prints most built-in structures directly, which makes state inspection
+        fast. Behind the scenes, printed containers use each element's repr, so custom
+        objects need __repr__ if you want useful output.
+      default_instincts:
+        - Use print(label, value) to avoid unlabeled output.
+        - Print slices or small prefixes for huge arrays.
+        - Print dict.items() or sorted(dict.items()) when order matters.
+        - Use repr-style output for strings when spaces or empty strings matter.
+      behind_the_scenes:
+        - dict preserves insertion order, but that is not sorted order.
+        - set output order should not be used as algorithm evidence.
+        - Printing a nested list shows references by value representation, but aliasing can still exist.
+      avoid:
+        - Trusting set print order.
+        - Printing inside O(n^2) loops unless the input is tiny.
+        - Forgetting to remove noisy debug output before final submission.
+  - language_lens:
+      language: cpp
+      title: C++ Debugging Instinct
+      body: >
+        C++ does not automatically know how to print STL containers. You usually
+        write quick loops or small debug helpers. Behind the scenes, references,
+        pointers, iterators, and copies can change what your debug line actually sees.
+      default_instincts:
+        - Use cerr for debug output so it is separate from answer output.
+        - Print vectors with a small helper or range loop.
+        - Print maps with structured bindings when available.
+        - Print pointer values only when address identity matters; otherwise print the pointed-to fields.
+      behind_the_scenes:
+        - cerr is unbuffered or less buffered than cout on many systems, useful for debugging but slower.
+        - A copied vector in a debug helper can hide mutation and waste time; pass const vector<T>&.
+        - unordered_map and unordered_set iteration order is not stable or sorted.
+        - A pointer print without dereferencing shows an address, not the node value.
+      avoid:
+        - Using endl for debug spam because it flushes.
+        - Dereferencing null pointers while debugging linked lists or trees.
+        - Assuming unordered_map prints in insertion order.
+  - language_lens:
+      language: java
+      title: Java Debugging Instinct
+      body: >
+        Java prints collections nicely but arrays need Arrays.toString or
+        Arrays.deepToString. Behind the scenes, primitive arrays, object arrays, and
+        collections have different toString behavior.
+      default_instincts:
+        - Use System.err.println for debug output.
+        - Use Arrays.toString for one-dimensional arrays.
+        - Use Arrays.deepToString for nested arrays.
+        - Override toString in small helper classes if objects appear in output.
+      behind_the_scenes:
+        - int[] toString prints a type-and-address-like identity string, not elements.
+        - ArrayList.toString prints elements because Collections implement useful toString.
+        - HashMap and HashSet output order is not sorted.
+        - Object toString defaults to class name plus hash-like identity text unless overridden.
+      avoid:
+        - Printing int[] directly.
+        - Depending on HashMap print order.
+        - Leaving System.out debug lines that corrupt required output.
+  - compare_table:
+      title: Interview Debugging Targets
+      columns:
+        - Pattern
+        - What To Print
+        - Why
+      rows:
+        - ["Two pointers", "left, right, nums[left], nums[right]", "Checks movement and boundary conditions"]
+        - ["Sliding window", "left, right, current count or sum", "Checks invariant after expand/shrink"]
+        - ["Binary search", "lo, mid, hi, condition(mid)", "Finds infinite-loop and off-by-one bugs"]
+        - ["DFS", "node, parent, visited size", "Checks revisits and recursion path"]
+        - ["DP", "state key and computed value", "Checks recurrence and memo hits"]
+
+examples:
+  - code_compare:
+      title: Print A One-Dimensional Array
+      idea: Inspect array contents quickly.
+      python: |
+        print("nums =", nums)
+      cpp: |
+        cerr << "nums = ";
+        for (int x : nums) cerr << x << ' ';
+        cerr << '\n';
+      java: |
+        System.err.println("nums = " + Arrays.toString(nums));
+      note: >
+        Java arrays need Arrays.toString. C++ containers need loops or helpers.
+        Python built-ins are already readable.
+  - code_compare:
+      title: Print A Frequency Map
+      idea: Check whether counts match the expected invariant.
+      python: |
+        print("freq =", freq)
+      cpp: |
+        for (auto& [key, val] : freq) {
+            cerr << key << ":" << val << " ";
+        }
+        cerr << '\n';
+      java: |
+        System.err.println("freq = " + freq);
+      note: >
+        Hash map order is not sorted in C++ or Java. Python dict preserves insertion
+        order, but interview logic should not depend on debug order.
+  - code_compare:
+      title: Print Binary Search State
+      idea: Catch off-by-one and stuck-loop mistakes.
+      python: |
+        print("lo mid hi =", lo, mid, hi)
+      cpp: |
+        cerr << "lo mid hi = " << lo << ' ' << mid << ' ' << hi << '\n';
+      java: |
+        System.err.println("lo mid hi = " + lo + " " + mid + " " + hi);
+      note: >
+        This is the highest-value debug print for binary search. If lo and hi stop
+        moving, the update rule is wrong.
+  - code_compare:
+      title: Common Java Array Mistake
+      idea: Avoid printing an array identity string.
+      python: |
+        print(nums)
+      cpp: |
+        for (int x : nums) cerr << x << ' ';
+      java: |
+        System.err.println(nums);                 // not useful
+        System.err.println(Arrays.toString(nums)); // useful
+      note: >
+        Java's direct array print shows identity-like text. Collections print more
+        naturally, but primitive arrays need Arrays helpers.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Debugging To C++
+    mindset_shift:
+      - From built-in readable output to explicit debug loops.
+      - From object references hidden by repr to visible pointers and references.
+      - From print convenience to separating debug output with cerr.
+    habit_swaps:
+      - python: print(nums) directly.
+        cpp: Write a loop or helper that takes const vector<T>&.
+      - python: Print a dict and inspect it.
+        cpp: Loop unordered_map entries and remember order is arbitrary.
+      - python: Print node and trust __repr__ when defined.
+        cpp: Print node->val after checking node is not null.
+    false_friends:
+      - term: object print
+        warning: C++ pointer output may show an address, not the contents you care about.
+      - term: order
+        warning: unordered_map debug order is not insertion order.
+  cpp_to_python:
+    title: Moving From C++ Debugging To Python
+    mindset_shift:
+      - From manual container printing to direct state snapshots.
+      - From pointer checks to None and aliasing checks.
+      - From type-level confidence to runtime shape confidence.
+    habit_swaps:
+      - cpp: Print each vector element manually.
+        python: print the list directly, or print nums[:10] for large data.
+      - cpp: Use cerr.
+        python: Use print, or print to sys.stderr if output must stay clean.
+      - cpp: Watch pointer addresses.
+        python: Watch whether two names alias the same list.
+    false_friends:
+      - term: sorted-looking output
+        warning: Python set output is not a sorted guarantee.
+      - term: copy
+        warning: Debugging one alias may mutate or display the same list as another name.
+  python_to_java:
+    title: Moving From Python Debugging To Java
+    mindset_shift:
+      - From automatic list display to choosing Arrays or collection output.
+      - From concise repr to explicit toString for custom objects.
+      - From flexible values to primitive versus boxed output behavior.
+    habit_swaps:
+      - python: print(nums).
+        java: Use Arrays.toString(nums) for int[].
+      - python: print(grid).
+        java: Use Arrays.deepToString(grid) for int[][].
+      - python: Print an object with __repr__.
+        java: Override toString or print fields manually.
+    false_friends:
+      - term: array print
+        warning: Java arrays do not print elements by default.
+      - term: map order
+        warning: HashMap output order is not reliable.
+  java_to_python:
+    title: Moving From Java Debugging To Python
+    mindset_shift:
+      - From helper methods to direct built-in display.
+      - From primitive arrays to reference-based lists.
+      - From null checks to None and truthiness checks.
+    habit_swaps:
+      - java: Arrays.toString(nums).
+        python: print(nums).
+      - java: System.err.println(map).
+        python: print(freq), or print(sorted(freq.items())) when order helps.
+      - java: Override toString.
+        python: Define __repr__ only when custom objects need readable output.
+    false_friends:
+      - term: truthiness
+        warning: In Python, empty containers are false, so debug conditions should not confuse empty with missing.
+      - term: identity
+        warning: Python is checks identity; == checks value behavior.
+  cpp_to_java:
+    title: Moving From C++ Debugging To Java
+    mindset_shift:
+      - From loops for every container to collection toString plus Arrays helpers.
+      - From pointers to object references and null checks.
+      - From cerr habit to System.err habit.
+    habit_swaps:
+      - cpp: Loop vector elements.
+        java: Use Arrays.toString for arrays and collection toString for Lists.
+      - cpp: Print pair.first and pair.second.
+        java: Print a small int[] with Arrays.toString or create a tiny class with toString.
+      - cpp: Check pointer before dereference.
+        java: Check object reference for null before field access.
+    false_friends:
+      - term: direct array output
+        warning: Java int[] direct output is not element output.
+      - term: object identity
+        warning: Default toString can look hash-like and is rarely useful for debugging fields.
+  java_to_cpp:
+    title: Moving From Java Debugging To C++
+    mindset_shift:
+      - From built-in collection display to explicit loops.
+      - From null references to null pointers and dereference risk.
+      - From garbage-collected object state to lifetime-aware state.
+    habit_swaps:
+      - java: System.err.println(list).
+        cpp: Loop through vector or write a debug helper.
+      - java: System.err.println(map).
+        cpp: Loop key-value entries with structured bindings.
+      - java: Print object fields through toString.
+        cpp: Print fields manually or overload operator<< when useful.
+    false_friends:
+      - term: null access
+        warning: C++ null pointer dereference can crash immediately.
+      - term: debug helper
+        warning: Passing containers by value into debug helpers can copy large data.
+
+interview_questions:
+  - question: Why should debug output often go to stderr?
+    answer: It keeps debug text separate from required answer output, which is especially useful in C++ and Java coding-test environments.
+  - question: Why does Java need Arrays.toString for int[]?
+    answer: Arrays do not override toString to show elements. Arrays.toString formats a one-dimensional array's contents.
+  - question: What should you print when binary search fails?
+    answer: Print lo, mid, hi, and the condition result. That reveals off-by-one and non-moving boundary bugs.
+  - question: Why is printing a C++ pointer often not enough?
+    answer: It usually prints an address. For linked lists or trees, you usually need node->val after checking the pointer is not null.
+  - question: Why can map debug output be misleading?
+    answer: Hash-based maps do not promise sorted order, so the displayed order should not be treated as algorithm behavior.
+
+revision:
+  quick_summary:
+    - Print one invariant, not the whole program.
+    - Python prints built-ins well.
+    - C++ needs loops or helpers for containers.
+    - Java collections print well, but arrays need Arrays helpers.
+  cheat_table:
+    title: Debug Print Cheat Table
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["Array", "print(nums)", "loop vector", "Arrays.toString(nums)"]
+      - ["Matrix", "loop rows", "nested loops", "Arrays.deepToString(grid)"]
+      - ["Map", "print(freq)", "loop entries", "System.err.println(map)"]
+      - ["Debug stream", "print(...)", "cerr << ...", "System.err.println(...)"]
+      - ["Custom object", "__repr__", "manual fields/operator<<", "toString"]
+  flashcards:
+    - question: What Java method prints int[] contents?
+      answer: Arrays.toString.
+    - question: What Java method prints int[][] contents?
+      answer: Arrays.deepToString.
+    - question: What C++ stream is commonly used for debug output?
+      answer: cerr.
+    - question: What Python output order should not be trusted as sorted?
+      answer: set output.
+    - question: What is the best binary search debug triple?
+      answer: lo, mid, hi.
+
+notes:
+  - Debug output is a temporary microscope; it should clarify the invariant and then get out of the way.
+  - Prefer labeled prints because unlabeled numbers are hard to interpret under interview pressure.
+  - For large inputs, print a small prefix or a single state transition.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_debug_templates
+    - create_bug_hunt_drills
+    - explain_language_specific_printing
+    - convert_to_revision_cards
+  context: >
+    This lesson teaches practical interview debugging across languages, with emphasis
+    on array printing, map order, pointer/reference caveats, and avoiding corrupted
+    output.

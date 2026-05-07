@@ -1,0 +1,282 @@
+id: edge_cases
+title: Error-Prone Edge Cases
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - edge_cases
+  - implementation
+  - correctness
+  - interviews
+  - testing
+goal: Help learners systematically identify and test edge cases in DSA interviews across Python, C++, and Java, including language-specific empty, null, overflow, indexing, and mutation traps.
+
+assets:
+  edge_case_checklist:
+    type: image
+    path: assets/dsa/edge_cases/edge-case-checklist.png
+    alt: Checklist of empty input, one element, duplicates, boundaries, overflow, and mutation edge cases.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Edge cases are inputs where a hidden assumption breaks. Good interviewers
+        expect you to test the boundaries of size, value, structure, ordering,
+        duplicates, missing data, and language behavior before claiming the solution
+        is complete.
+  - compare_table:
+      title: Universal Edge-Case Buckets
+      columns:
+        - Bucket
+        - Questions To Ask
+        - Examples
+      rows:
+        - ["Size", "empty, one, two, max?", "[], [x], n=1"]
+        - ["Values", "negative, zero, huge, duplicate?", "0, -1, INT_MAX"]
+        - ["Ordering", "sorted, reverse, all same?", "already sorted"]
+        - ["Structure", "null root, cycle, disconnected?", "empty tree"]
+        - ["Boundaries", "first/last index?", "target at ends"]
+        - ["Mutation", "input preserved?", "in-place problems"]
+  - language_lens:
+      language: python
+      title: Python Edge-Case Thinking
+      body: >
+        Python catches many bounds errors with exceptions, but negative indices,
+        truthiness, and aliasing can hide bugs instead of crashing immediately.
+      default_instincts:
+        - Test empty list/string before indexing.
+        - Check negative index behavior when pointers decrement.
+        - Distinguish None from 0, empty list, and empty string.
+        - Test nested-list initialization.
+      behind_the_scenes:
+        - nums[-1] is valid.
+        - Empty containers are falsy.
+        - Python int does not overflow, so huge values test algorithm not integer width.
+        - Slicing out of range is often allowed and may hide boundary bugs.
+      avoid:
+        - Using "if not x" when 0 or empty is a valid value with different meaning.
+        - Assuming an IndexError will catch all pointer mistakes.
+        - Forgetting recursion depth on chain-shaped inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Edge-Case Thinking
+      body: >
+        C++ may not protect you from invalid access, overflow, or dangling references.
+        Edge-case testing must include bounds, empty containers, null pointers, and
+        integer limits.
+      default_instincts:
+        - Check empty before front/back/top.
+        - Use long long for boundary arithmetic.
+        - Check null before pointer dereference.
+        - Avoid unsigned underflow in reverse loops.
+      behind_the_scenes:
+        - vector operator[] does not do bounds checking.
+        - int overflow can silently break answers.
+        - size_t underflows when decremented below zero.
+        - Accessing top/front on empty stack/queue is invalid.
+      avoid:
+        - Computing n - 1 when n can be 0 with unsigned types.
+        - Dereferencing fast->next before checking fast.
+        - Returning references to locals on edge returns.
+  - language_lens:
+      language: java
+      title: Java Edge-Case Thinking
+      body: >
+        Java throws on invalid indices and null dereferences, but you must still
+        design for null/empty, primitive overflow, arrays versus lists, and missing
+        map keys.
+      default_instincts:
+        - Check array length before indexing.
+        - Use long for large sums/products.
+        - Check null tree/list nodes.
+        - Use getOrDefault or containsKey for maps.
+      behind_the_scenes:
+        - nums[-1] throws immediately.
+        - int overflow wraps.
+        - HashMap.get returns null when absent.
+        - ArrayDeque.poll returns null on empty; pop throws.
+      avoid:
+        - Using == for String edge cases.
+        - Returning null when empty array/list is expected.
+        - Forgetting Integer.MAX_VALUE + 1 overflows.
+
+examples:
+  - code_compare:
+      title: Empty Input Guard
+      idea: Avoid first-element access on empty input.
+      python: |
+        if not nums:
+            return 0
+        best = nums[0]
+      cpp: |
+        if (nums.empty()) return 0;
+        int best = nums[0];
+      java: |
+        if (nums.length == 0) return 0;
+        int best = nums[0];
+      note: >
+        Use the problem's required return for empty input; 0 here is only an example.
+  - code_compare:
+      title: Safe Queue Pop
+      idea: Check before reading/removing.
+      python: |
+        if q:
+            node = q.popleft()
+      cpp: |
+        if (!q.empty()) {
+            int node = q.front();
+            q.pop();
+        }
+      java: |
+        if (!q.isEmpty()) {
+            int node = q.poll();
+        }
+      note: >
+        C++ front on empty is invalid. Java poll returns null for object queues but
+        unboxing null to int would fail.
+  - code_compare:
+      title: Pointer Or Node Null Check
+      idea: Avoid dereferencing missing nodes.
+      python: |
+        if node is None:
+            return 0
+      cpp: |
+        if (node == nullptr) return 0;
+      java: |
+        if (node == null) return 0;
+      note: >
+        Null-root tree cases are among the easiest to miss.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Edge Cases To C++
+    mindset_shift:
+      - From exceptions and negative indices to undefined invalid access.
+      - From arbitrary ints to overflow boundaries.
+      - From None checks to pointer checks.
+    habit_swaps:
+      - python: Test left < len(nums).
+        cpp: Also avoid negative/unsigned indexing.
+      - python: big ints work.
+        cpp: Use long long for boundary sums.
+      - python: q truthiness.
+        cpp: q.empty().
+    false_friends:
+      - term: negative index
+        warning: Python negative index is valid; C++ negative index is invalid.
+      - term: empty access
+        warning: C++ may not throw a clean exception.
+  cpp_to_python:
+    title: Moving From C++ Edge Cases To Python
+    mindset_shift:
+      - From invalid access crashes to silent negative-index behavior.
+      - From overflow tests to aliasing/truthiness tests.
+      - From pointer null to None.
+    habit_swaps:
+      - cpp: nullptr.
+        python: None.
+      - cpp: empty().
+        python: not container.
+      - cpp: long long boundaries.
+        python: still test huge values for algorithm assumptions.
+    false_friends:
+      - term: truthiness
+        warning: "if not value" groups None, 0, empty string, and empty list.
+      - term: slice
+        warning: Python slices can mask out-of-range boundaries.
+  python_to_java:
+    title: Moving From Python Edge Cases To Java
+    mindset_shift:
+      - From truthiness to explicit length/null checks.
+      - From arbitrary int to int/long boundaries.
+      - From flexible empty returns to exact expected types.
+    habit_swaps:
+      - python: if not nums.
+        java: if (nums.length == 0).
+      - python: node is None.
+        java: node == null.
+      - python: return [].
+        java: return new int[0] or new ArrayList<>() as expected.
+    false_friends:
+      - term: null
+        warning: Java null dereference throws NullPointerException.
+      - term: string equality
+        warning: Edge cases involving empty strings still need equals for content checks.
+  java_to_python:
+    title: Moving From Java Edge Cases To Python
+    mindset_shift:
+      - From explicit checks to Python truthiness with caution.
+      - From thrown index errors to negative-index traps.
+      - From fixed return types to flexible but judge-sensitive values.
+    habit_swaps:
+      - java: nums.length == 0.
+        python: not nums.
+      - java: s.length() == 0.
+        python: not s.
+      - java: null.
+        python: None.
+    false_friends:
+      - term: negative index
+        warning: Python nums[-1] works and may hide a bug.
+      - term: empty answer
+        warning: Return the exact empty shape expected by the platform.
+
+interview_questions:
+  - question: What edge case should be checked before accessing nums[0]?
+    answer: Empty input.
+  - question: Why are all-equal values important?
+    answer: They test duplicate handling, comparator equal cases, and pointer movement.
+  - question: Why test max integer values in C++ and Java?
+    answer: They reveal overflow in sums, products, midpoints, and sentinel arithmetic.
+  - question: Why is n=1 important?
+    answer: It tests base cases, pointer crossing, and loops that assume at least two elements.
+  - question: Why should edge-case return shape match exactly?
+    answer: Judges compare expected type and structure, not just intent.
+
+revision:
+  quick_summary:
+    - Edge cases test hidden assumptions.
+    - Always test empty, one element, duplicates, boundaries, and extremes.
+    - Python negative indices can hide bugs.
+    - C++ invalid access and overflow can silently break.
+    - Java null, array bounds, and int overflow matter.
+  cheat_table:
+    title: Edge Case Revision
+    columns:
+      - Category
+      - Examples
+      - Why
+    rows:
+      - ["Size", "empty, one, two", "Base cases"]
+      - ["Values", "zero, negative, huge", "Arithmetic assumptions"]
+      - ["Duplicates", "all same, repeated target", "Equality/count logic"]
+      - ["Ordering", "sorted, reverse", "Pointer/search assumptions"]
+      - ["Structure", "null root, disconnected graph", "Traversal assumptions"]
+  flashcards:
+    - question: What Python index trap is common?
+      answer: Negative indices are valid.
+    - question: What C++ empty-container access is unsafe?
+      answer: front, back, top, or operator[] without checks.
+    - question: What Java value signals absent object reference?
+      answer: null.
+    - question: What numeric edge matters in C++ and Java?
+      answer: Integer overflow.
+
+notes:
+  - Say edge cases out loud before coding; it improves both design and interviewer trust.
+  - Edge cases are not separate from the algorithm; they reveal the invariant.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_edge_case_checklist
+    - create_language_edge_drills
+    - analyze_solution_edge_cases
+    - produce_test_inputs
+  context: >
+    This lesson teaches edge-case thinking across Python, C++, and Java for DSA
+    interviews, focused on empty inputs, boundaries, duplicates, nulls, overflow,
+    indexing, mutation, and exact return shapes.

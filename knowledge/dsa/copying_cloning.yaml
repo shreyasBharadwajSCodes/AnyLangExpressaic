@@ -1,0 +1,288 @@
+id: copying_cloning
+title: Copying And Cloning
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - copying
+  - cloning
+  - shallow_copy
+  - deep_copy
+  - references
+  - interview
+goal: Help learners copy arrays, lists, matrices, maps, objects, and graph-like structures correctly across Python, C++, and Java while understanding shallow versus deep copy.
+
+assets:
+  shallow_deep_copy:
+    type: image
+    path: assets/dsa/copying_cloning/shallow-vs-deep-copy.png
+    alt: Shallow copy sharing nested objects versus deep copy duplicating nested objects.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Copying creates another container or object. A shallow copy duplicates the
+        outer container but shares nested objects. A deep copy recursively duplicates
+        nested objects. Interviews usually need shallow snapshots for paths and
+        careful deep cloning for graphs or linked structures.
+  - compare_table:
+      title: Copy Map
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["List/vector copy", "a.copy() or a[:]", "vector<int> b = a", "arr.clone or new ArrayList<>(list)"]
+        - ["Matrix copy", "row copies", "vector copy", "copy each row"]
+        - ["Map copy", "dict.copy()", "unordered_map copy", "new HashMap<>(map)"]
+        - ["Path snapshot", "path.copy()", "ans.push_back(path)", "new ArrayList<>(path)"]
+        - ["Deep graph clone", "DFS/BFS with map", "DFS/BFS with pointer map", "DFS/BFS with HashMap"]
+  - language_lens:
+      language: python
+      title: Python Copy Thinking
+      body: >
+        Python assignment aliases. copy methods usually make shallow copies. This is
+        perfect for path snapshots of primitive values, but not enough for nested
+        mutable structures.
+      default_instincts:
+        - Use list.copy or slicing for 1D list snapshots.
+        - Use row.copy in a comprehension for matrix copies.
+        - Use dict.copy for shallow map copies.
+        - Use copy.deepcopy only when recursive duplication is truly needed.
+      behind_the_scenes:
+        - "'b = a' is not a copy."
+        - "'a.copy()' is shallow."
+        - "'grid.copy()' shares row lists."
+        - deepcopy can be expensive and may be overkill in interviews.
+      avoid:
+        - Using shallow copy for nested mutable data.
+        - Deepcopying in every recursive branch without considering cost.
+        - Forgetting to copy path before storing it.
+  - language_lens:
+      language: cpp
+      title: C++ Copy Thinking
+      body: >
+        C++ value containers copy their elements when assigned or passed by value.
+        That is convenient for snapshots but dangerous for performance when accidental.
+      default_instincts:
+        - Use vector<int> b = a for an intentional copy.
+        - Pass const vector<int>& to avoid copy.
+        - Copy path into answers naturally with push_back.
+        - Use unordered_map<Node*, Node*> for graph cloning.
+      behind_the_scenes:
+        - vector copy copies elements.
+        - vector<vector<int>> copy copies row vectors and their ints.
+        - Copying pointers copies addresses, not pointed-to objects.
+        - Custom classes may need correct copy behavior if they own resources.
+      avoid:
+        - Passing containers by value accidentally.
+        - Thinking pointer copy clones the object.
+        - Returning references to copied local objects.
+  - language_lens:
+      language: java
+      title: Java Copy Thinking
+      body: >
+        Java copies references unless you explicitly create a new array, collection,
+        or object. Constructors like new ArrayList<>(list) are shallow copies.
+      default_instincts:
+        - Use arr.clone or Arrays.copyOf for primitive arrays.
+        - Use new ArrayList<>(list) for list snapshots.
+        - Copy each row for 2D arrays.
+        - Use HashMap<Old, New> for graph cloning.
+      behind_the_scenes:
+        - int[] clone copies primitive values.
+        - Object[] clone copies references.
+        - new HashMap<>(map) is shallow.
+        - clone() is not the default interview tool for custom objects.
+      avoid:
+        - Assigning int[] b = a when a copy is needed.
+        - Copying only the outer 2D array.
+        - Expecting collection copy constructors to deep-copy elements.
+
+examples:
+  - code_compare:
+      title: 1D Copy
+      idea: Create an independent numeric sequence.
+      python: |
+        b = a.copy()
+      cpp: |
+        vector<int> b = a;
+      java: |
+        int[] b = a.clone();
+      note: >
+        These are independent for primitive/int values. For nested objects, think
+        shallow versus deep.
+  - code_compare:
+      title: Matrix Copy
+      idea: Copy rows independently.
+      python: |
+        copied = [row.copy() for row in grid]
+      cpp: |
+        vector<vector<int>> copied = grid;
+      java: |
+        int[][] copied = new int[grid.length][];
+        for (int i = 0; i < grid.length; i++) {
+            copied[i] = grid[i].clone();
+        }
+      note: >
+        Java grid.clone() only copies the outer array. Copy each row.
+  - code_compare:
+      title: Graph Clone Shape
+      idea: Map old nodes to new nodes.
+      python: |
+        old_to_new = {}
+      cpp: |
+        unordered_map<Node*, Node*> oldToNew;
+      java: |
+        Map<Node, Node> oldToNew = new HashMap<>();
+      note: >
+        Deep graph cloning needs identity mapping so cycles do not recurse forever.
+  - code_compare:
+      title: Store Path Snapshot
+      idea: Avoid later mutation changing stored answer.
+      python: |
+        ans.append(path.copy())
+      cpp: |
+        ans.push_back(path);
+      java: |
+        ans.add(new ArrayList<>(path));
+      note: >
+        This is shallow but enough when path elements are immutable or primitive-like.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Copying To C++
+    mindset_shift:
+      - From assignment aliases to value-copy assignment.
+      - From shallow copy methods to container value semantics.
+      - From deepcopy convenience to explicit clone algorithms for pointer graphs.
+    habit_swaps:
+      - python: "b = a aliases."
+        cpp: "vector<int> b = a copies."
+      - python: path.copy for snapshot.
+        cpp: ans.push_back(path).
+      - python: deepcopy graph.
+        cpp: DFS/BFS with map from old pointer to new pointer.
+    false_friends:
+      - term: pointer copy
+        warning: Copying a pointer copies an address, not the object.
+      - term: pass by value
+        warning: C++ accidental copies can change complexity.
+  cpp_to_python:
+    title: Moving From C++ Copying To Python
+    mindset_shift:
+      - From value-copy containers to aliasing assignment.
+      - From explicit references to hidden shared objects.
+      - From pointer clone maps to object-to-object dicts.
+    habit_swaps:
+      - cpp: vector copy with assignment.
+        python: Use copy or slicing, not plain assignment.
+      - cpp: vector<vector<int>> copy.
+        python: Use row.copy for matrix copy.
+      - cpp: unordered_map<Node*, Node*>.
+        python: dict from old node object to new node object.
+    false_friends:
+      - term: shallow copy
+        warning: Python shallow copies share nested objects.
+      - term: default argument
+        warning: Shared mutable defaults are not copies.
+  python_to_java:
+    title: Moving From Python Copying To Java
+    mindset_shift:
+      - From list.copy to array clone or collection constructors.
+      - From tuple/list snapshots to object/array copies.
+      - From deepcopy to explicit clone traversal.
+    habit_swaps:
+      - python: a.copy().
+        java: arr.clone or new ArrayList<>(list).
+      - python: "[row.copy() for row in grid]"
+        java: Loop and clone each row.
+      - python: dict old_to_new.
+        java: HashMap<Node, Node>.
+    false_friends:
+      - term: clone
+        warning: Object clone is not the usual interview solution for custom classes.
+      - term: 2D array
+        warning: grid.clone only copies the outer array.
+  java_to_python:
+    title: Moving From Java Copying To Python
+    mindset_shift:
+      - From explicit constructors/clones to copy methods and comprehensions.
+      - From primitive arrays to reference-list copies.
+      - From shallow collection constructors to shallow Python copies.
+    habit_swaps:
+      - java: arr.clone.
+        python: a.copy or a[:].
+      - java: new ArrayList<>(path).
+        python: path.copy().
+      - java: copy each row.
+        python: row.copy for each row.
+    false_friends:
+      - term: assignment
+        warning: Python assignment aliases like Java object reference assignment.
+      - term: list of lists
+        warning: Copying the outer list still shares inner lists.
+
+interview_questions:
+  - question: What is a shallow copy?
+    answer: A copy of the outer container that still shares nested objects.
+  - question: What is a deep copy?
+    answer: A copy that recursively duplicates nested objects or graph structure.
+  - question: Why does Java need row-by-row matrix copying?
+    answer: int[][] is an array of row arrays, so cloning the outer array shares rows.
+  - question: Why does graph cloning need a map from old to new nodes?
+    answer: To preserve shared structure and avoid infinite recursion on cycles.
+  - question: Why can C++ copying be both useful and dangerous?
+    answer: Value copies make snapshots easy but accidental copies can add O(n) time and space.
+
+revision:
+  quick_summary:
+    - Assignment and copy are different.
+    - Shallow copy duplicates the outer container only.
+    - Deep clone is needed for graphs and nested mutable objects.
+    - Python and Java assignment alias mutable objects.
+    - C++ value containers copy by assignment.
+  cheat_table:
+    title: Copying Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["1D numeric copy", "a.copy()", "vector b = a", "a.clone()"]
+      - ["Matrix copy", "row.copy each row", "copy vector", "clone each row"]
+      - ["Path snapshot", "path.copy()", "push_back(path)", "new ArrayList<>(path)"]
+      - ["Map copy", "dict.copy()", "map copy", "new HashMap<>(map)"]
+      - ["Graph clone", "old_to_new dict", "old-to-new pointer map", "HashMap old-to-new"]
+  flashcards:
+    - question: Is Python "b = a" a copy?
+      answer: No.
+    - question: Is Java "int[] b = a" a copy?
+      answer: No.
+    - question: Is C++ "vector<int> b = a" a copy?
+      answer: Yes.
+    - question: What does Java grid.clone copy?
+      answer: Only the outer array.
+    - question: What copy is usually needed for backtracking path answers?
+      answer: A shallow snapshot of the path.
+
+notes:
+  - Copy only as deeply as the problem requires.
+  - In interviews, copying mistakes usually show up in backtracking, matrix mutation, and graph cloning.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_copying_quiz
+    - explain_shallow_vs_deep_copy
+    - create_graph_clone_drill
+    - compare_copy_syntax
+  context: >
+    This lesson teaches copying and cloning across Python, C++, and Java for DSA
+    interviews, focused on assignment, shallow copies, deep copies, matrix rows,
+    path snapshots, and graph cloning.

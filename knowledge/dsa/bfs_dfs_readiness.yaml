@@ -1,0 +1,324 @@
+id: bfs_dfs_readiness
+title: BFS And DFS Readiness
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - bfs
+  - dfs
+  - graphs
+  - trees
+  - traversal
+  - interview
+goal: Help learners choose and implement BFS or DFS across Python, C++, and Java with correct visited handling, queue/stack choices, recursion caveats, and graph representation.
+
+assets:
+  traversal_frontier:
+    type: image
+    path: assets/dsa/bfs_dfs/traversal-frontier.png
+    alt: BFS frontier expanding level by level and DFS path going deep before backtracking.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        BFS and DFS are traversal strategies. BFS explores by distance or level using
+        a queue. DFS explores deeply using recursion or a stack. The interview skill
+        is choosing the traversal that matches the question and marking visited at
+        the right time.
+  - compare_table:
+      title: BFS Versus DFS
+      columns:
+        - Need
+        - Prefer
+        - Why
+      rows:
+        - ["Shortest path in unweighted graph", "BFS", "First time reached is shortest"]
+        - ["Connected components", "Either", "Need visit all reachable nodes"]
+        - ["Cycle detection", "DFS or BFS", "Depends on directed/undirected state"]
+        - ["Tree height/diameter", "DFS", "Natural recursion"]
+        - ["Level order", "BFS", "Queue preserves levels"]
+        - ["Backtracking paths", "DFS", "Path state and undo"]
+  - language_lens:
+      language: python
+      title: Python Traversal Thinking
+      body: >
+        Python makes traversal concise with lists, dicts, sets, and deque. Recursion
+        is pleasant but recursion depth can fail on deep graphs or chains.
+      default_instincts:
+        - Use deque for BFS.
+        - Use set for visited when nodes are arbitrary.
+        - Use list of lists for 0..n-1 adjacency.
+        - Consider iterative DFS for deep graphs.
+      behind_the_scenes:
+        - Python recursion depth is limited.
+        - set membership is average O(1).
+        - deque.popleft is O(1), list.pop(0) is O(n).
+      avoid:
+        - Using list as a BFS queue.
+        - Marking visited too late and enqueuing duplicates.
+        - Sharing path lists accidentally without backtracking or copying.
+  - language_lens:
+      language: cpp
+      title: C++ Traversal Thinking
+      body: >
+        C++ traversal is fast and explicit. Use vector<vector<int>> for indexed
+        graphs, queue for BFS, and recursion or stack for DFS. Watch recursion depth
+        and pointer null checks in trees.
+      default_instincts:
+        - Use vector<vector<int>> adj(n).
+        - Use vector<int> visited(n) or vector<bool> carefully.
+        - Use queue<int> for BFS.
+        - Use recursive DFS for trees and moderate graph depth.
+      behind_the_scenes:
+        - queue pop returns void; read front first.
+        - Deep recursion can stack overflow.
+        - Passing adjacency by value copies the graph; use const reference.
+      avoid:
+        - Copying adjacency into helpers.
+        - Forgetting parent checks in undirected cycle detection.
+        - Dereferencing null tree pointers.
+  - language_lens:
+      language: java
+      title: Java Traversal Thinking
+      body: >
+        Java traversal usually uses List<List<Integer>>, boolean[], and ArrayDeque.
+        Recursion is clean but can overflow the call stack on deep inputs.
+      default_instincts:
+        - Use ArrayList lists for adjacency.
+        - Use boolean[] visited for 0..n-1 nodes.
+        - Use Deque<Integer> q = new ArrayDeque<>() for BFS.
+        - Use iterative traversal when depth can be very large.
+      behind_the_scenes:
+        - Deque<Integer> boxes node ids.
+        - poll returns null if empty, but loops usually check isEmpty first.
+        - Java recursive calls can stack overflow.
+      avoid:
+        - Using Stack instead of ArrayDeque.
+        - Forgetting to initialize each adjacency list.
+        - Using == for object node identity when value equality is intended.
+
+examples:
+  - code_compare:
+      title: BFS On Adjacency List
+      idea: Visit all nodes reachable from start.
+      python: |
+        from collections import deque
+
+        q = deque([start])
+        seen = {start}
+        while q:
+            node = q.popleft()
+            for nei in adj[node]:
+                if nei not in seen:
+                    seen.add(nei)
+                    q.append(nei)
+      cpp: |
+        queue<int> q;
+        vector<int> seen(n, 0);
+        q.push(start);
+        seen[start] = 1;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            for (int nei : adj[node]) {
+                if (!seen[nei]) {
+                    seen[nei] = 1;
+                    q.push(nei);
+                }
+            }
+        }
+      java: |
+        Deque<Integer> q = new ArrayDeque<>();
+        boolean[] seen = new boolean[n];
+        q.offer(start);
+        seen[start] = true;
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            for (int nei : adj.get(node)) {
+                if (!seen[nei]) {
+                    seen[nei] = true;
+                    q.offer(nei);
+                }
+            }
+        }
+      note: >
+        Mark visited when adding to the queue to avoid duplicate enqueues.
+  - code_compare:
+      title: DFS Recursive
+      idea: Traverse a component deeply.
+      python: |
+        def dfs(node):
+            seen.add(node)
+            for nei in adj[node]:
+                if nei not in seen:
+                    dfs(nei)
+      cpp: |
+        void dfs(int node, const vector<vector<int>>& adj, vector<int>& seen) {
+            seen[node] = 1;
+            for (int nei : adj[node]) {
+                if (!seen[nei]) dfs(nei, adj, seen);
+            }
+        }
+      java: |
+        private void dfs(int node, List<List<Integer>> adj, boolean[] seen) {
+            seen[node] = true;
+            for (int nei : adj.get(node)) {
+                if (!seen[nei]) dfs(nei, adj, seen);
+            }
+        }
+      note: >
+        Recursive DFS is simple, but deep graphs may need iterative DFS.
+  - code_compare:
+      title: Matrix BFS Directions
+      idea: Explore grid neighbors.
+      python: |
+        dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        for dr, dc in dirs:
+            nr, nc = r + dr, c + dc
+      cpp: |
+        vector<pair<int, int>> dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        for (auto [dr, dc] : dirs) {
+            int nr = r + dr, nc = c + dc;
+        }
+      java: |
+        int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        for (int[] d : dirs) {
+            int nr = r + d[0], nc = c + d[1];
+        }
+      note: >
+        Check bounds before reading grid[nr][nc].
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Traversal To C++
+    mindset_shift:
+      - From set/dict flexibility to indexed vectors and explicit types.
+      - From deque pop returning values to queue front then pop.
+      - From recursion limit to stack overflow awareness.
+    habit_swaps:
+      - python: q.popleft().
+        cpp: int node = q.front(); q.pop().
+      - python: seen = set().
+        cpp: vector<int> seen(n).
+      - python: adj as dict/list.
+        cpp: vector<vector<int>> adj.
+    false_friends:
+      - term: helper parameter
+        warning: Pass adjacency by const reference, not by value.
+      - term: pop
+        warning: C++ queue pop does not return the element.
+  cpp_to_python:
+    title: Moving From C++ Traversal To Python
+    mindset_shift:
+      - From vector adjacency to lists/dicts.
+      - From explicit empty checks to truthiness.
+      - From value/reference concerns to aliasing and recursion depth.
+    habit_swaps:
+      - cpp: vector<int> seen.
+        python: list of booleans or set depending on node labels.
+      - cpp: queue<int>.
+        python: deque.
+      - cpp: recursive DFS.
+        python: Recursive DFS is clear but depth-limited.
+    false_friends:
+      - term: list queue
+        warning: Python list.pop(0) is O(n).
+      - term: path copy
+        warning: Passing path lists around can share mutation.
+  python_to_java:
+    title: Moving From Python Traversal To Java
+    mindset_shift:
+      - From flexible containers to typed lists and arrays.
+      - From set of arbitrary nodes to boolean[] when nodes are 0..n-1.
+      - From deque to ArrayDeque.
+    habit_swaps:
+      - python: adj[node].
+        java: adj.get(node).
+      - python: node in seen.
+        java: seen[node] for boolean[].
+      - python: q.append/q.popleft.
+        java: q.offer/q.poll.
+    false_friends:
+      - term: initialization
+        warning: Each Java adjacency list must be initialized before adding edges.
+      - term: recursion
+        warning: Java recursion can overflow for deep graphs.
+  java_to_python:
+    title: Moving From Java Traversal To Python
+    mindset_shift:
+      - From List<List<Integer>> to list of lists or dict.
+      - From boolean[] to list/set.
+      - From method calls to direct iteration.
+    habit_swaps:
+      - java: adj.get(node).
+        python: adj[node].
+      - java: q.offer/q.poll.
+        python: q.append/q.popleft.
+      - java: boolean[] seen.
+        python: seen = [False] * n or set().
+    false_friends:
+      - term: bounds
+        warning: Python negative grid indices are valid, so bounds checks must be explicit.
+      - term: recursion limit
+        warning: Python recursion depth is lower than many graph sizes.
+
+interview_questions:
+  - question: When should BFS be preferred over DFS?
+    answer: When the problem asks for shortest path in an unweighted graph or level order.
+  - question: When should visited be marked in BFS?
+    answer: Usually when enqueuing, so the same node is not enqueued many times.
+  - question: Why can recursive DFS fail on a long chain?
+    answer: It can exceed the language call stack or recursion limit.
+  - question: What is the common C++ BFS pop mistake?
+    answer: Calling pop and expecting it to return the front value.
+  - question: What Java container is usually preferred for BFS queues?
+    answer: ArrayDeque through the Deque interface.
+
+revision:
+  quick_summary:
+    - BFS uses a queue and explores by level.
+    - DFS uses recursion or a stack and explores deeply.
+    - Mark visited deliberately.
+    - Use iterative traversal when recursion depth is risky.
+  cheat_table:
+    title: BFS DFS Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["BFS queue", "deque", "queue", "ArrayDeque", "Mark on enqueue"]
+      - ["DFS recursion", "def dfs", "helper with refs", "private helper", "Depth risk"]
+      - ["Visited indexed", "list bool", "vector<int/bool>", "boolean[]", "0..n-1 nodes"]
+      - ["Visited arbitrary", "set", "unordered_set", "HashSet", "Hash/equality"]
+      - ["Grid dirs", "tuple list", "pair vector", "int[][]", "Bounds first"]
+  flashcards:
+    - question: Which traversal gives shortest path in unweighted graphs?
+      answer: BFS.
+    - question: What should Python use for BFS queue?
+      answer: collections.deque.
+    - question: Does C++ queue.pop return a value?
+      answer: No.
+    - question: What is the Java BFS queue default?
+      answer: ArrayDeque.
+
+notes:
+  - Traversal bugs are usually visited timing, bad bounds, or recursion depth.
+  - For graph questions, first define node representation and adjacency shape.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_traversal_drills
+    - compare_bfs_dfs_choice
+    - create_graph_representation_quiz
+    - explain_visited_timing
+  context: >
+    This lesson teaches BFS and DFS readiness across Python, C++, and Java with
+    focus on traversal choice, visited handling, queue/stack mechanics, recursion
+    limits, and graph/grid representation.

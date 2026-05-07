@@ -1,0 +1,329 @@
+id: sliding_window
+title: Sliding Window
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - sliding_window
+  - arrays
+  - strings
+  - hashmap
+  - interview
+goal: Help learners solve fixed and variable sliding-window problems across Python, C++, and Java by maintaining a clear window invariant and updating counts safely.
+
+assets:
+  window_invariant:
+    type: image
+    path: assets/dsa/sliding_window/window-invariant.png
+    alt: Window with left and right boundaries expanding and shrinking over an array.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Sliding window keeps a contiguous range [left, right] and updates its state
+        as the range expands or shrinks. It works when the problem asks about
+        contiguous subarrays or substrings and the state can be updated incrementally.
+  - compare_table:
+      title: Fixed Versus Variable Window
+      columns:
+        - Type
+        - Signal
+        - Main Invariant
+      rows:
+        - ["Fixed", "Exactly k length", "Window size equals k"]
+        - ["Variable", "Longest/shortest satisfying condition", "Window remains valid after shrinking"]
+        - ["Counting chars", "Substring constraints", "Frequency map matches rule"]
+        - ["Monotonic", "Max/min in every window", "Deque stores useful candidates"]
+  - language_lens:
+      language: python
+      title: Python Window Thinking
+      body: >
+        Python makes window code compact with dict, Counter, defaultdict, and deque.
+        The danger is hiding O(n) work inside each step, such as slicing or repeated
+        full-window scans.
+      default_instincts:
+        - Use left and right indices.
+        - Use dict or Counter for character counts.
+        - Use deque for max/min window candidates.
+        - Use while invalid to shrink variable windows.
+      behind_the_scenes:
+        - s[left:right + 1] creates a new substring.
+        - dict.get avoids KeyError for counts.
+        - Removing zero-count keys can simplify distinct-count logic.
+      avoid:
+        - Recomputing sum(window) inside the loop.
+        - Slicing every window.
+        - Forgetting to remove the outgoing element.
+  - language_lens:
+      language: cpp
+      title: C++ Window Thinking
+      body: >
+        C++ window code is explicit and fast. Use arrays for small fixed alphabets,
+        unordered_map for general keys, and long long for sums that may overflow.
+      default_instincts:
+        - Use vector<int> count(26) for lowercase letters.
+        - Use unordered_map for arbitrary values.
+        - Use long long for running sums.
+        - Use deque<int> for monotonic queues.
+      behind_the_scenes:
+        - unordered_map operator[] inserts missing keys.
+        - vector<int> counts are zero-initialized when sized.
+        - char indexing needs careful offset such as c - 'a'.
+      avoid:
+        - Using int sum when constraints are large.
+        - Forgetting to shrink in a while loop for variable windows.
+        - Letting zero counts inflate distinct key logic.
+  - language_lens:
+      language: java
+      title: Java Window Thinking
+      body: >
+        Java window code often uses int[] for character counts and HashMap for
+        arbitrary keys. Primitive arrays keep window state fast; maps require careful
+        getOrDefault and zero-removal logic.
+      default_instincts:
+        - Use int[] count = new int[26] for lowercase letters.
+        - Use Map<Integer,Integer> or Map<Character,Integer> for general counts.
+        - Use long for running sums.
+        - Use ArrayDeque<Integer> for monotonic windows.
+      behind_the_scenes:
+        - String.charAt returns char; subtract 'a' for lowercase index.
+        - HashMap get can return null.
+        - Deque<Integer> boxes indices.
+      avoid:
+        - Using substring repeatedly for window state.
+        - Forgetting to decrement/remap outgoing counts.
+        - Using int for large sums.
+
+examples:
+  - code_compare:
+      title: Fixed Window Maximum Sum
+      idea: Maintain sum of exactly k elements.
+      python: |
+        cur = sum(nums[:k])
+        best = cur
+        for right in range(k, len(nums)):
+            cur += nums[right] - nums[right - k]
+            best = max(best, cur)
+      cpp: |
+        long long cur = 0;
+        for (int i = 0; i < k; i++) cur += nums[i];
+        long long best = cur;
+        for (int right = k; right < nums.size(); right++) {
+            cur += nums[right] - nums[right - k];
+            best = max(best, cur);
+        }
+      java: |
+        long cur = 0;
+        for (int i = 0; i < k; i++) cur += nums[i];
+        long best = cur;
+        for (int right = k; right < nums.length; right++) {
+            cur += nums[right] - nums[right - k];
+            best = Math.max(best, cur);
+        }
+      note: >
+        The incoming element is right; the outgoing element is right - k.
+  - code_compare:
+      title: Longest Substring Without Repeating Characters
+      idea: Shrink until the window has no duplicate.
+      python: |
+        seen = set()
+        left = best = 0
+        for right, ch in enumerate(s):
+            while ch in seen:
+                seen.remove(s[left])
+                left += 1
+            seen.add(ch)
+            best = max(best, right - left + 1)
+      cpp: |
+        vector<int> seen(256, 0);
+        int left = 0, best = 0;
+        for (int right = 0; right < s.size(); right++) {
+            while (seen[(unsigned char)s[right]]) {
+                seen[(unsigned char)s[left++]] = 0;
+            }
+            seen[(unsigned char)s[right]] = 1;
+            best = max(best, right - left + 1);
+        }
+      java: |
+        Set<Character> seen = new HashSet<>();
+        int left = 0, best = 0;
+        for (int right = 0; right < s.length(); right++) {
+            char ch = s.charAt(right);
+            while (seen.contains(ch)) {
+                seen.remove(s.charAt(left++));
+            }
+            seen.add(ch);
+            best = Math.max(best, right - left + 1);
+        }
+      note: >
+        This version is easy to reason about. An index map version can jump left
+        faster but must use max(left, lastSeen + 1).
+  - code_compare:
+      title: Minimum Length With Sum At Least Target
+      idea: Expand right, then shrink while valid.
+      python: |
+        left = cur = 0
+        best = float("inf")
+        for right, x in enumerate(nums):
+            cur += x
+            while cur >= target:
+                best = min(best, right - left + 1)
+                cur -= nums[left]
+                left += 1
+      cpp: |
+        int left = 0, best = INT_MAX;
+        long long cur = 0;
+        for (int right = 0; right < nums.size(); right++) {
+            cur += nums[right];
+            while (cur >= target) {
+                best = min(best, right - left + 1);
+                cur -= nums[left++];
+            }
+        }
+      java: |
+        int left = 0, best = Integer.MAX_VALUE;
+        long cur = 0;
+        for (int right = 0; right < nums.length; right++) {
+            cur += nums[right];
+            while (cur >= target) {
+                best = Math.min(best, right - left + 1);
+                cur -= nums[left++];
+            }
+        }
+      note: >
+        This positive-number window relies on sum decreasing when left moves. With
+        negative numbers, use prefix sums and other techniques.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Sliding Windows To C++
+    mindset_shift:
+      - From dict/set convenience to explicit arrays/maps.
+      - From arbitrary int to long long for sums.
+      - From slicing temptation to index-only state.
+    habit_swaps:
+      - python: "cur = sum(nums[:k])"
+        cpp: Initialize with a loop and long long.
+      - python: ch in seen.
+        cpp: Use vector<int> for small alphabets or unordered_set.
+      - python: dict.get.
+        cpp: Use find/count or operator[] when insertion is intended.
+    false_friends:
+      - term: substring
+        warning: Rebuilding substrings changes complexity.
+      - term: char index
+        warning: C++ char may be signed; cast when indexing 256 arrays.
+  cpp_to_python:
+    title: Moving From C++ Sliding Windows To Python
+    mindset_shift:
+      - From arrays and maps to concise dict/set/deque.
+      - From overflow checks to avoiding hidden O(n) operations.
+      - From explicit types to invariant clarity.
+    habit_swaps:
+      - cpp: vector<int> count(26).
+        python: Use list of 26 counts or dict/Counter.
+      - cpp: long long sum.
+        python: int is safe but still update incrementally.
+      - cpp: while invalid.
+        python: Same structure; do not replace with repeated slicing.
+    false_friends:
+      - term: slice
+        warning: Python window slices allocate new objects.
+      - term: set removal
+        warning: remove raises if absent; discard is safer when absence is possible.
+  python_to_java:
+    title: Moving From Python Sliding Windows To Java
+    mindset_shift:
+      - From flexible containers to primitive count arrays when possible.
+      - From direct string indexing to charAt.
+      - From Python int to long for sums.
+    habit_swaps:
+      - python: s[right].
+        java: s.charAt(right).
+      - python: freq.get(ch, 0).
+        java: map.getOrDefault(ch, 0).
+      - python: deque.
+        java: ArrayDeque.
+    false_friends:
+      - term: substring
+        warning: Java substring creates strings and should not represent every window.
+      - term: char counts
+        warning: int[26] only works for known lowercase English letters.
+  java_to_python:
+    title: Moving From Java Sliding Windows To Python
+    mindset_shift:
+      - From methods and arrays to direct indexing and dict/set tools.
+      - From long sums to Python int.
+      - From explicit isEmpty to truthiness.
+    habit_swaps:
+      - java: s.charAt(i).
+        python: s[i].
+      - java: count[ch - 'a'].
+        python: count[ord(ch) - ord('a')] or dict.
+      - java: Math.max.
+        python: max.
+    false_friends:
+      - term: Unicode
+        warning: Character assumptions differ; confirm alphabet constraints before using fixed-size arrays.
+      - term: removal
+        warning: Python dict zero counts remain unless deleted.
+
+interview_questions:
+  - question: What is the sliding-window invariant?
+    answer: The condition that remains true for the current [left, right] range after each expansion and shrink.
+  - question: When does the classic sum-shrinking window fail?
+    answer: When negative numbers exist, because moving left may not decrease the sum predictably.
+  - question: Why avoid slicing each window?
+    answer: It copies data and can turn an O(n) solution into O(nk) or worse.
+  - question: Why use a while loop to shrink variable windows?
+    answer: One right expansion may require multiple left moves to restore validity.
+  - question: What is the outgoing element in a fixed window of size k?
+    answer: The element at index right - k when adding nums[right].
+
+revision:
+  quick_summary:
+    - Sliding window is for contiguous ranges.
+    - Fixed windows maintain exact size.
+    - Variable windows expand right and shrink left until valid.
+    - Keep state incremental; do not rescan the window.
+  cheat_table:
+    title: Sliding Window Revision
+    columns:
+      - Problem Signal
+      - Window Type
+      - State
+      - Caveat
+    rows:
+      - ["Exactly k", "Fixed", "sum/count/deque", "Remove outgoing"]
+      - ["Longest valid", "Variable", "counts/set", "Shrink while invalid"]
+      - ["Shortest valid", "Variable", "sum/count", "Shrink while valid"]
+      - ["Max per window", "Monotonic deque", "indices", "Remove stale front"]
+      - ["Negative numbers", "Usually not simple sum window", "prefix/map", "Check assumptions"]
+  flashcards:
+    - question: What does the right pointer usually do?
+      answer: Expands the window.
+    - question: What does the left pointer usually do?
+      answer: Shrinks or restores validity.
+    - question: Why store indices in a monotonic deque?
+      answer: To remove values that leave the window.
+    - question: What Java type should hold large window sums?
+      answer: long.
+
+notes:
+  - Name the invariant before coding.
+  - If state cannot be updated when one element enters/leaves, sliding window may not fit.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_sliding_window_drills
+    - explain_window_invariant
+    - compare_fixed_variable_window
+    - create_language_transition_quiz
+  context: >
+    This lesson teaches sliding-window interview patterns across Python, C++, and
+    Java with attention to invariants, fixed versus variable windows, count maps,
+    monotonic deques, and hidden copy/performance traps.

@@ -1,0 +1,394 @@
+id: common_builtins_cheat_sheet
+title: Common Built-ins Cheat Sheet
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - interview
+  - builtins
+  - standard_library
+  - quick_revision
+  - language_transition
+goal: Help learners choose the right built-in methods and standard-library tools for common DSA interview moves in Python, C++, and Java.
+
+assets:
+  builtin_family_map:
+    type: image
+    path: assets/dsa/common_builtins/builtin-family-map.png
+    alt: Common interview operations mapped to Python built-ins, C++ STL, and Java utilities.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Built-ins are interview leverage. They reduce boilerplate, remove avoidable
+        bugs, and let the interviewer see the algorithm. The caveat is that each
+        language's library has different defaults around mutation, ordering, equality,
+        hashing, overflow, and comparator contracts.
+  - compare_table:
+      title: Most Common Interview Moves
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Length", "len(x)", "x.size()", "a.length, s.length(), or list.size()"]
+        - ["Sort array/list", "nums.sort() or sorted(nums)", "sort(v.begin(), v.end())", "Arrays.sort(a) or list.sort(cmp)"]
+        - ["Reverse", "nums.reverse(), reversed(x), or x[::-1]", "reverse(begin, end)", "Collections.reverse(list) or manual array swap"]
+        - ["Min/max", "min(x), max(x)", "*min_element, *max_element", "manual loop, or Arrays.stream(a).min().getAsInt() for non-empty int[]"]
+        - ["Frequency", "Counter", "unordered_map", "HashMap"]
+        - ["Queue", "collections.deque", "queue/deque", "ArrayDeque"]
+        - ["Heap", "heapq", "priority_queue", "PriorityQueue"]
+        - ["Binary search", "bisect", "lower_bound", "Arrays.binarySearch or custom"]
+  - language_lens:
+      language: python
+      title: Python Built-in Instinct
+      body: >
+        Python's built-ins are expressive and often interview-friendly. Behind the
+        scenes, many operations allocate new lists or iterators, so know whether a
+        call mutates in place or returns a new object.
+      default_instincts:
+        - Use len, enumerate, zip, sorted, min, max, sum, any, and all directly.
+        - Use Counter, defaultdict, deque, and heapq from standard modules.
+        - Use key functions for custom sorting.
+        - Use bisect for sorted-list insertion points.
+      behind_the_scenes:
+        - list.sort mutates and returns None; sorted returns a new list.
+        - reversed returns an iterator for many sequences; slicing creates a new list or string.
+        - heapq is a min-heap over a normal list, so the list must be treated as heap-structured after heap operations.
+        - Counter stores zero or negative counts unless you delete or normalize them.
+      avoid:
+        - Writing manual loops when a built-in clearly expresses the same idea.
+        - Forgetting that sort key functions are computed for comparison behavior, not pairwise comparator callbacks.
+        - Using list as a queue with pop(0).
+  - language_lens:
+      language: cpp
+      title: C++ STL Instinct
+      body: >
+        C++ STL gives high-performance algorithms and containers, but calls usually
+        require iterator ranges. Behind the scenes, algorithms may mutate ranges,
+        invalidate assumptions about ordering, or depend on strict comparator rules.
+      default_instincts:
+        - Use sort, reverse, lower_bound, upper_bound, min_element, and max_element.
+        - Use unordered_map and unordered_set for average O(1) lookup.
+        - Use deque, queue, stack, and priority_queue for access patterns.
+        - Use long long and accumulate with 0LL when sums may overflow int.
+      behind_the_scenes:
+        - sort mutates the range in place and requires random-access iterators.
+        - lower_bound requires the range to already be sorted according to the same comparator.
+        - priority_queue is a max-heap by default.
+        - accumulate's result type comes from the initial value, so accumulate(v.begin(), v.end(), 0) can overflow int.
+      avoid:
+        - Calling lower_bound on an unsorted vector.
+        - Using map when unordered_map is enough.
+        - Writing comparators that return true for equal elements.
+        - Forgetting begin/end ranges are half-open.
+  - language_lens:
+      language: java
+      title: Java Utility Instinct
+      body: >
+        Java splits utilities across Arrays, Collections, Math, and collection classes.
+        Behind the scenes, primitive arrays and generic collections behave differently:
+        arrays are compact and fast; generic collections hold object references and
+        use boxed types for primitives.
+      default_instincts:
+        - Use Arrays.sort for arrays and list.sort or Collections.sort for lists.
+        - Use HashMap, HashSet, ArrayDeque, and PriorityQueue for common patterns.
+        - Use Math.min and Math.max in simple loops.
+        - Use StringBuilder for repeated string construction.
+      behind_the_scenes:
+        - Arrays.binarySearch returns a negative insertion encoding when not found, not the insertion index directly.
+        - PriorityQueue is a min-heap by default.
+        - List<Integer> boxes ints; int[] avoids boxing.
+        - HashMap with custom key objects needs equals and hashCode.
+      avoid:
+        - Using == for String value comparison.
+        - Using Stack instead of ArrayDeque for stack behavior.
+        - Sorting int[] with a custom comparator; primitive arrays do not accept Comparator, so use Integer[] or List<int[]> when a comparator is required.
+        - Assuming HashMap iteration order is insertion order.
+  - compare_table:
+      title: Mutation And Return Behavior
+      columns:
+        - Operation
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Sort in place", "nums.sort()", "sort(v.begin(), v.end())", "Arrays.sort(a), list.sort(cmp)"]
+        - ["Sorted copy", "sorted(nums)", "copy then sort", "a.clone() then Arrays.sort, or new ArrayList<>(list) then sort"]
+        - ["Reverse in place", "nums.reverse()", "reverse(begin, end)", "Collections.reverse(list); arrays need manual swap"]
+        - ["Heap push", "heappush(heap, x)", "pq.push(x)", "pq.offer(x)"]
+        - ["Heap pop", "heappop(heap)", "pq.top(); pq.pop()", "pq.poll()"]
+
+examples:
+  - code_compare:
+      title: Sort By Custom Rule
+      idea: Sort pairs by first ascending, then second descending.
+      python: |
+        pairs.sort(key=lambda p: (p[0], -p[1]))
+      cpp: |
+        sort(pairs.begin(), pairs.end(), [](const auto& a, const auto& b) {
+            if (a.first != b.first) return a.first < b.first;
+            return a.second > b.second;
+        });
+      java: |
+        pairs.sort((a, b) -> {
+            if (a[0] != b[0]) return Integer.compare(a[0], b[0]);
+            return Integer.compare(b[1], a[1]);
+        });
+      note: >
+        This Java version assumes pairs is a List<int[]> or similar object list.
+        An int[][] is an array, not a List, so use Arrays.sort(pairs, cmp)
+        for that shape. C++ and Java comparators must be consistent.
+  - code_compare:
+      title: Frequency Count
+      idea: Count values in an array.
+      python: |
+        from collections import Counter
+
+        freq = Counter(nums)
+      cpp: |
+        unordered_map<int, int> freq;
+        for (int x : nums) freq[x]++;
+      java: |
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : nums) {
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+      note: >
+        Python Counter is compact. C++ operator[] inserts a default value. Java needs
+        getOrDefault or merge.
+  - code_compare:
+      title: Min Heap
+      idea: Always remove the smallest value.
+      python: |
+        import heapq
+
+        heapq.heapify(nums)
+        smallest = heapq.heappop(nums)
+      cpp: |
+        priority_queue<int, vector<int>, greater<int>> pq;
+        for (int x : nums) pq.push(x);
+        int smallest = pq.top();
+        pq.pop();
+      java: |
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int x : nums) pq.offer(x);
+        int smallest = pq.poll();
+      note: >
+        Python heapq and Java PriorityQueue are min-heaps by default. C++
+        priority_queue is a max-heap by default.
+  - code_compare:
+      title: Lower Bound
+      idea: Find the first index where value is at least target.
+      python: |
+        from bisect import bisect_left
+
+        i = bisect_left(nums, target)
+      cpp: |
+        int i = lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+      java: |
+        int lo = 0, hi = nums.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] < target) lo = mid + 1;
+            else hi = mid;
+        }
+        int i = lo;
+      note: >
+        Python and C++ have direct lower-bound helpers. Java's Arrays.binarySearch
+        is useful for exact search, but its negative not-found result must be decoded;
+        a custom lower_bound is often clearer.
+  - code_compare:
+      title: Sum Without Overflow Surprise
+      idea: Sum many integers safely.
+      python: |
+        total = sum(nums)
+      cpp: |
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+      java: |
+        long total = 0;
+        for (int x : nums) total += x;
+      note: >
+        C++ accumulate with 0 uses int accumulation. Use 0LL to make the running
+        sum long long.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Built-ins To C++ STL
+    mindset_shift:
+      - From function names over objects to algorithms over iterator ranges.
+      - From min-heap default to max-heap default for priority_queue.
+      - From automatic big integers to explicit long long.
+    habit_swaps:
+      - python: sorted(nums).
+        cpp: Copy the vector first if you need the original, then sort the copy.
+      - python: bisect_left(nums, x).
+        cpp: lower_bound(nums.begin(), nums.end(), x), only on sorted ranges.
+      - python: sum(nums).
+        cpp: accumulate(nums.begin(), nums.end(), 0LL) for large sums.
+    false_friends:
+      - term: heap
+        warning: Python heapq is min-heap, C++ priority_queue is max-heap by default.
+      - term: sort comparator
+        warning: C++ comparators must define a strict weak ordering.
+  cpp_to_python:
+    title: Moving From C++ STL To Python Built-ins
+    mindset_shift:
+      - From iterator ranges to direct iterable operations.
+      - From in-place algorithm default to choosing mutating or copying calls.
+      - From explicit numeric types to object and memory awareness.
+    habit_swaps:
+      - cpp: sort(v.begin(), v.end()).
+        python: Use nums.sort() for in-place or sorted(nums) for a copy.
+      - cpp: unordered_map count loop.
+        python: Use Counter when frequency is the whole job.
+      - cpp: priority_queue for top values.
+        python: Use heapq and remember it operates on a list.
+    false_friends:
+      - term: sort return
+        warning: Python list.sort() returns None, not the sorted list.
+      - term: reversed
+        warning: reversed(nums) returns an iterator; list(reversed(nums)) creates a list.
+  python_to_java:
+    title: Moving From Python Built-ins To Java Utilities
+    mindset_shift:
+      - From one built-in namespace to Arrays, Collections, Math, and specific classes.
+      - From dynamic lists to primitive arrays or boxed collections.
+      - From key functions to comparators.
+    habit_swaps:
+      - python: nums.sort(key=...).
+        java: Use list.sort((a, b) -> ...) or Arrays.sort on object arrays.
+      - python: Counter(nums).
+        java: Use HashMap with getOrDefault or merge.
+      - python: "''.join(parts)"
+        java: Use StringBuilder for repeated construction.
+    false_friends:
+      - term: comparator subtraction
+        warning: return a - b can overflow; use Integer.compare(a, b).
+      - term: primitive array comparator
+        warning: int[] cannot be sorted with a Comparator directly.
+  java_to_python:
+    title: Moving From Java Utilities To Python Built-ins
+    mindset_shift:
+      - From class-specific helpers to direct functions over iterables.
+      - From boxing awareness to mutability and allocation awareness.
+      - From Comparator logic to key functions.
+    habit_swaps:
+      - java: Arrays.sort(nums).
+        python: nums.sort() or sorted(nums).
+      - java: map.getOrDefault(x, 0) + 1.
+        python: freq[x] = freq.get(x, 0) + 1 or Counter.
+      - java: PriorityQueue.
+        python: heapq over a list.
+    false_friends:
+      - term: contains
+        warning: Python x in list is O(n); use a set for repeated membership checks.
+      - term: string builder
+        warning: "Python often uses list append plus ''.join for many string pieces."
+  cpp_to_java:
+    title: Moving From C++ STL To Java Utilities
+    mindset_shift:
+      - From iterator algorithms to class utility methods.
+      - From value containers to primitive arrays or object-reference collections.
+      - From max-heap default to min-heap default.
+    habit_swaps:
+      - cpp: sort(v.begin(), v.end()).
+        java: Arrays.sort(a) for arrays or list.sort(cmp) for lists.
+      - cpp: unordered_set.
+        java: HashSet.
+      - cpp: priority_queue<int>.
+        java: PriorityQueue<Integer>, noting the default min-heap.
+    false_friends:
+      - term: binary search result
+        warning: Arrays.binarySearch encodes insertion point as a negative value when not found.
+      - term: pair
+        warning: Java has no standard pair in core java.util for interviews; use int[], Map.Entry, or a tiny class.
+  java_to_cpp:
+    title: Moving From Java Utilities To C++ STL
+    mindset_shift:
+      - From utility classes to free algorithms and iterator ranges.
+      - From references and GC to values, references, and invalidation.
+      - From min-heap PriorityQueue to max-heap priority_queue.
+    habit_swaps:
+      - java: Collections.sort(list).
+        cpp: sort(v.begin(), v.end()).
+      - java: HashMap getOrDefault.
+        cpp: unordered_map find/count or operator[] depending on insertion intent.
+      - java: StringBuilder.
+        cpp: string accumulation or ostringstream when formatting is needed.
+    false_friends:
+      - term: priority queue order
+        warning: C++ priority_queue returns the largest element by default.
+      - term: references
+        warning: vector growth can invalidate references and iterators.
+
+interview_questions:
+  - question: What is the difference between Python sorted(nums) and nums.sort()?
+    answer: sorted(nums) returns a new sorted list. nums.sort() mutates the list in place and returns None.
+  - question: Why can C++ accumulate overflow even when assigned to long long?
+    answer: The accumulation type is based on the initial value. Use 0LL so the running sum is long long.
+  - question: What is Java's default heap behavior?
+    answer: PriorityQueue is a min-heap by default.
+  - question: What is C++ priority_queue's default heap behavior?
+    answer: It is a max-heap by default.
+  - question: Why is Java comparator subtraction risky?
+    answer: a - b can overflow and break ordering. Use Integer.compare or Long.compare.
+  - question: When is lower_bound valid in C++?
+    answer: Only when the searched range is sorted according to the same ordering.
+
+revision:
+  quick_summary:
+    - Built-ins should make the algorithm clearer.
+    - Know whether an operation mutates or returns a copy.
+    - Hash maps differ most on missing keys and custom equality.
+    - Heaps have different defaults across languages.
+    - Comparator correctness matters in C++ and Java.
+  cheat_table:
+    title: Built-ins Interview Cheat Table
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["Sort", "sort/sorted", "sort", "Arrays.sort/list.sort", "Mutation differs"]
+      - ["Frequency", "Counter", "unordered_map", "HashMap", "Missing keys differ"]
+      - ["Set lookup", "set", "unordered_set", "HashSet", "Hash order not sorted"]
+      - ["Min heap", "heapq", "priority_queue with greater", "PriorityQueue", "C++ default is max"]
+      - ["Lower bound", "bisect_left", "lower_bound", "custom loop", "Requires sorted input"]
+      - ["Large sum", "sum", "accumulate with 0LL", "long loop", "C++ initial type matters"]
+  flashcards:
+    - question: What does Python list.sort return?
+      answer: None.
+    - question: What is C++ priority_queue by default?
+      answer: Max-heap.
+    - question: What is Java PriorityQueue by default?
+      answer: Min-heap.
+    - question: Which Java comparison helper avoids subtraction overflow?
+      answer: Integer.compare or Long.compare.
+    - question: Which Python module provides bisect_left?
+      answer: bisect.
+    - question: What C++ initial value should be used for long long accumulate?
+      answer: 0LL.
+
+notes:
+  - A built-in is not a shortcut if you cannot explain its complexity and mutation behavior.
+  - During language switching, check heap direction, sort behavior, missing-key behavior, and integer overflow first.
+  - Use standard tools confidently, but do not let library calls hide the invariant.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_builtin_quiz
+    - create_language_transition_table
+    - explain_library_caveats
+    - produce_interview_cheat_sheet
+  context: >
+    This lesson is a compact but deep built-ins reference for DSA interviews across
+    Python, C++, and Java. Focus on practical operations, hidden caveats, and
+    language-natural choices.

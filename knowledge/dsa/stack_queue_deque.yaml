@@ -1,0 +1,368 @@
+id: stack_queue_deque
+title: Stack Queue Deque Readiness
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - stack
+  - queue
+  - deque
+  - containers
+  - interview
+  - language_transition
+goal: Help learners choose and use stack, queue, and deque structures correctly across Python, C++, and Java for traversal, monotonic patterns, simulation, and parsing problems.
+
+assets:
+  access_patterns:
+    type: image
+    path: assets/dsa/stack_queue_deque/access-patterns.png
+    alt: Stack, queue, and deque access patterns showing push and pop directions.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Stack, queue, and deque are about access order. Stack is last-in first-out.
+        Queue is first-in first-out. Deque supports both ends. Interviews use them
+        for DFS, BFS, parentheses, monotonic stacks, sliding windows, topological
+        order, and simulations.
+  - compare_table:
+      title: First Mapping
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Stack", "list append/pop", "vector or stack", "ArrayDeque push/pop"]
+        - ["Queue", "collections.deque", "queue or deque", "ArrayDeque offer/poll"]
+        - ["Deque", "collections.deque", "deque", "ArrayDeque"]
+        - ["Peek stack", "st[-1]", "st.top() or v.back()", "dq.peek()"]
+        - ["Pop front", "dq.popleft()", "q.front(); q.pop()", "dq.poll()"]
+        - ["Push front", "dq.appendleft(x)", "dq.push_front(x)", "dq.addFirst(x)"]
+  - language_lens:
+      language: python
+      title: Python Stack And Queue Thinking
+      body: >
+        Python list is excellent as a stack at the end. For queues and deques, use
+        collections.deque because popping from the front of a list is O(n).
+      default_instincts:
+        - Use list for stack with append and pop.
+        - Use deque for BFS queues.
+        - Use deque for sliding-window max/min.
+        - Use st[-1] to peek a non-empty stack.
+      behind_the_scenes:
+        - list.pop() from the end is O(1) amortized.
+        - list.pop(0) shifts elements and is O(n).
+        - deque supports O(1) operations at both ends.
+        - deque indexing in the middle is not the main use case.
+      avoid:
+        - Using list as a queue with pop(0).
+        - Peeking st[-1] without checking the stack is non-empty.
+        - Confusing appendleft order in simulations.
+  - language_lens:
+      language: cpp
+      title: C++ Stack Queue Deque Thinking
+      body: >
+        C++ has adapters stack and queue plus the concrete deque container. Adapters
+        intentionally expose limited operations, which helps match the access pattern
+        but prevents iteration.
+      default_instincts:
+        - Use stack<T> for pure LIFO.
+        - Use queue<T> for pure FIFO.
+        - Use deque<T> when both ends or iteration are needed.
+        - Use vector as a stack when iteration or custom behavior matters.
+      behind_the_scenes:
+        - stack and queue are adapters over an underlying container.
+        - queue pop does not return the value; read front first.
+        - stack pop does not return the value; read top first.
+        - deque does not have vector's single contiguous memory guarantee.
+      avoid:
+        - Trying to iterate a stack or queue adapter directly.
+        - Calling top/front on an empty container.
+        - Using queue when you need to remove from both ends.
+  - language_lens:
+      language: java
+      title: Java Deque Thinking
+      body: >
+        Java's best interview default for stacks and queues is usually ArrayDeque.
+        Stack is legacy. LinkedList can implement Deque, but ArrayDeque is typically
+        faster and cleaner when null elements are not needed.
+      default_instincts:
+        - Use Deque<Integer> stack = new ArrayDeque<>() for stack behavior.
+        - Use Deque<Integer> q = new ArrayDeque<>() for BFS.
+        - Use offer/poll/peek for queue-style methods.
+        - Use push/pop/peek for stack-style methods.
+      behind_the_scenes:
+        - ArrayDeque does not allow null elements.
+        - poll returns null when empty; remove throws.
+        - pop throws when empty.
+        - Generic Deque<Integer> boxes primitive ints.
+      avoid:
+        - Using Stack unless specifically required.
+        - Mixing stack-style and queue-style methods in the same code without clarity.
+        - Ignoring possible null from poll.
+  - compare_table:
+      title: Which Container For Which Pattern
+      columns:
+        - Pattern
+        - Container
+        - Why
+      rows:
+        - ["Valid parentheses", "Stack", "Need most recent unmatched opener"]
+        - ["BFS", "Queue", "Process by arrival order"]
+        - ["Sliding-window maximum", "Deque", "Drop stale front, maintain monotonic back"]
+        - ["DFS iterative", "Stack", "Simulate recursion"]
+        - ["Simulation with both ends", "Deque", "Push/pop from front and back"]
+
+examples:
+  - code_compare:
+      title: Stack For Parentheses
+      idea: Track the most recent unmatched opener.
+      python: |
+        st = []
+        for ch in s:
+            if ch == '(':
+                st.append(ch)
+            elif st:
+                st.pop()
+            else:
+                return False
+      cpp: |
+        stack<char> st;
+        for (char ch : s) {
+            if (ch == '(') st.push(ch);
+            else if (!st.empty()) st.pop();
+            else return false;
+        }
+      java: |
+        Deque<Character> st = new ArrayDeque<>();
+        for (char ch : s.toCharArray()) {
+            if (ch == '(') st.push(ch);
+            else if (!st.isEmpty()) st.pop();
+            else return false;
+        }
+      note: >
+        Always check non-empty before pop or peek.
+  - code_compare:
+      title: BFS Queue
+      idea: Process nodes in first-in first-out order.
+      python: |
+        from collections import deque
+
+        q = deque([start])
+        while q:
+            node = q.popleft()
+      cpp: |
+        queue<int> q;
+        q.push(start);
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+        }
+      java: |
+        Deque<Integer> q = new ArrayDeque<>();
+        q.offer(start);
+        while (!q.isEmpty()) {
+            int node = q.poll();
+        }
+      note: >
+        C++ pop does not return the removed value. Read front first.
+  - code_compare:
+      title: Monotonic Deque
+      idea: Keep indices for sliding-window maximum.
+      python: |
+        dq = deque()
+        for i, x in enumerate(nums):
+            while dq and dq[0] <= i - k:
+                dq.popleft()
+            while dq and nums[dq[-1]] <= x:
+                dq.pop()
+            dq.append(i)
+      cpp: |
+        deque<int> dq;
+        for (int i = 0; i < nums.size(); i++) {
+            while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
+            while (!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
+            dq.push_back(i);
+        }
+      java: |
+        Deque<Integer> dq = new ArrayDeque<>();
+        for (int i = 0; i < nums.length; i++) {
+            while (!dq.isEmpty() && dq.peekFirst() <= i - k) dq.pollFirst();
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) dq.pollLast();
+            dq.offerLast(i);
+        }
+      note: >
+        Store indices, not values, so stale elements can be removed by position.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python list/deque To C++ stack/queue/deque
+    mindset_shift:
+      - From one list plus deque to specific adapters and containers.
+      - From pop returning values to C++ pop returning void.
+      - From direct truthiness to explicit empty checks.
+    habit_swaps:
+      - python: st.pop() returns the value.
+        cpp: Read st.top() first, then st.pop().
+      - python: q.popleft().
+        cpp: Read q.front(), then q.pop().
+      - python: while q.
+        cpp: while (!q.empty()).
+    false_friends:
+      - term: pop
+        warning: C++ stack::pop and queue::pop do not return the removed element.
+      - term: iteration
+        warning: C++ stack and queue adapters are not meant for direct iteration.
+  cpp_to_python:
+    title: Moving From C++ stack/queue/deque To Python
+    mindset_shift:
+      - From adapters to direct list/deque operations.
+      - From explicit empty to truthiness.
+      - From front-read-then-pop to pop returning the value.
+    habit_swaps:
+      - cpp: stack top then pop.
+        python: value = st.pop().
+      - cpp: queue front then pop.
+        python: value = q.popleft().
+      - cpp: deque push_front.
+        python: appendleft.
+    false_friends:
+      - term: queue with list
+        warning: Python list.pop(0) is O(n); use deque.
+      - term: empty peek
+        warning: st[-1] on an empty list raises IndexError.
+  python_to_java:
+    title: Moving From Python Stack/Deque To Java ArrayDeque
+    mindset_shift:
+      - From list/deque methods to Deque interface methods.
+      - From dynamic primitives to boxed generic elements.
+      - From exceptions on empty access to null-returning poll/peek options.
+    habit_swaps:
+      - python: st.append(x), st.pop().
+        java: st.push(x), st.pop().
+      - python: q.append(x), q.popleft().
+        java: q.offer(x), q.poll().
+      - python: dq.appendleft(x).
+        java: dq.addFirst(x).
+    false_friends:
+      - term: Stack
+        warning: Java Stack is legacy; ArrayDeque is usually preferred.
+      - term: null
+        warning: ArrayDeque does not allow null elements.
+  java_to_python:
+    title: Moving From Java ArrayDeque To Python
+    mindset_shift:
+      - From method-heavy Deque to list or deque by pattern.
+      - From boxed values to direct object references.
+      - From null-aware APIs to exceptions/truthiness.
+    habit_swaps:
+      - java: stack.push/pop.
+        python: list append/pop.
+      - java: queue.offer/poll.
+        python: deque append/popleft.
+      - java: isEmpty.
+        python: use if q or while q.
+    false_friends:
+      - term: poll
+        warning: Python popleft raises if empty; check q first.
+      - term: front removal
+        warning: Python list front removal is not queue-efficient.
+  cpp_to_java:
+    title: Moving From C++ Adapters To Java Deque
+    mindset_shift:
+      - From separate stack/queue adapters to one Deque interface.
+      - From pop void to pop/poll returning values.
+      - From values to boxed object references for generics.
+    habit_swaps:
+      - cpp: stack<int> st.
+        java: Deque<Integer> st = new ArrayDeque<>().
+      - cpp: queue<int> q.
+        java: Deque<Integer> q = new ArrayDeque<>().
+      - cpp: deque<int> dq.
+        java: Deque<Integer> dq = new ArrayDeque<>().
+    false_friends:
+      - term: empty removal
+        warning: Java pop/remove throw on empty; poll returns null.
+      - term: primitive storage
+        warning: Deque<Integer> boxes ints.
+  java_to_cpp:
+    title: Moving From Java Deque To C++
+    mindset_shift:
+      - From one Deque interface to choosing adapter or container.
+      - From returning pop methods to top/front then pop.
+      - From object references to value storage.
+    habit_swaps:
+      - java: q.poll().
+        cpp: int x = q.front(); q.pop().
+      - java: st.pop().
+        cpp: int x = st.top(); st.pop().
+      - java: dq.offerFirst.
+        cpp: dq.push_front.
+    false_friends:
+      - term: pop return
+        warning: C++ pop methods return void.
+      - term: null
+        warning: C++ empty access is undefined or invalid; check empty first.
+
+interview_questions:
+  - question: Why is deque the right Python queue for BFS?
+    answer: popleft is O(1), while list.pop(0) is O(n).
+  - question: Why is Java ArrayDeque preferred over Stack?
+    answer: Stack is legacy; ArrayDeque is faster and cleaner for normal stack and queue behavior.
+  - question: What is the C++ queue pop trap?
+    answer: pop returns void, so read front before popping.
+  - question: Why do monotonic deques store indices?
+    answer: Indices let you remove elements that have left the sliding window.
+  - question: When should C++ deque be used instead of queue?
+    answer: When you need operations at both ends or need to inspect more than the front/back adapter interface.
+
+revision:
+  quick_summary:
+    - Stack means LIFO; queue means FIFO; deque means both ends.
+    - Python list is fine for stack, deque for queue.
+    - C++ stack and queue pop methods return void.
+    - Java ArrayDeque is the usual stack/queue choice.
+  cheat_table:
+    title: Stack Queue Deque Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      - ["Stack", "list", "stack/vector", "ArrayDeque", "Check empty before peek"]
+      - ["Queue", "deque", "queue", "ArrayDeque", "Avoid Python list.pop(0)"]
+      - ["Deque", "deque", "deque", "ArrayDeque", "Both ends"]
+      - ["Pop returns value", "yes", "no", "yes for pop/poll", "C++ read first"]
+      - ["Legacy trap", "list as queue", "wrong adapter", "Stack", "Use pattern-fit tool"]
+  flashcards:
+    - question: What Python operation should be avoided for queues?
+      answer: list.pop(0).
+    - question: What C++ method reads the next queue element?
+      answer: front().
+    - question: What Java class is usually best for stack behavior?
+      answer: ArrayDeque through the Deque interface.
+    - question: Does C++ stack.pop return the popped value?
+      answer: No.
+    - question: What does deque add over queue?
+      answer: Efficient operations at both ends.
+
+notes:
+  - Pick the container by access pattern first, then syntax.
+  - Many interview bugs come from empty peeks and using the wrong end of a deque.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_stack_queue_quiz
+    - create_bfs_container_drill
+    - explain_monotonic_deque
+    - compare_pop_semantics
+  context: >
+    This lesson teaches stack, queue, and deque usage across Python, C++, and Java
+    with emphasis on access order, empty checks, pop behavior, and interview patterns.

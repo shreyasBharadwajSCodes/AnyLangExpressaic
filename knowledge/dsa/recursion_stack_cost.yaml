@@ -1,0 +1,271 @@
+id: recursion_stack_cost
+title: Recursion Stack Cost
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - recursion
+  - stack_space
+  - complexity
+  - dfs
+  - interview
+goal: Help learners account for recursion stack time and space costs across Python, C++, and Java, and decide when to switch to iterative traversal.
+
+assets:
+  recursion_stack_frames:
+    type: image
+    path: assets/dsa/recursion_stack_cost/recursion-stack-frames.png
+    alt: Recursive calls creating stack frames until base cases return.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Every recursive call creates a stack frame holding parameters, local variables,
+        and return information. Space complexity includes the maximum number of active
+        calls, not the total number of calls.
+  - compare_table:
+      title: Depth Versus Total Calls
+      columns:
+        - Recursion Shape
+        - Total Calls
+        - Stack Space
+      rows:
+        - ["Linked-list DFS chain", "O(n)", "O(n)"]
+        - ["Balanced binary tree", "O(n)", "O(log n)"]
+        - ["Skewed binary tree", "O(n)", "O(n)"]
+        - ["Backtracking subsets", "O(2^n)", "O(n) depth"]
+        - ["Grid DFS component", "O(r*c)", "O(r*c) worst depth"]
+  - language_lens:
+      language: python
+      title: Python Recursion Thinking
+      body: >
+        Python recursion is readable but depth-limited. Deep DFS on graphs, grids,
+        or linked lists can fail even when the algorithm is correct.
+      default_instincts:
+        - Count recursion stack as O(depth).
+        - Use iterative DFS for deep or unknown-depth inputs.
+        - Keep recursive parameters small.
+        - Use memoization deliberately when states repeat.
+      behind_the_scenes:
+        - Python has a recursion limit.
+        - Each call has interpreter overhead.
+        - Increasing recursion limit can still risk crashing if stack grows too deep.
+      avoid:
+        - Ignoring recursion stack in space complexity.
+        - Passing copied lists into every recursive call.
+        - Using mutable default arguments for recursive state.
+  - language_lens:
+      language: cpp
+      title: C++ Recursion Thinking
+      body: >
+        C++ recursion is fast but still uses the call stack. Deep recursion can cause
+        stack overflow, especially on long chains or large grids.
+      default_instincts:
+        - Pass large containers by reference.
+        - Count stack depth.
+        - Use iterative DFS when depth can be O(n) for large n.
+        - Avoid large local arrays inside recursive functions.
+      behind_the_scenes:
+        - Each call stores parameters, locals, and return address.
+        - Large local objects multiply stack usage per call.
+        - Tail-call optimization should not be assumed in interviews.
+      avoid:
+        - Copying vectors in recursive parameters.
+        - Allocating large local arrays per call.
+        - Dereferencing tree pointers before null checks.
+  - language_lens:
+      language: java
+      title: Java Recursion Thinking
+      body: >
+        Java recursion is clean for trees and DP, but stack depth is limited. Large
+        graph or grid DFS may need an explicit stack with ArrayDeque.
+      default_instincts:
+        - Count recursion stack as O(depth).
+        - Use boolean[] visited outside recursion.
+        - Use iterative traversal for large depths.
+        - Use helper methods for clean recursion signatures.
+      behind_the_scenes:
+        - Java stack frames hold parameters, locals, and call metadata.
+        - Object references are copied by value into calls.
+        - StackOverflowError can occur on deep recursion.
+      avoid:
+        - Assuming recursion works for every n.
+        - Creating new large arrays in each recursive call.
+        - Using Stack instead of ArrayDeque for iterative DFS.
+
+examples:
+  - code_compare:
+      title: Tree Height Stack Cost
+      idea: Stack space equals tree height.
+      python: |
+        def height(node):
+            if not node:
+                return 0
+            return 1 + max(height(node.left), height(node.right))
+      cpp: |
+        int height(TreeNode* node) {
+            if (!node) return 0;
+            return 1 + max(height(node->left), height(node->right));
+        }
+      java: |
+        private int height(TreeNode node) {
+            if (node == null) return 0;
+            return 1 + Math.max(height(node.left), height(node.right));
+        }
+      note: >
+        Time is O(n). Stack space is O(h), where h is tree height.
+  - code_compare:
+      title: Iterative DFS Alternative
+      idea: Use explicit stack to control memory.
+      python: |
+        st = [start]
+        while st:
+            node = st.pop()
+      cpp: |
+        vector<int> st = {start};
+        while (!st.empty()) {
+            int node = st.back();
+            st.pop_back();
+        }
+      java: |
+        Deque<Integer> st = new ArrayDeque<>();
+        st.push(start);
+        while (!st.isEmpty()) {
+            int node = st.pop();
+        }
+      note: >
+        Explicit stacks still use O(depth or frontier) space, but avoid call-stack
+        limits and can be easier to control.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Recursion To C++
+    mindset_shift:
+      - From recursion-limit errors to native stack overflow risk.
+      - From object-reference parameters to reference/value choices.
+      - From interpreter overhead to copy/lifetime concerns.
+    habit_swaps:
+      - python: Recursive helper captures list.
+        cpp: Pass vector by const reference or reference.
+      - python: Recursion limit may fail.
+        cpp: Deep recursion can also fail; use iterative DFS if needed.
+      - python: list state copied with path + [x].
+        cpp: Use push_back and pop_back for backtracking.
+    false_friends:
+      - term: pass by value
+        warning: C++ container pass-by-value copies on every call.
+      - term: tail recursion
+        warning: Do not rely on tail-call optimization.
+  cpp_to_python:
+    title: Moving From C++ Recursion To Python
+    mindset_shift:
+      - From fast recursive calls to higher overhead and lower default depth.
+      - From references to mutable object aliasing.
+      - From stack overflow to recursion limit exceptions.
+    habit_swaps:
+      - cpp: Recursive DFS on large tree.
+        python: Consider iterative DFS for deep inputs.
+      - cpp: vector path push/pop.
+        python: list append/pop for backtracking.
+      - cpp: memo vector.
+        python: lru_cache or dict.
+    false_friends:
+      - term: default argument
+        warning: Avoid mutable defaults like path=[].
+      - term: copy path
+        warning: path + [x] copies O(length) each time.
+  python_to_java:
+    title: Moving From Python Recursion To Java
+    mindset_shift:
+      - From nested functions to helper methods.
+      - From recursion limit to StackOverflowError risk.
+      - From dynamic state to typed parameters.
+    habit_swaps:
+      - python: def dfs(node).
+        java: private void dfs(int node, ...).
+      - python: set visited.
+        java: boolean[] visited for indexed nodes.
+      - python: list stack.
+        java: ArrayDeque for iterative stack.
+    false_friends:
+      - term: object reference
+        warning: Java passes reference values by value; mutation is visible, rebinding is not.
+      - term: Stack
+        warning: Java Stack is legacy; use ArrayDeque.
+  java_to_python:
+    title: Moving From Java Recursion To Python
+    mindset_shift:
+      - From typed helpers to concise nested functions.
+      - From arrays to lists/sets.
+      - From StackOverflowError to recursion limit.
+    habit_swaps:
+      - java: boolean[] visited.
+        python: visited list or set.
+      - java: helper method.
+        python: nested function can close over data.
+      - java: ArrayDeque stack.
+        python: list as stack.
+    false_friends:
+      - term: closure state
+        warning: Python closures can hide mutation; be explicit with nonlocal when rebinding.
+      - term: recursion depth
+        warning: Python default recursion limit is often lower than graph input size.
+
+interview_questions:
+  - question: Does recursion stack count as space complexity?
+    answer: Yes. Maximum active call depth contributes O(depth) space.
+  - question: What is stack space for DFS on a balanced binary tree?
+    answer: O(log n) for height if the tree is balanced.
+  - question: What is stack space for DFS on a skewed tree?
+    answer: O(n).
+  - question: Why can total calls be O(2^n) but stack space O(n)?
+    answer: Backtracking explores many branches over time, but only one path of depth n is active at once.
+  - question: When should recursion be replaced with iteration?
+    answer: When maximum depth may exceed the language call stack or recursion limit.
+
+revision:
+  quick_summary:
+    - Stack space is maximum active depth.
+    - Total calls affect time; depth affects stack space.
+    - Deep recursion can fail in Python, C++, and Java.
+    - Explicit stacks trade call stack for heap/container memory.
+  cheat_table:
+    title: Recursion Stack Revision
+    columns:
+      - Shape
+      - Time
+      - Stack Space
+    rows:
+      - ["Balanced tree DFS", "O(n)", "O(log n)"]
+      - ["Skewed tree DFS", "O(n)", "O(n)"]
+      - ["Grid DFS", "O(r*c)", "O(r*c) worst"]
+      - ["Subsets", "O(2^n)", "O(n)"]
+      - ["Memo recursion", "states", "depth + memo"]
+  flashcards:
+    - question: What does recursion stack space depend on?
+      answer: Maximum active call depth.
+    - question: Does iterative DFS use no extra space?
+      answer: No, it uses an explicit stack.
+    - question: What Python recursion caveat matters in interviews?
+      answer: Recursion limit.
+    - question: What Java error signals too-deep recursion?
+      answer: StackOverflowError.
+
+notes:
+  - Say both time and stack space for recursive solutions.
+  - In tree problems, use h for height and then discuss balanced versus skewed.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_recursion_stack_quiz
+    - explain_time_vs_depth
+    - convert_recursive_to_iterative
+    - analyze_dfs_space
+  context: >
+    This lesson teaches recursion stack costs across Python, C++, and Java with
+    focus on maximum depth, call-stack limits, iterative alternatives, and interview
+    complexity explanations.

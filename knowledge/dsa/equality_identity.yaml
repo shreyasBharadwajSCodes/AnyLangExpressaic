@@ -1,0 +1,271 @@
+id: equality_identity
+title: Equality And Identity
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - equality
+  - identity
+  - hashing
+  - custom_keys
+  - interview
+goal: Help learners compare values, references, objects, strings, arrays, and custom keys correctly across Python, C++, and Java.
+
+assets:
+  equality_identity_split:
+    type: image
+    path: assets/dsa/equality_identity/equality-vs-identity.png
+    alt: Two separate objects with equal contents but different identities.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Equality asks whether two values should be considered the same. Identity asks
+        whether two names or references point to the exact same object. Interviews
+        often fail on this distinction in strings, arrays, lists, and hash keys.
+  - compare_table:
+      title: Equality Map
+      columns:
+        - Need
+        - Python
+        - C++
+        - Java
+      rows:
+        - ["Value equality", "==", "operator==", "equals for objects"]
+        - ["Identity", "is", "address/pointer comparison", "== for object references"]
+        - ["String content", "==", "== on string", "equals"]
+        - ["Array content", "== for list contents", "vector == vector", "Arrays.equals"]
+        - ["Hash key contract", "__eq__ and __hash__", "== and hash functor", "equals and hashCode"]
+  - language_lens:
+      language: python
+      title: Python Equality Thinking
+      body: >
+        Python uses == for equality and is for identity. Built-in containers compare
+        contents, but hashability depends on immutability and a stable hash.
+      default_instincts:
+        - Use == for value comparison.
+        - Use is for None checks and identity-specific questions.
+        - Use tuple keys for immutable compound values.
+        - Use dataclasses carefully if objects become keys.
+      behind_the_scenes:
+        - list equality compares elements.
+        - dict equality compares key-value pairs.
+        - mutable objects are usually unhashable.
+        - Custom objects default to identity-based equality unless __eq__ is defined.
+      avoid:
+        - Using is for string or integer value equality.
+        - Using mutable values as dict keys.
+        - Defining __eq__ without a compatible __hash__ for hash keys.
+  - language_lens:
+      language: cpp
+      title: C++ Equality Thinking
+      body: >
+        C++ equality depends on operators and types. STL containers often support
+        element-wise equality, but pointers compare addresses unless you compare
+        pointed-to values.
+      default_instincts:
+        - Use == for values and strings.
+        - Compare pointers carefully: address versus contents.
+        - Define operator== for custom structs when needed.
+        - Provide hash support for unordered_map custom keys.
+      behind_the_scenes:
+        - string == compares contents.
+        - vector == compares elements in order.
+        - raw pointer == compares addresses.
+        - unordered_map custom keys need equality and hash.
+      avoid:
+        - Comparing char arrays with == for content.
+        - Forgetting custom hash for unordered_map<pair<...>, ...>.
+        - Using pointer equality when node values matter.
+  - language_lens:
+      language: java
+      title: Java Equality Thinking
+      body: >
+        Java's == compares primitive values, but for objects it compares references.
+        Object content equality usually requires equals, and hash-based collections
+        require equals and hashCode to agree.
+      default_instincts:
+        - Use == for primitives.
+        - Use equals for String and object content.
+        - Use Arrays.equals for primitive arrays.
+        - Override equals and hashCode for custom HashMap keys.
+      behind_the_scenes:
+        - String equals compares content.
+        - int[] equals uses object identity; Arrays.equals compares elements.
+        - HashMap uses hashCode first, then equals.
+        - Records generate equals and hashCode automatically.
+      avoid:
+        - Using == for String content.
+        - Using arrays directly as HashMap keys unless identity is intended.
+        - Overriding equals without hashCode.
+
+examples:
+  - code_compare:
+      title: String Equality
+      idea: Compare content, not identity.
+      python: |
+        if a == b:
+            return True
+      cpp: |
+        if (a == b) return true; // std::string content
+      java: |
+        if (a.equals(b)) return true;
+      note: >
+        Java == checks whether two String references point to the same object.
+  - code_compare:
+      title: Array Or List Equality
+      idea: Compare elements.
+      python: |
+        nums1 == nums2
+      cpp: |
+        nums1 == nums2
+      java: |
+        Arrays.equals(nums1, nums2)
+      note: >
+        Java int[] uses object identity for equals, so use Arrays.equals for content.
+  - code_compare:
+      title: Custom Key
+      idea: Make compound keys hash correctly.
+      python: |
+        key = (r, c)
+        seen.add(key)
+      cpp: |
+        map<pair<int, int>, int> dist;
+        dist[{r, c}] = d;
+      java: |
+        record Cell(int r, int c) {}
+        Set<Cell> seen = new HashSet<>();
+      note: >
+        Java records are a clean interview way to get value equality and hashCode.
+
+transitions:
+  python_to_java:
+    title: Moving From Python Equality To Java
+    mindset_shift:
+      - From == as value equality for many objects to equals for object content.
+      - From tuple keys to records/classes or encoded keys.
+      - From hashable immutability to equals/hashCode contracts.
+    habit_swaps:
+      - python: "a == b for strings."
+        java: "a.equals(b) for strings."
+      - python: list equality.
+        java: Arrays.equals for arrays.
+      - python: tuple key.
+        java: record or custom class key.
+    false_friends:
+      - term: ==
+        warning: Java == checks object reference identity for objects.
+      - term: array equality
+        warning: Java arrays do not use element equality with equals.
+  java_to_python:
+    title: Moving From Java Equality To Python
+    mindset_shift:
+      - From equals methods to == value equality.
+      - From object identity == to Python is.
+      - From records/classes to tuple keys when simple.
+    habit_swaps:
+      - java: str.equals(other).
+        python: str == other.
+      - java: Arrays.equals(a, b).
+        python: a == b for lists.
+      - java: object == reference.
+        python: a is b for identity.
+    false_friends:
+      - term: is
+        warning: Python is is not value equality.
+      - term: custom hash
+        warning: Defining equality can affect hashability.
+  python_to_cpp:
+    title: Moving From Python Equality To C++
+    mindset_shift:
+      - From built-in container equality to operator-based equality.
+      - From object identity via is to address or pointer comparison.
+      - From tuple keys to pair/struct keys.
+    habit_swaps:
+      - python: list equality.
+        cpp: vector equality.
+      - python: string equality with ==.
+        cpp: std::string equality with ==.
+      - python: tuple key in dict.
+        cpp: pair in map or custom hash for unordered_map.
+    false_friends:
+      - term: pointer equality
+        warning: Pointer == compares addresses, not pointed-to object content.
+      - term: char array
+        warning: C-style char arrays do not compare content with ==.
+  cpp_to_java:
+    title: Moving From C++ Equality To Java
+    mindset_shift:
+      - From overloaded operators to methods and contracts.
+      - From value containers to arrays and object references.
+      - From hash functors to hashCode.
+    habit_swaps:
+      - cpp: string == string.
+        java: string.equals(other).
+      - cpp: vector == vector.
+        java: Arrays.equals for arrays or list.equals for lists.
+      - cpp: operator== plus hash functor.
+        java: equals plus hashCode.
+    false_friends:
+      - term: ==
+        warning: Java object == is identity, not value equality.
+      - term: array key
+        warning: Java arrays as HashMap keys use identity behavior.
+
+interview_questions:
+  - question: What is identity?
+    answer: Whether two references or names point to the exact same object.
+  - question: What is equality?
+    answer: Whether two values should be considered the same by their comparison rules.
+  - question: How should Java strings be compared?
+    answer: With equals, not ==.
+  - question: How should Java int[] contents be compared?
+    answer: With Arrays.equals.
+  - question: What must custom hash keys provide?
+    answer: Consistent equality and hashing behavior.
+
+revision:
+  quick_summary:
+    - Equality and identity are different questions.
+    - Python == is usually value equality; is is identity.
+    - C++ pointer equality is address equality.
+    - Java object == is reference identity; equals is content when implemented.
+  cheat_table:
+    title: Equality Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["String content", "==", "std::string ==", "equals"]
+      - ["List/array content", "==", "vector ==", "Arrays.equals"]
+      - ["Identity", "is", "pointer/address", "== for objects"]
+      - ["Custom hash key", "__eq__/__hash__", "== + hash", "equals/hashCode"]
+  flashcards:
+    - question: What does Python is check?
+      answer: Identity.
+    - question: What does Java == check for objects?
+      answer: Reference identity.
+    - question: What compares Java primitive array contents?
+      answer: Arrays.equals.
+    - question: What do Java records generate?
+      answer: equals, hashCode, and other value-style methods.
+
+notes:
+  - In DSA, equality bugs most often appear in HashMap keys, visited sets, strings, and arrays.
+  - Say whether you mean content equality or identity before choosing the operator.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_equality_quiz
+    - compare_identity_semantics
+    - create_custom_key_drills
+    - explain_hash_contracts
+  context: >
+    This lesson teaches equality and identity across Python, C++, and Java for DSA
+    interviews, with focus on strings, arrays, objects, pointers, and hash keys.

@@ -1,0 +1,296 @@
+id: integer_overflow
+title: Integer Overflow
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - integer_overflow
+  - arithmetic
+  - numeric_types
+  - implementation
+  - interview
+goal: Help learners detect and prevent integer overflow in C++ and Java while understanding why Python behaves differently and how overflow affects DSA patterns.
+
+assets:
+  overflow_boundary:
+    type: image
+    path: assets/dsa/integer_overflow/overflow-boundary.png
+    alt: Fixed-width integer range boundary showing overflow when arithmetic exceeds the maximum value.
+
+lesson:
+  - explain:
+      title: Core Idea
+      body: >
+        Overflow happens when arithmetic exceeds the range of the type storing it.
+        Python integers grow automatically, but C++ and Java int values are fixed
+        width. In interviews, overflow hides in sums, products, midpoint formulas,
+        comparators, DP sentinels, and prefix sums.
+  - compare_table:
+      title: Overflow Risk Map
+      columns:
+        - Operation
+        - Risk
+        - Safer Habit
+      rows:
+        - ["Pair sum", "a + b exceeds int", "use long long/long"]
+        - ["Area/product", "a * b overflows before assignment", "promote first"]
+        - ["Binary search mid", "left + right overflows", "left + (right-left)/2"]
+        - ["Comparator", "return a - b overflows", "compare helpers"]
+        - ["DP INF", "INF + cost overflows", "guard or smaller INF"]
+        - ["Prefix sum", "many ints accumulate", "long long/long"]
+  - language_lens:
+      language: python
+      title: Python Overflow Thinking
+      body: >
+        Python int is arbitrary precision, so normal integer overflow is not the
+        correctness risk. The risk shifts to performance, memory, and translating
+        the same logic to C++ or Java.
+      default_instincts:
+        - Use int naturally.
+        - Still read constraints to understand magnitude.
+        - Use modulo when the problem asks for modulo.
+        - Mention overflow differences when explaining language transitions.
+      behind_the_scenes:
+        - Python integers grow to hold larger values.
+        - Very large integers cost more memory and time.
+        - Floating-point overflow/precision is a different issue.
+      avoid:
+        - Ignoring modulo requirements because Python can hold large numbers.
+        - Assuming C++/Java translations are safe without wider types.
+        - Using float for exact integer problems.
+  - language_lens:
+      language: cpp
+      title: C++ Overflow Thinking
+      body: >
+        C++ int is fixed width, and signed overflow is a serious correctness problem.
+        Use long long before arithmetic crosses int range.
+      default_instincts:
+        - Use long long for sums, products, counts, and answer search bounds.
+        - Promote with 1LL before multiplication.
+        - Use safe midpoint formula.
+        - Avoid INT_MAX arithmetic unless guarded.
+      behind_the_scenes:
+        - "'long long x = a * b' can overflow first if a and b are int."
+        - "'1LL * a * b' promotes before multiplication."
+        - accumulate with 0 accumulates as int; use 0LL.
+        - Comparator should return a < b, not a - b.
+      avoid:
+        - Casting after overflow.
+        - Using int for prefix sums.
+        - Using INT_MAX as INF and then adding to it.
+  - language_lens:
+      language: java
+      title: Java Overflow Thinking
+      body: >
+        Java int overflow wraps around silently. Use long before arithmetic that can
+        exceed int range, especially multiplication and cumulative sums.
+      default_instincts:
+        - Use long for prefix sums and products.
+        - Cast one operand before multiplication.
+        - Use Integer.compare and Long.compare in comparators.
+        - Use safe midpoint formula.
+      behind_the_scenes:
+        - int arithmetic stays int unless an operand is long.
+        - "'long x = a * b' can overflow before assignment."
+        - Math.addExact throws on overflow but is rarely used in timed interviews.
+        - Integer.MAX_VALUE + 1 wraps to Integer.MIN_VALUE.
+      avoid:
+        - return a - b in comparators.
+        - Using int for count of pairs/subarrays when result can be O(n^2).
+        - Adding to Integer.MAX_VALUE sentinels.
+
+examples:
+  - code_compare:
+      title: Safe Pair Sum
+      idea: Compare pair sum to target.
+      python: |
+        total = nums[left] + nums[right]
+      cpp: |
+        long long total = 1LL * nums[left] + nums[right];
+      java: |
+        long total = (long) nums[left] + nums[right];
+      note: >
+        Promotion before addition is enough here because one operand becomes wide.
+  - code_compare:
+      title: Safe Product
+      idea: Compute area or combinations.
+      python: |
+        area = width * height
+      cpp: |
+        long long area = 1LL * width * height;
+      java: |
+        long area = (long) width * height;
+      note: >
+        Assigning to long after int multiplication is too late.
+  - code_compare:
+      title: Safe Midpoint
+      idea: Avoid left + right overflow.
+      python: |
+        mid = (left + right) // 2
+      cpp: |
+        int mid = left + (right - left) / 2;
+      java: |
+        int mid = left + (right - left) / 2;
+      note: >
+        Python does not overflow, but using the safe formula is a good cross-language
+        habit.
+  - code_compare:
+      title: Safe Comparator
+      idea: Compare without subtraction overflow.
+      python: |
+        nums.sort()
+      cpp: |
+        sort(nums.begin(), nums.end(), [](int a, int b) {
+            return a < b;
+        });
+      java: |
+        arr.sort((a, b) -> Integer.compare(a.value, b.value));
+      note: >
+        Java comparator subtraction can overflow and break ordering.
+  - code_compare:
+      title: Safe Accumulate
+      idea: Sum many int values in C++.
+      python: |
+        total = sum(nums)
+      cpp: |
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+      java: |
+        long total = 0;
+        for (int x : nums) total += x;
+      note: >
+        C++ accumulate result type follows the initial value.
+
+transitions:
+  python_to_cpp:
+    title: Moving From Python Arithmetic To C++
+    mindset_shift:
+      - From growing integers to fixed-width types.
+      - From safe multiplication to promotion-before-operation.
+      - From no overflow in midpoints to safe midpoint habit.
+    habit_swaps:
+      - python: total = sum(nums).
+        cpp: accumulate with 0LL or long long loop.
+      - python: area = a * b.
+        cpp: long long area = 1LL * a * b.
+      - python: comparator not needed for ints.
+        cpp: return a < b, not subtraction-style comparison.
+    false_friends:
+      - term: assignment to long long
+        warning: The expression can overflow before assignment.
+      - term: INF
+        warning: INT_MAX + 1 overflows; guard or use smaller INF.
+  cpp_to_python:
+    title: Moving From C++ Arithmetic To Python
+    mindset_shift:
+      - From fixed-width overflow to big integer cost.
+      - From explicit casts to simpler arithmetic.
+      - From sentinel overflow to logical sentinel clarity.
+    habit_swaps:
+      - cpp: 1LL * a * b.
+        python: a * b.
+      - cpp: long long prefix.
+        python: int prefix.
+      - cpp: safe midpoint.
+        python: either midpoint formula works, but safe formula remains readable.
+    false_friends:
+      - term: modulo
+        warning: Python still must apply modulo when problem requires it.
+      - term: float
+        warning: Do not use float for exact integer overflow avoidance.
+  python_to_java:
+    title: Moving From Python Arithmetic To Java
+    mindset_shift:
+      - From arbitrary precision to int/long choice.
+      - From natural multiplication to cast-before-operation.
+      - From flexible counts to long for O(n^2) result counts.
+    habit_swaps:
+      - python: total += x.
+        java: long total when constraints require.
+      - python: a * b.
+        java: (long) a * b.
+      - python: sort key.
+        java: Integer.compare or Long.compare.
+    false_friends:
+      - term: long assignment
+        warning: long x = a * b is unsafe if a and b are int.
+      - term: compare subtraction
+        warning: return a - b can overflow.
+  java_to_python:
+    title: Moving From Java Arithmetic To Python
+    mindset_shift:
+      - From explicit long to Python int.
+      - From wraparound risk to memory/time of huge integers.
+      - From compare helpers to key-based sorting.
+    habit_swaps:
+      - java: long prefix.
+        python: int prefix.
+      - java: (long) a * b.
+        python: a * b.
+      - java: Integer.compare.
+        python: key functions or normal numeric comparisons.
+    false_friends:
+      - term: overflow tests
+        warning: Python may pass overflow-heavy cases that fail direct Java/C++ translations.
+      - term: division
+        warning: Python // floors; Java integer division truncates toward zero.
+
+interview_questions:
+  - question: Why is casting after multiplication too late?
+    answer: If both operands are int, the multiplication can overflow as int before the result is cast.
+  - question: What is the safe C++ multiplication promotion pattern?
+    answer: 1LL * a * b.
+  - question: What is the safe Java multiplication promotion pattern?
+    answer: (long) a * b.
+  - question: Why is return a - b unsafe in Java comparators?
+    answer: The subtraction can overflow and produce the wrong ordering sign.
+  - question: Why can DP INF overflow?
+    answer: Adding a cost to a maximum sentinel can exceed the type range.
+  - question: Does Python int overflow?
+    answer: Normal Python int grows automatically, though very large values cost more time and memory.
+
+revision:
+  quick_summary:
+    - Python int avoids normal overflow.
+    - C++ and Java int can overflow.
+    - Promote before arithmetic, not after.
+    - Prefix sums, products, midpoints, comparators, and INF are danger zones.
+  cheat_table:
+    title: Integer Overflow Revision
+    columns:
+      - Risk
+      - Python
+      - C++
+      - Java
+    rows:
+      - ["Sum", "int", "long long", "long"]
+      - ["Product", "automatic", "1LL * a * b", "(long) a * b"]
+      - ["Midpoint", "safe anyway", "l + (r-l)/2", "l + (r-l)/2"]
+      - ["Comparator", "key/normal", "a < b", "Integer.compare"]
+      - ["INF add", "large int ok", "guard/safe INF", "guard/safe INF"]
+  flashcards:
+    - question: What C++ initial value makes accumulate use long long?
+      answer: 0LL.
+    - question: What Java type should count many pairs?
+      answer: long.
+    - question: What operation often overflows before assignment?
+      answer: int multiplication.
+    - question: What is the safe binary search midpoint?
+      answer: left + (right - left) / 2.
+
+notes:
+  - Read constraints before choosing numeric types.
+  - Overflow bugs often survive sample tests because samples are small.
+
+tlm_hooks:
+  possible_tasks:
+    - generate_overflow_quiz
+    - analyze_numeric_constraints
+    - create_casting_drills
+    - compare_python_cpp_java_arithmetic
+  context: >
+    This lesson teaches integer overflow for DSA interviews across Python, C++, and
+    Java, focused on fixed-width arithmetic, promotion timing, prefix sums, products,
+    comparators, binary search midpoints, and DP sentinels.
