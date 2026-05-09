@@ -253,10 +253,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Python int avoids normal overflow.
-    - C++ and Java int can overflow.
-    - Promote before arithmetic, not after.
-    - Prefix sums, products, midpoints, comparators, and INF are danger zones.
+    - "Integer Overflow is an interview implementation topic: state the contract, choose safe types and helpers, and handle edge cases deliberately."
+    - "Implementation answer: Python int avoids normal overflow. C++ and Java int can overflow. Promote before arithmetic, not after. Prefix sums, products, midpoints, comparators, and INF are danger zones."
   cheat_table:
     title: Integer Overflow Revision
     columns:

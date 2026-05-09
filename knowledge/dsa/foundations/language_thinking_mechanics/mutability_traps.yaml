@@ -237,10 +237,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Mutation plus aliasing creates hidden side effects.
-    - Python and Java assignment can alias mutable containers.
-    - C++ value assignment copies containers unless references/pointers are used.
-    - Backtracking usually needs push/pop plus snapshot copy.
+    - "Mutability Traps explains behind-the-scenes language behavior that affects references, copying, equality, memory, or mutation in interview code."
+    - "Behind the scenes: Mutation plus aliasing creates hidden side effects. Python and Java assignment can alias mutable containers. C++ value assignment copies containers unless references/pointers are used. Backtracking usually needs push/pop plus snapshot copy."
   cheat_table:
     title: Mutability Revision
     columns:

@@ -133,7 +133,9 @@ interview_questions:
   - question: What does lower_bound return if all values are smaller?
     answer: n, the insertion position after the last element.
 revision:
-  quick_summary: [Lower is first >= target, Upper is first > target, Equal range is half-open.]
+  quick_summary:
+    - "Lower Bound And Upper Bound is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Lower is first >= target. Upper is first > target. Equal range is half-open."
   cheat_table:
     title: Bound Cheat Table
     columns: [Bound, Condition]

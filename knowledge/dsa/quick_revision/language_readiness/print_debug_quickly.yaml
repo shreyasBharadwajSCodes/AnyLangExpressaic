@@ -296,10 +296,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Print one invariant, not the whole program.
-    - Python prints built-ins well.
-    - C++ needs loops or helpers for containers.
-    - Java collections print well, but arrays need Arrays helpers.
+    - "Print And Debug Quickly is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Print one invariant, not the whole program. Python prints built-ins well. C++ needs loops or helpers for containers. Java collections print well, but arrays need Arrays helpers."
   cheat_table:
     title: Debug Print Cheat Table
     columns:

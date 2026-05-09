@@ -318,10 +318,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Two pointers work when each move safely eliminates candidates.
-    - Sorted input often justifies inward movement.
-    - Write pointers compact arrays in place.
-    - Slow/fast pointers are for linked lists and cycle-style patterns.
+    - "Two Pointers is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Two pointers work when each move safely eliminates candidates. Sorted input often justifies inward movement. Write pointers compact arrays in place. Slow/fast pointers are for linked lists and cycle-style patterns."
   cheat_table:
     title: Two Pointers Revision
     columns:

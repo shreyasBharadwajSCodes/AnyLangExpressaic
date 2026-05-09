@@ -242,11 +242,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Assignment and copy are different.
-    - Shallow copy duplicates the outer container only.
-    - Deep clone is needed for graphs and nested mutable objects.
-    - Python and Java assignment alias mutable objects.
-    - C++ value containers copy by assignment.
+    - "Copying And Cloning explains behind-the-scenes language behavior that affects references, copying, equality, memory, or mutation in interview code."
+    - "Behind the scenes: Assignment and copy are different. Shallow copy duplicates the outer container only. Deep clone is needed for graphs and nested mutable objects. Python and Java assignment alias mutable objects. C++ value containers copy by assignment."
   cheat_table:
     title: Copying Revision
     columns:

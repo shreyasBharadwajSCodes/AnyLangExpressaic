@@ -2,8 +2,16 @@ id: sweep_line
 title: Sweep Line
 category: dsa
 level: intermediate
-languages: [python, cpp, java]
-tags: [sweep_line, events, intervals, sorting, interview]
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - sweep_line
+  - events
+  - intervals
+  - sorting
+  - interview
 goal: Teach sweep-line event processing across Python, C++, and Java with tie-breaking, active counts, and ordered-event differences.
 assets:
   sweep_line_events:
@@ -26,11 +34,16 @@ lesson:
         controls endpoint overlap behavior.
   - compare_table:
       title: Event Design
-      columns: [Question, Why It Matters]
+      columns:
+        - Question
+        - Why It Matters
       rows:
-        - ["start before end?", "decides whether touching intervals overlap"]
-        - ["delta sign?", "+1 starts, -1 ends for active count"]
-        - ["same coordinate grouping?", "prevents tie-order bugs"]
+        - - "start before end?"
+          - "decides whether touching intervals overlap"
+        - - "delta sign?"
+          - "positive starts, negative ends for active count"
+        - - "same coordinate grouping?"
+          - "prevents tie-order bugs"
   - language_lens:
       language: python
       title: Python Strategy
@@ -42,7 +55,7 @@ lesson:
       avoid:
         - Sorting by a field without knowing why that order is safe.
         - Forgetting to clarify whether touching endpoints overlap.
-        - Using heap state without defining what heap[0] represents.
+        - Using heap state without defining what the top element represents.
   - language_lens:
       language: cpp
       title: C++ Strategy
@@ -58,13 +71,13 @@ lesson:
   - language_lens:
       language: java
       title: Java Strategy
-      body: Use int[][] or event objects with Comparator.comparingInt and tie-breakers.
+      body: Use Java two-dimensional int arrays or event objects with Comparator helpers and tie-breakers.
       default_instincts:
         - Use Comparator.comparingInt or compare helpers for interval sorting.
         - Use PriorityQueue for earliest-ending active intervals.
-        - Represent events with int[] or small classes and explicit tie-breakers.
+        - Represent events with small arrays or small classes and explicit tie-breakers.
       avoid:
-        - Using a[0] - b[0] in comparators.
+        - Using subtraction inside comparators.
         - Forgetting to initialize list buckets or event containers.
         - Leaving endpoint semantics implicit.
 examples:
@@ -120,37 +133,53 @@ examples:
 transitions:
   python_to_cpp:
     title: Python sweep events to C++
-    mindset_shift: [From tuple key sort to pair/custom comparator, Same active delta model.]
+    mindset_shift:
+      - From tuple key sort to pair or custom comparator.
+      - Same active delta model.
     habit_swaps:
-      - python: "events.sort(key=lambda x: (x[0], -x[1]))"
+      - python: "tuple key sort by coordinate and tie priority"
         cpp: "sort with coordinate then delta tie comparator"
-    false_friends: [{term: tie order, warning: Wrong tie order changes whether touching intervals overlap.}]
+    false_friends:
+      - term: tie order
+        warning: Wrong tie order changes whether touching intervals overlap.
   python_to_java:
     title: Python sweep events to Java
-    mindset_shift: [From tuple events to int[] events and explicit comparator.]
+    mindset_shift:
+      - From tuple events to Java int array events and explicit comparator.
     habit_swaps:
       - python: "(pos, delta)"
-        java: "new int[]{pos, delta}"
-    false_friends: [{term: comparator subtraction, warning: Use Integer.compare for coordinates and deltas.}]
+        java: "small int event array with position and delta"
+    false_friends:
+      - term: comparator subtraction
+        warning: Use Integer.compare for coordinates and deltas.
 interview_questions:
   - question: What does active mean in a sweep line?
     answer: The number of intervals/events currently open after processing the current event.
   - question: Why is tie order important?
     answer: Events at the same coordinate can change whether touching intervals count as overlapping.
 revision:
-  quick_summary: [Convert ranges to events, sort with correct tie-break, scan deltas into active state.]
+  quick_summary:
+    - "Sweep line is an interview pattern for converting ranges into ordered events and scanning them with one active state."
+    - "Working idea: convert starts and ends into deltas, sort with the correct tie-break, then scan those deltas into the active count or coverage state."
   cheat_table:
     title: Sweep Line Cheat Table
-    columns: [Need, Choice]
+    columns:
+      - Need
+      - Choice
     rows:
-      - ["closed overlap", "start before end"]
-      - ["half-open overlap", "end before start"]
-      - ["max overlap", "track max active"]
+      - - "closed overlap"
+        - "start before end"
+      - - "half-open overlap"
+        - "end before start"
+      - - "max overlap"
+        - "track max active"
   flashcards:
     - question: What are typical deltas?
       answer: +1 for start and -1 for end.
 notes:
   - Always state endpoint semantics before choosing event tie order.
 tlm_hooks:
-  possible_tasks: [trace_sweep_line, generate_tie_break_drills]
+  possible_tasks:
+    - trace_sweep_line
+    - generate_tie_break_drills
   context: Focus on event encoding, active count, and tie-breaking semantics.

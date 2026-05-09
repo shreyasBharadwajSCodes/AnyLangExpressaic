@@ -18,12 +18,12 @@ lesson:
         candidates, top as the next chosen item, priority as the ordering value, and
         size k when solving top-k problems.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A heap repeatedly extracts the item with best priority, not necessarily the
-        item inserted first. The method is to separate priority from payload, choose
-        min-heap or max-heap direction, and handle stale or tied entries deliberately
-        when the problem can insert multiple candidates for the same entity.
+        Heap methods repeatedly choose the best-priority item without fully sorting
+        all candidates. Each entry should separate priority from payload in your
+        thinking. Correctness depends on heap direction, tie fields, and discarding
+        stale entries when the problem can push updated versions.
 
   - compare_table:
       title: Heap Defaults
@@ -38,17 +38,41 @@ lesson:
       language: python
       title: Python Strategy
       body: heapq is a min-heap over a list; tuples naturally compare by first field then next fields.
+      default_instincts:
+        - Use list for stack and deque for queue/deque behavior.
+        - Store indices when position or staleness matters.
+        - Represent heap entries as priority-payload tuples.
       behind_the_scenes: ["Use negative values for max-heap.", "Tuple tie fields must be comparable."]
+      avoid:
+        - Using list.pop(0) for queue behavior.
+        - Storing values when the algorithm needs indices.
+        - Forgetting heapq is a min-heap.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: priority_queue is max-heap by default; use greater or custom comparator for min-heap.
+      default_instincts:
+        - Use vector as a stack when you need back access or iteration.
+        - Use queue/deque for FIFO and both-ended behavior.
+        - Configure priority_queue for min-heap when needed.
       behind_the_scenes: ["pop returns void.", "Comparator meaning can feel inverted."]
+      avoid:
+        - Expecting pop to return a value.
+        - Calling top/front/back on empty containers.
+        - Forgetting C++ priority_queue is a max-heap by default.
   - language_lens:
       language: java
       title: Java Strategy
       body: PriorityQueue is min-heap by default and uses Comparator for custom order.
+      default_instincts:
+        - Use ArrayDeque for stack, queue, and deque patterns.
+        - Use PriorityQueue for min-heap priority processing.
+        - Use indices in deques for sliding-window expiration.
       behind_the_scenes: ["poll returns best item.", "Comparator subtraction can overflow."]
+      avoid:
+        - Using legacy Stack by habit.
+        - Adding null to ArrayDeque.
+        - Using subtraction comparators in PriorityQueue.
 examples:
   - code_compare:
       title: Min Heap Of Distances
@@ -98,7 +122,9 @@ interview_questions:
   - question: What should priority represent?
     answer: The value that decides which candidate is processed next.
 revision:
-  quick_summary: [Python/Java default min-heap, C++ default max-heap, Track priority separately from item.]
+  quick_summary:
+    - "Heap / Priority Queue is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Python/Java default min-heap. C++ default max-heap. Track priority separately from item."
   cheat_table:
     title: Heap Cheat Table
     columns: [Need, Python, C++, Java]

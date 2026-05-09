@@ -201,11 +201,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - C++ values copy unless referenced or moved.
-    - References alias existing objects and must not dangle.
-    - vector is contiguous and can reallocate.
-    - unordered_map operator[] inserts missing keys.
-    - int overflow matters.
+    - "C++ Internal Mechanics explains behind-the-scenes language behavior that affects references, copying, equality, memory, or mutation in interview code."
+    - "Behind the scenes: C++ values copy unless referenced or moved. References alias existing objects and must not dangle. vector is contiguous and can reallocate. unordered_map operator[] inserts missing keys. int overflow matters."
   cheat_table:
     title: C++ Mechanics Revision
     columns:

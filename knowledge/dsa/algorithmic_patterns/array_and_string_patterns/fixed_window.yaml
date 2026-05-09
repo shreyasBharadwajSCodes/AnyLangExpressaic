@@ -216,9 +216,8 @@ interview_questions:
     answer: Before that point the window has fewer than k elements and is not a valid candidate.
 revision:
   quick_summary:
-    - Add incoming element.
-    - Remove outgoing element when size exceeds k.
-    - Update answer only when the window has exactly k elements.
+    - "Fixed Window is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Add incoming element. Remove outgoing element when size exceeds k. Update answer only when the window has exactly k elements."
   cheat_table:
     title: Fixed Window Cheat Table
     columns: [Need, Python, C++, Java]

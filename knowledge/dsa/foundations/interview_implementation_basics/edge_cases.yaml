@@ -239,11 +239,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Edge cases test hidden assumptions.
-    - Always test empty, one element, duplicates, boundaries, and extremes.
-    - Python negative indices can hide bugs.
-    - C++ invalid access and overflow can silently break.
-    - Java null, array bounds, and int overflow matter.
+    - "Error-Prone Edge Cases is an interview implementation topic: state the contract, choose safe types and helpers, and handle edge cases deliberately."
+    - "Implementation answer: Edge cases test hidden assumptions. Always test empty, one element, duplicates, boundaries, and extremes. Python negative indices can hide bugs. C++ invalid access and overflow can silently break. Java null, array bounds, and int overflow matter."
   cheat_table:
     title: Edge Case Revision
     columns:

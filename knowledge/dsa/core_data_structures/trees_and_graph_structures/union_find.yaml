@@ -18,12 +18,12 @@ lesson:
         representative root. find(x) returns the root and compresses the path. union(a,b)
         connects two roots and may reduce component_count.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Union Find stores a forest of components where every node points toward a
-        representative root. find follows parent links to the root and compresses the
-        path. union connects two roots, usually attaching the smaller tree under the
-        larger one so future find calls stay cheap.
+        Union-find methods maintain components through parent links. find follows
+        parent pointers to a representative root and compresses the path; union joins
+        two roots and uses size or rank to keep trees shallow. Component count changes
+        only when two different roots are merged.
 
   - compare_table:
       title: Core Operations
@@ -36,14 +36,38 @@ lesson:
       language: python
       title: Python Strategy
       body: parent and size are lists; nested find is concise.
+      default_instincts:
+        - Use object references for nodes and lists/dicts for adjacency.
+        - Name helper return values by the subtree or component summary they represent.
+        - Use iterative traversal if recursion depth can be too large.
+      avoid:
+        - Comparing node values when identity is needed.
+        - Using shared rows or adjacency lists by multiplication.
+        - Forgetting to add both directions for undirected edges.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: vector<int> parent and size; recursive or iterative find works.
+      default_instincts:
+        - Check pointers before dereferencing node fields.
+        - Pass adjacency and large structures by reference.
+        - Use vectors for indexed graphs and maps for sparse labels.
+      avoid:
+        - Dereferencing nullptr.
+        - Copying adjacency lists into recursive helpers.
+        - Using int bounds where tree values need long long sentinels.
   - language_lens:
       language: java
       title: Java Strategy
       body: int[] parent and size; class DSU keeps arrays and methods together.
+      default_instincts:
+        - Use null checks before reading node fields.
+        - Use helper classes or methods for DSU, trie, and traversal state.
+        - Initialize every inner adjacency list.
+      avoid:
+        - Forgetting inner-list initialization.
+        - Using == for object value equality when equals is needed.
+        - Mutating key objects used in maps or sets.
 examples:
   - code_compare:
       title: Find With Path Compression
@@ -125,7 +149,9 @@ interview_questions:
   - question: What does path compression change?
     answer: It updates parent pointers on the find path to point directly to the root.
 revision:
-  quick_summary: [parent stores forest, find returns root, union connects roots, size/rank keeps shallow.]
+  quick_summary:
+    - "Union Find / Disjoint Set is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: parent stores forest. find returns root. union connects roots. size/rank keeps shallow."
   cheat_table:
     title: DSU Cheat Table
     columns: [Variable, Meaning]

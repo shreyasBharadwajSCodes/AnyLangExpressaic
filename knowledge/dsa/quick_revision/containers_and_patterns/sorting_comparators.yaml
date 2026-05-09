@@ -331,10 +331,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Sorting is often the setup for greedy, intervals, two pointers, and binary search.
-    - Python uses stable key-based sorting.
-    - C++ comparators return bool and must be strict.
-    - Java comparators return negative, zero, or positive and must avoid overflow.
+    - "Sorting Comparator Readiness is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Sorting is often the setup for greedy, intervals, two pointers, and binary search. Python uses stable key-based sorting. C++ comparators return bool and must be strict. Java comparators return negative, zero, or positive and must avoid overflow."
   cheat_table:
     title: Sorting Revision
     columns:

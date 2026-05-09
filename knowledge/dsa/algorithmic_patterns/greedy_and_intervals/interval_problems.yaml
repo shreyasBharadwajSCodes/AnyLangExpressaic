@@ -2,8 +2,16 @@
 title: Interval Problems
 category: dsa
 level: intermediate
-languages: [python, cpp, java]
-tags: [intervals, sorting, greedy, sweep_line, interview]
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - intervals
+  - sorting
+  - greedy
+  - sweep_line
+  - interview
 goal: Teach interval problem recognition and implementation across Python, C++, and Java with boundary semantics and sorting differences.
 assets:
   interval_boundaries:
@@ -15,23 +23,34 @@ lesson:
       title: Interval Mental Model
       body: >
         Interval problems are about boundaries. First clarify whether intervals are
-        closed [s,e], half-open [s,e), or whether touching endpoints count as overlap.
-        Then sort by start or end depending on the decision.
+        closed, half-open, or whether touching endpoints count as overlap. Then
+        sort by start or end depending on the decision.
   - explain:
       title: How The Algorithm Works
       body: >
         Convert each interval into start and end decisions. Sorting makes only nearby
         or currently active intervals relevant, but the comparison depends on the
-        endpoint rule. Before coding, decide whether [s,e], [s,e), or touching
-        endpoints should count as overlapping.
+        endpoint rule. Before coding, decide whether closed intervals, half-open
+        intervals, or touching endpoints should count as overlapping.
   - compare_table:
       title: Pattern Map
-      columns: [Problem, Sort By, State]
+      columns:
+        - Problem
+        - Sort By
+        - State
       rows:
-        - ["merge intervals", "start", "current merged end"]
-        - ["erase overlaps", "end", "last chosen end"]
-        - ["meeting rooms", "start/end events", "active meetings"]
-        - ["insert interval", "start", "merged new interval"]
+        - - "merge intervals"
+          - "start"
+          - "current merged end"
+        - - "erase overlaps"
+          - "end"
+          - "last chosen end"
+        - - "meeting rooms"
+          - "start and end events"
+          - "active meetings"
+        - - "insert interval"
+          - "start"
+          - "merged new interval"
   - language_lens:
       language: python
       title: Python Strategy
@@ -43,7 +62,7 @@ lesson:
       avoid:
         - Sorting by a field without knowing why that order is safe.
         - Forgetting to clarify whether touching endpoints overlap.
-        - Using heap state without defining what heap[0] represents.
+        - Using heap state without defining what the top element represents.
   - language_lens:
       language: cpp
       title: C++ Strategy
@@ -59,13 +78,13 @@ lesson:
   - language_lens:
       language: java
       title: Java Strategy
-      body: int[][] needs Arrays.sort with a Comparator; use comparingInt to avoid overflow.
+      body: Java two-dimensional int arrays need Arrays.sort with a Comparator; use compare helpers to avoid overflow.
       default_instincts:
         - Use Comparator.comparingInt or compare helpers for interval sorting.
         - Use PriorityQueue for earliest-ending active intervals.
-        - Represent events with int[] or small classes and explicit tie-breakers.
+        - Represent events with small arrays or small classes and explicit tie-breakers.
       avoid:
-        - Using a[0] - b[0] in comparators.
+        - Using subtraction inside comparators.
         - Forgetting to initialize list buckets or event containers.
         - Leaving endpoint semantics implicit.
 examples:
@@ -108,40 +127,54 @@ examples:
 transitions:
   python_to_cpp:
     title: Python intervals to C++
-    mindset_shift: [From key sorting to vector lexicographic/default comparator choices.]
+    mindset_shift:
+      - From key sorting to vector lexicographic or explicit comparator choices.
     habit_swaps:
-      - python: "intervals.sort(key=lambda p: p[0])"
+      - python: "sort intervals by start using a key"
         cpp: "sort(intervals.begin(), intervals.end())"
     false_friends:
       - term: endpoint touching
         warning: Decide whether s == prevEnd overlaps before choosing < or <=.
   python_to_java:
     title: Python intervals to Java
-    mindset_shift: [From list sort key to Arrays.sort comparator for int[][].]
+    mindset_shift:
+      - From list sort key to Arrays.sort with a Comparator for Java 2D int arrays.
     habit_swaps:
-      - python: "p[0]"
-        java: "a[0] inside Comparator.comparingInt"
+      - python: "start field inside the key function"
+        java: "start field inside Comparator.comparingInt"
     false_friends:
       - term: comparator subtraction
-        warning: Avoid a[0] - b[0] when values can be large.
+        warning: Avoid subtracting two fields when values can be large.
 interview_questions:
   - question: What should you clarify before coding interval overlap?
     answer: Whether touching endpoints count as overlap.
 revision:
-  quick_summary: [Clarify boundaries, sort by the decision field, track current/previous end.]
+  quick_summary:
+    - "Interval problems are interview boundary problems: define overlap rules first, then choose the sort order and active state."
+    - "Working idea: sort by the field that supports the decision, then track the current or previous end to decide merge, conflict, or separation."
   cheat_table:
     title: Interval Cheat Table
-    columns: [Task, Sort, State]
+    columns:
+      - Task
+      - Sort
+      - State
     rows:
-      - ["merge", "start", "merged end"]
-      - ["select max", "end", "last end"]
-      - ["rooms", "events or heap", "active count"]
+      - - "merge"
+        - "start"
+        - "merged end"
+      - - "select max"
+        - "end"
+        - "last end"
+      - - "rooms"
+        - "events or heap"
+        - "active count"
   flashcards:
     - question: What changes if intervals are half-open?
       answer: Touching endpoints usually do not overlap.
 notes:
   - Boundary semantics determine whether the comparison is < or <=.
 tlm_hooks:
-  possible_tasks: [trace_interval_overlap, generate_boundary_drills]
+  possible_tasks:
+    - trace_interval_overlap
+    - generate_boundary_drills
   context: Focus on starts, ends, sorting field, and endpoint semantics.
-

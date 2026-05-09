@@ -246,10 +246,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Signatures define input, output, and mutation contract.
-    - Python signatures hide reference and mutability details.
-    - C++ signatures must avoid accidental copies.
-    - Java signatures are typed but mutation still depends on object references.
+    - "Function Signatures is an interview implementation topic: state the contract, choose safe types and helpers, and handle edge cases deliberately."
+    - "Implementation answer: Signatures define input, output, and mutation contract. Python signatures hide reference and mutability details. C++ signatures must avoid accidental copies. Java signatures are typed but mutation still depends on object references."
   cheat_table:
     title: Function Signature Revision
     columns:

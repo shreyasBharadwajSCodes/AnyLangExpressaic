@@ -363,10 +363,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Binary search needs sorted data or a monotonic predicate.
-    - Lower bound means first index where value is at least target.
-    - Keep one template consistent.
-    - C++ and Java need overflow-safe midpoint.
+    - "Binary Search is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Binary search needs sorted data or a monotonic predicate. Lower bound means first index where value is at least target. Keep one template consistent. C++ and Java need overflow-safe midpoint."
   cheat_table:
     title: Binary Search Revision
     columns:

@@ -18,12 +18,11 @@ lesson:
         next item to process, and neighbors are appended to the back. Mark visited
         before enqueueing to avoid duplicate queue entries.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A queue stores work in first-in first-out order. In BFS, the queue is the
-        frontier of nodes discovered but not fully processed. The method is to mark
-        a node visited before enqueueing it so multiple parents do not place the
-        same node into the frontier repeatedly.
+        Queue methods process work in first-in, first-out order. In BFS, the queue
+        is the frontier, and visited timing controls duplication. The usual method is
+        mark before enqueue, then pop the oldest item and expand its neighbors.
 
   - compare_table:
       title: Queue Operations
@@ -37,17 +36,41 @@ lesson:
       language: python
       title: Python Strategy
       body: Use collections.deque; list.pop(0) is O(n).
+      default_instincts:
+        - Use list for stack and deque for queue/deque behavior.
+        - Store indices when position or staleness matters.
+        - Represent heap entries as priority-payload tuples.
       behind_the_scenes: ["popleft returns the removed value."]
+      avoid:
+        - Using list.pop(0) for queue behavior.
+        - Storing values when the algorithm needs indices.
+        - Forgetting heapq is a min-heap.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: queue adapter is good for FIFO; read front before pop.
+      default_instincts:
+        - Use vector as a stack when you need back access or iteration.
+        - Use queue/deque for FIFO and both-ended behavior.
+        - Configure priority_queue for min-heap when needed.
       behind_the_scenes: ["pop returns void.", "queue is not directly iterable."]
+      avoid:
+        - Expecting pop to return a value.
+        - Calling top/front/back on empty containers.
+        - Forgetting C++ priority_queue is a max-heap by default.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use ArrayDeque through Deque for BFS queues.
+      default_instincts:
+        - Use ArrayDeque for stack, queue, and deque patterns.
+        - Use PriorityQueue for min-heap priority processing.
+        - Use indices in deques for sliding-window expiration.
       behind_the_scenes: ["poll returns null when empty.", "offer appends at back."]
+      avoid:
+        - Using legacy Stack by habit.
+        - Adding null to ArrayDeque.
+        - Using subtraction comparators in PriorityQueue.
 examples:
   - code_compare:
       title: BFS Skeleton
@@ -116,7 +139,9 @@ interview_questions:
   - question: Why mark visited before enqueue?
     answer: To prevent the same node from being enqueued by multiple parents.
 revision:
-  quick_summary: [Queue is FIFO, q is frontier, node comes from front, neighbors go to back.]
+  quick_summary:
+    - "Queue is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Queue is FIFO. q is frontier. node comes from front. neighbors go to back."
   cheat_table:
     title: Queue Cheat Table
     columns: [Need, Python, C++, Java]

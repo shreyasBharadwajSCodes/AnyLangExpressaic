@@ -29,6 +29,15 @@ lesson:
         for frequency counts, first-seen indices, prefix sums, grouping, memoization,
         and visited-state tracking. The syntax is easy; the real skill is knowing
         what happens when a key is missing and what makes a key hashable.
+  - explain:
+      title: Method Strategy
+      body: >
+        Hash maps turn a key into a bucket and then use equality to find the exact
+        entry. The method strategy is to define what the key represents before
+        coding: a value frequency, a first-seen index, a prefix sum, a coordinate, or
+        a memo state. Most mistakes come from missing-key behavior, mutable keys, or
+        assuming hash-map iteration is sorted.
+
   - compare_table:
       title: First Mapping
       columns:
@@ -357,10 +366,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Hash maps give fast average lookup.
-    - Missing-key behavior differs sharply across languages.
-    - Custom keys require correct hashing and equality.
-    - Hash map order is not sorted order.
+    - "Dictionary / HashMap / unordered_map is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Hash maps give fast average lookup. Missing-key behavior differs sharply across languages. Custom keys require correct hashing and equality. Hash map order is not sorted order."
   cheat_table:
     title: Hash Map Revision
     columns:

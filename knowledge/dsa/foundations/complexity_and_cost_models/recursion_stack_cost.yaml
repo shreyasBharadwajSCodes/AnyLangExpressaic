@@ -229,10 +229,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Stack space is maximum active depth.
-    - Total calls affect time; depth affects stack space.
-    - Deep recursion can fail in Python, C++, and Java.
-    - Explicit stacks trade call stack for heap/container memory.
+    - "Recursion Stack Cost is about explaining cost clearly: name the input size, the dominant operation, and the hidden language or runtime cost."
+    - "Interview answer: Stack space is maximum active depth. Total calls affect time; depth affects stack space. Deep recursion can fail in Python, C++, and Java. Explicit stacks trade call stack for heap/container memory."
   cheat_table:
     title: Recursion Stack Revision
     columns:

@@ -273,10 +273,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - DP means compute each repeated state once.
-    - Define state in words before recurrence.
-    - Memoization is top-down; tabulation is bottom-up.
-    - Watch row aliasing, overflow, and recursion depth.
+    - "Dynamic Programming Readiness is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: DP means compute each repeated state once. Define state in words before recurrence. Memoization is top-down; tabulation is bottom-up. Watch row aliasing, overflow, and recursion depth."
   cheat_table:
     title: DP Readiness Revision
     columns:

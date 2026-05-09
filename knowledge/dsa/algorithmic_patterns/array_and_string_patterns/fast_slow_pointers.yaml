@@ -210,9 +210,8 @@ interview_questions:
     answer: With both pointers starting at head and while fast and fast.next, slow returns the second middle.
 revision:
   quick_summary:
-    - Slow moves one step; fast moves two.
-    - Null end means no cycle; meeting means cycle.
-    - In linked lists, compare node identity, not values.
+    - "Fast And Slow Pointers is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Slow moves one step; fast moves two. Null end means no cycle; meeting means cycle. In linked lists, compare node identity, not values."
   cheat_table:
     title: Fast Slow Cheat Table
     columns: [Need, Python, C++, Java]

@@ -2,8 +2,15 @@ id: merge_intervals
 title: Merge Intervals
 category: dsa
 level: beginner_to_intermediate
-languages: [python, cpp, java]
-tags: [merge_intervals, intervals, sorting, interview]
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - merge_intervals
+  - intervals
+  - sorting
+  - interview
 goal: Teach merge intervals across Python, C++, and Java with current merged interval state and endpoint caveats.
 assets:
   merge_intervals_trace:
@@ -27,7 +34,7 @@ lesson:
   - language_lens:
       language: python
       title: Python Strategy
-      body: Lists are mutable; updating merged[-1][1] changes the stored interval.
+      body: Lists are mutable; updating the last merged interval changes the stored interval.
       default_instincts:
         - Use key functions to make the greedy order visible.
         - Name active state such as end, rooms, active, or best.
@@ -35,11 +42,11 @@ lesson:
       avoid:
         - Sorting by a field without knowing why that order is safe.
         - Forgetting to clarify whether touching endpoints overlap.
-        - Using heap state without defining what heap[0] represents.
+        - Using heap state without defining what the top element represents.
   - language_lens:
       language: cpp
       title: C++ Strategy
-      body: vector<vector<int>> can update merged.back()[1] directly.
+      body: A vector of interval vectors can update the last merged interval directly.
       default_instincts:
         - Use strict sort comparators for interval orderings.
         - Configure priority_queue direction explicitly for min-heap needs.
@@ -51,13 +58,13 @@ lesson:
   - language_lens:
       language: java
       title: Java Strategy
-      body: Use List<int[]> for dynamic output, then convert to int[][] if needed.
+      body: Use a list of small int arrays for dynamic output, then convert to a two-dimensional int array if needed.
       default_instincts:
         - Use Comparator.comparingInt or compare helpers for interval sorting.
         - Use PriorityQueue for earliest-ending active intervals.
-        - Represent events with int[] or small classes and explicit tie-breakers.
+        - Represent events with small arrays or small classes and explicit tie-breakers.
       avoid:
-        - Using a[0] - b[0] in comparators.
+        - Using subtraction inside comparators.
         - Forgetting to initialize list buckets or event containers.
         - Leaving endpoint semantics implicit.
 examples:
@@ -107,34 +114,49 @@ examples:
 transitions:
   python_to_cpp:
     title: Python merge intervals to C++
-    mindset_shift: [From list append to vector push_back, Same active-last interval model.]
+    mindset_shift:
+      - From list append to vector push_back.
+      - Same active-last interval model.
     habit_swaps:
-      - python: "merged[-1][1]"
-        cpp: "merged.back()[1]"
-    false_friends: [{term: touching intervals, warning: Use s > end to merge touching closed intervals; use s >= end for half-open separation.}]
+      - python: "update the last merged interval"
+        cpp: "update merged.back directly"
+    false_friends:
+      - term: touching intervals
+        warning: Use start greater than end to merge touching closed intervals; use start greater than or equal to end for half-open separation.
   python_to_java:
     title: Python merge intervals to Java
-    mindset_shift: [From dynamic list of lists to List<int[]> and explicit comparator.]
+    mindset_shift:
+      - From dynamic list of lists to a list of small int arrays and explicit comparator.
     habit_swaps:
-      - python: "merged.append([s,e])"
-        java: "merged.add(new int[]{s,e})"
-    false_friends: [{term: array aliasing, warning: Mutating last[1] mutates the stored interval object, which is intended here.}]
+      - python: "append a start-end pair to merged"
+        java: "add a small interval array to merged"
+    false_friends:
+      - term: array aliasing
+        warning: Mutating the last interval mutates the stored interval object, which is intended here.
 interview_questions:
   - question: Why sort by start?
     answer: Once starts are ordered, only the last merged interval can overlap the next interval.
 revision:
-  quick_summary: [Sort by start, compare next start to active end, extend or append.]
+  quick_summary:
+    - "Merge intervals is an interview pattern for compressing overlapping ranges after sorting them by start."
+    - "Working idea: keep the last merged interval as the active block, extend it on overlap, or append a new block when the next interval starts after it."
   cheat_table:
     title: Merge Intervals Cheat Table
-    columns: [Condition, Action]
+    columns:
+      - Condition
+      - Action
     rows:
-      - ["s > active_end", "append new interval"]
-      - ["s <= active_end", "active_end = max(active_end, e)"]
+      - - "next start is after active end"
+        - "append new interval"
+      - - "next start reaches active interval"
+        - "extend active end if needed"
   flashcards:
     - question: What is the active interval?
       answer: The last interval already placed in merged.
 notes:
   - Clarify whether touching endpoints should merge.
 tlm_hooks:
-  possible_tasks: [trace_merge_intervals, generate_endpoint_drills]
+  possible_tasks:
+    - trace_merge_intervals
+    - generate_endpoint_drills
   context: Focus on active merged interval and endpoint semantics.

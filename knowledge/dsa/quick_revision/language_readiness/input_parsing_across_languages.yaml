@@ -409,10 +409,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Parse into the exact shape your algorithm needs.
-    - Token-based input is ideal for most DSA numbers and words.
-    - Line-based input is needed when spaces inside a field matter.
-    - Python is concise, C++ streams are reliable, and Java needs a faster scanner for large input.
+    - "Input Parsing Across Languages is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Parse into the exact shape your algorithm needs. Token-based input is ideal for most DSA numbers and words. Line-based input is needed when spaces inside a field matter. Python is concise, C++ streams are reliable, and Java needs a faster scanner for large input."
   cheat_table:
     title: Input Parsing Readiness Table
     columns:

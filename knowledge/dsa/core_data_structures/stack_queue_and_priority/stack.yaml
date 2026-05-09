@@ -18,12 +18,12 @@ lesson:
         item, and x as the current input. Every push means x is waiting for a future
         match; every pop means the current x resolved the previous top.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A stack stores unresolved items in last-in first-out order. The top item is
-        the only candidate that can be resolved next. The method is to define what
-        unresolved means, push when a value waits for future information, and pop
-        when the current input resolves the top.
+        Stack methods maintain unresolved work in last-in, first-out order. The top
+        item is the only item allowed to be resolved next. The strategy is to define
+        what each pushed item is waiting for, and to pop only when the current input
+        proves that waiting item is resolved.
 
   - compare_table:
       title: Stack Operations
@@ -37,17 +37,41 @@ lesson:
       language: python
       title: Python Strategy
       body: list is the standard stack; append and pop at end are amortized O(1).
+      default_instincts:
+        - Use list for stack and deque for queue/deque behavior.
+        - Store indices when position or staleness matters.
+        - Represent heap entries as priority-payload tuples.
       behind_the_scenes: ["st[-1] fails on empty.", "list pop from end is efficient."]
+      avoid:
+        - Using list.pop(0) for queue behavior.
+        - Storing values when the algorithm needs indices.
+        - Forgetting heapq is a min-heap.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: stack adapter is good for pure LIFO; vector is useful when iteration is needed.
+      default_instincts:
+        - Use vector as a stack when you need back access or iteration.
+        - Use queue/deque for FIFO and both-ended behavior.
+        - Configure priority_queue for min-heap when needed.
       behind_the_scenes: ["pop returns void.", "top on empty is invalid."]
+      avoid:
+        - Expecting pop to return a value.
+        - Calling top/front/back on empty containers.
+        - Forgetting C++ priority_queue is a max-heap by default.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use ArrayDeque through Deque; old Stack is usually avoided.
+      default_instincts:
+        - Use ArrayDeque for stack, queue, and deque patterns.
+        - Use PriorityQueue for min-heap priority processing.
+        - Use indices in deques for sliding-window expiration.
       behind_the_scenes: ["pop throws on empty.", "Deque<Integer> boxes ints."]
+      avoid:
+        - Using legacy Stack by habit.
+        - Adding null to ArrayDeque.
+        - Using subtraction comparators in PriorityQueue.
 examples:
   - code_compare:
       title: Valid Parentheses
@@ -106,7 +130,9 @@ interview_questions:
   - question: What does st represent in parentheses matching?
     answer: Opening brackets that have not yet been matched.
 revision:
-  quick_summary: [Stack is LIFO, Always check empty before peek/pop, C++ pop returns void.]
+  quick_summary:
+    - "Stack is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Stack is LIFO. Always check empty before peek/pop. C++ pop returns void."
   cheat_table:
     title: Stack Cheat Table
     columns: [Need, Python, C++, Java]

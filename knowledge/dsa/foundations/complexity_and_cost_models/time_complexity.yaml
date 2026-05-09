@@ -244,10 +244,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Big-O describes growth, not exact runtime.
-    - Name the input size and dominant operation.
-    - Library calls still have costs.
-    - Language constants matter after the algorithmic class is correct.
+    - "Time Complexity Discussions is about explaining cost clearly: name the input size, the dominant operation, and the hidden language or runtime cost."
+    - "Interview answer: Big-O describes growth, not exact runtime. Name the input size and dominant operation. Library calls still have costs. Language constants matter after the algorithmic class is correct."
   cheat_table:
     title: Time Complexity Revision
     columns:

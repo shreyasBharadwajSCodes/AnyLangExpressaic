@@ -18,12 +18,12 @@ lesson:
         text fragment, builder as the growing mutable buffer, and ans as the final
         immutable result. This avoids repeated full-string copies.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Builders separate temporary construction from the final immutable string.
-        The algorithm keeps appending accepted pieces into a mutable buffer, then
-        materializes the final string once. This matters in interview loops because
-        repeated string concatenation can repeatedly copy earlier content.
+        Builder methods separate collecting pieces from creating the final string.
+        The strategy is to append small pieces into a mutable buffer and materialize
+        the final string once. This keeps the algorithm focused on what is accepted
+        into the output instead of repeatedly copying the whole partial answer.
 
   - compare_table:
       title: Builder Choices
@@ -36,17 +36,41 @@ lesson:
       language: python
       title: Python Strategy
       body: Collect pieces in a list and join once; this keeps each append cheap and makes final construction explicit.
+      default_instincts:
+        - Collect pieces in a list and join once at the end.
+        - Append only accepted pieces so the buffer mirrors output state.
+        - Use newline join for many output lines.
       behind_the_scenes: ["''.join(parts) allocates the final string once.", "parts contains references to string pieces."]
+      avoid:
+        - Using result += piece repeatedly for large outputs.
+        - Joining before all pieces are collected.
+        - Mixing non-string pieces into join without conversion.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: std::string is mutable and push_back works for characters; reserve capacity when final size is predictable.
+      default_instincts:
+        - Use string push_back for characters and += for string pieces.
+        - Reserve capacity when final size is predictable.
+        - Use ostringstream when formatting many mixed pieces.
       behind_the_scenes: ["string can reallocate as it grows.", "reserve reduces reallocations."]
+      avoid:
+        - Assuming push_back accepts strings instead of single chars.
+        - Ignoring reallocations when output grows heavily.
+        - Returning references to local string buffers.
   - language_lens:
       language: java
       title: Java Strategy
       body: StringBuilder is the default for repeated string construction.
+      default_instincts:
+        - Use StringBuilder for repeated construction.
+        - Append pieces as state changes and call toString once at the end.
+        - Use char[] when direct indexed mutation is clearer.
       behind_the_scenes: ["String is immutable.", "StringBuilder grows an internal char/byte buffer."]
+      avoid:
+        - Using String + repeatedly inside large loops.
+        - Forgetting to convert StringBuilder to String for return values.
+        - Sharing one builder across branches without restoring length.
 examples:
   - code_compare:
       title: Build From Characters
@@ -100,7 +124,9 @@ interview_questions:
   - question: When is reserve useful?
     answer: When final size is predictable and repeated growth may reallocate.
 revision:
-  quick_summary: [Builders avoid repeated full-string copies, Track current piece and final output separately.]
+  quick_summary:
+    - "String Builders And Buffers is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Builders avoid repeated full-string copies. Track current piece and final output separately."
   cheat_table:
     title: Builder Cheat Table
     columns: [Need, Python, C++, Java]

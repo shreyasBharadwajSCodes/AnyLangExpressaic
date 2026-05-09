@@ -145,7 +145,9 @@ interview_questions:
   - question: Why does r - c identify a diagonal?
     answer: Cells on the same main diagonal have the same row-column difference.
 revision:
-  quick_summary: [One row at a time, track columns and two diagonals, undo every changed constraint.]
+  quick_summary:
+    - "N-Queens Style Search is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: One row at a time. track columns and two diagonals. undo every changed constraint."
   cheat_table:
     title: N-Queens Cheat Table
     columns: [Constraint, Key]

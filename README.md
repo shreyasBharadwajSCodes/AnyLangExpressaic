@@ -4,289 +4,175 @@
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
 ![Status](https://img.shields.io/badge/Status-Active-green)
-![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen)
 
-AnyLanguageExpressaic is a learning tool for programmers moving from one language to another.
+**AnyLanguageExpressaic is a high-signal learning and knowledge system for moving between programming languages.**
 
-It helps you learn the same programming concept through the thinking style of different languages. Instead of only showing syntax translations, it focuses on mental models, habits, traps, examples, revision tables, and language-to-language transition paths.
+It is built for people who do not just want syntax translation. The goal is to teach how thinking changes across languages: data structure choices, memory behavior, references, mutability, equality, hashing, iteration costs, standard-library habits, and interview implementation patterns.
 
-If you know Python and want to learn C++, or you know Java and want to write natural Python, this project is built for that shift.
+The current focus is **DSA interview preparation across Python, C++, and Java**.
 
----
+## Why It Matters
 
-## Why This Exists
-
-Most programming comparison tools answer:
-
-> What is the syntax for this in another language?
-
-AnyLanguageExpressaic tries to answer:
-
-> How should I change the way I think when moving from one language to another?
-
-For example, moving from Python collections to C++ STL is not just:
+Most language-comparison material says:
 
 ```text
-list = vector
-dict = unordered_map
+Python list = C++ vector = Java ArrayList
 ```
 
-The real lesson is:
+That is not enough for real interviews or real code.
+
+AnyLanguageExpressaic explains the actual shift:
 
 ```text
-Python encourages direct built-in expression.
-C++ asks you to choose containers by guarantees, memory behavior, and cost.
-Java encourages interface-first design with implementation choices.
+Python list stores references and encourages direct expression.
+C++ vector stores typed values contiguously and forces you to care about copies, references, and invalidation.
+Java separates primitive arrays from collection classes and makes equality, boxing, and interfaces matter.
 ```
 
-That is the kind of learning this software is designed to support.
+That difference is the project.
 
----
+## High-Signal YAML Knowledge
 
-## Key Features
+The content is stored as structured YAML lessons. These files are designed to be:
 
-* Language-transition learning for Python, C++, Java, and future languages
-* Lesson mode for new readers
-* Revision mode for quick review with tables and flashcards
-* Transition mode for source-language to target-language thinking
-* Global language filter to show only the languages the learner wants
-* YAML-based lesson files that are easy to generate, edit, and share
-* Image placeholders and asset support for diagrams and examples
-* Folder-based YAML browsing with persistence
-* Keyboard shortcuts for fast navigation
-* Authoring template and AI prompt for generating new lesson files
+- readable by humans
+- easy to render in the Vis2 viewer
+- easy to revise quickly
+- useful for interview preparation
+- structured enough for AI-assisted generation, validation, and retrieval
+- high signal for the operability of small language models
 
----
+The YAML format keeps concepts compact and explicit: goals, explanations, language lenses, code comparisons, transition paths, common traps, revision tables, and flashcards.
 
-## Vis2
+This makes the knowledge base especially useful for smaller models because the data is not noisy prose. It is organized, predictable, and dense with the exact reasoning a model needs to answer or teach well.
 
-The current main experience is `vis2.py`.
+## What The Lessons Teach
 
-Vis2 reads component-style YAML lessons and renders them as:
+Each lesson is meant to explain:
 
-* beginner-friendly lessons
-* compact revision material
-* language-to-language transition guides
-* filtered views for selected languages
-* raw filtered YAML previews
+- the core algorithm or data structure strategy
+- how Python, C++, and Java think differently about the same concept
+- what variables mean while code runs
+- why key implementation steps are done
+- common interview traps and edge cases
+- when a method is appropriate
+- how to revise the topic quickly
 
-Run it with:
+Examples are not meant to be decorative. Code comments focus on important state changes and language caveats, not obvious syntax.
+
+## Current DSA Coverage
+
+The DSA knowledge base includes:
+
+- language readiness and implementation basics
+- complexity and cost models
+- language internals for Python, C++, and Java
+- core data structures
+- algorithmic patterns
+- graph and tree foundations
+- dynamic-programming planning
+- important interview problem tracks
+- final revision and cheat-table planning
+
+The strongest current areas are language readiness, foundations, core data structures, and algorithmic patterns.
+
+## How To Read The Content
+
+Start with the DSA booklet:
+
+```text
+knowledge/dsa/dsa_interview_booklet.yaml
+```
+
+Use it as the table of contents, then open the linked lesson YAML files in Vis2. For a fast path, read in this order:
+
+- quick revision
+- foundations
+- core data structures
+- algorithmic patterns
+
+For details on running the viewer, opening the DSA folder, and using the builder, see `outputter/Outputter_readme.md`.
+
+## Vis2 Viewer
+
+The main viewer is `outputter/src/vis2.py`.
+
+It opens YAML lessons and renders them as:
+
+- lesson view
+- revision view
+- transition view
+- filtered language view
+- raw YAML preview
+
+Run with:
 
 ```bash
 python outputter/src/vis2.py
 ```
 
-Install the required dependency first:
+Install the YAML dependency if needed:
 
 ```bash
 pip install pyyaml
 ```
 
----
+For detailed run instructions, builder usage, and troubleshooting, see `outputter/Outputter_readme.md`.
 
-## How It Works
+## Authoring
 
-Each concept file is a structured YAML lesson.
+New lessons should follow the project's YAML style:
 
-A good lesson contains:
+- valid YAML only
+- clear lesson goal
+- language-specific thinking blocks
+- comparable Python/C++/Java examples
+- code comments only for meaningful algorithm state or caveats
+- transition paths such as `python_to_cpp` and `python_to_java`
+- compact revision tables and flashcards
 
-* the shared concept
-* how each language wants you to think
-* examples across languages
-* transition paths such as `python_to_cpp` or `java_to_python`
-* habit swaps using language names
-* false friends where similar terms behave differently
-* revision summaries, cheat tables, and flashcards
-* optional image placeholders for diagrams
+Useful authoring references:
 
-Example transition block:
+- `templates/yaml-generation-prompt.md`
+- `templates/compare-template.yaml`
+- `outputter/src/lesson_builder_vis2.py`
 
-```yaml
-transitions:
-  python_to_cpp:
-    title: Moving from Python to C++
-    mindset_shift:
-      - From runtime flexibility to explicit types and compile-time checks.
-      - From convenience first to guarantees, costs, and ownership.
-    habit_swaps:
-      - python: Use list for most ordered data.
-        cpp: Start with vector, but understand allocation and invalidation.
-    false_friends:
-      - term: list
-        warning: C++ list is a linked list, not the equivalent of Python list.
-```
-
----
-
-## Authoring New Lessons
-
-Use these files:
-
-* `templates/compare-template.yaml` - a full reusable Vis2 lesson template
-* `templates/yaml-generation-prompt.md` - a prompt for generating useful YAML lessons with AI
-* `outputter/src/lesson_builder.py` - a visual component builder for creating and editing Vis2 YAML lessons
-* `outputter/src/lesson_builder_vis2.py` - a combined viewer/builder for UI-first lesson editing
-
-The prompt is designed to produce lessons that are actually useful:
-
-* not just syntax
-* not just tables
-* not rigid textbook notes
-* but mental models, examples, traps, revision material, and transition guidance
-
-Suggested workflow:
-
-1. Open Builder Vis2 from Vis2 or run `python outputter/src/lesson_builder_vis2.py`
-2. View the lesson first, then switch to Builder mode when you want to edit
-3. Use the + controls between cards or the bottom-right + button to add components
-4. Drag card handles to reorder components
-5. Choose Edit on a card to change details inline
-6. Save the lesson under `knowledge/`
-7. Open the folder in Vis2 and review Lesson, Revision, and Transition modes
-
----
-
-## Example Knowledge File
-
-The sample file:
-
-```text
-knowledge/dsa/stl_vs_collections.yaml
-```
-
-demonstrates how to compare:
-
-* Python collections
-* C++ STL containers
-* Java Collections
-
-It includes lesson blocks, code comparisons, revision tables, flashcards, and transition paths like:
-
-* `python_to_cpp`
-* `cpp_to_python`
-* `java_to_cpp`
-* `cpp_to_java`
-
----
-
-## Keyboard Shortcuts
-
-Vis2 includes shortcuts for faster study:
-
-* `Ctrl+O` - open YAML folder
-* `Ctrl+B` - open Lesson Builder
-* `Ctrl+R` - reload current YAML
-* `Up` / `Down` - previous or next YAML file
-* `PageUp` / `PageDown` - jump through YAML files
-* `Home` / `End` - first or last YAML file
-* `Ctrl+1` - lesson mode
-* `Ctrl+2` - revision mode
-* `Ctrl+3` - transition mode
-* `Ctrl+4` - raw structure mode
-* `Ctrl+Left` / `Ctrl+Right` - cycle views
-* `Ctrl+T` or `Ctrl+Enter` - show transition mode
-* `Ctrl+Shift+T` - swap transition languages
-
----
-
-## Repository Structure
-
-```text
-knowledge/
-  dsa/
-    stl_vs_collections.yaml
-
-templates/
-  compare-template.yaml
-  yaml-generation-prompt.md
-
-outputter/
-  src/
-    vis2.py
-    lesson_builder.py
-    lesson_builder_vis2.py
-
-assets/
-  icon.ico
-```
-
----
-
-## Who This Is For
-
-AnyLanguageExpressaic is useful for:
-
-* Python developers learning C++
-* Java developers learning Python
-* C++ developers learning Java
-* students revising data structures and algorithms
-* interview preparation across multiple programming languages
-* educators creating programming language comparison lessons
-* learners who want to understand mental models, not memorize syntax
-
----
-
-## Search Keywords
-
-programming language comparison,
-Python to C++,
-C++ STL vs Python collections,
-Java Collections vs C++ STL,
-Python Java C++ data structures,
-learn programming languages,
-language transition learning,
-mental models for programming,
-data structures across languages,
-algorithms across languages,
-coding interview revision,
-programming education tool,
-YAML learning content,
-multi-language programming lessons,
-cross-language programming concepts
-
----
-
-## Roadmap
-
-Planned directions:
-
-* More concept files for core programming and DSA topics
-* More language support
-* Better image and diagram rendering
-* YAML validation tools
-* Export to Markdown or HTML
-* TLM/AI-assisted lesson generation and review
-* Web version
-* VS Code extension
-
----
+For AI agents and small language models working on this repository, see `AGENTS.md`.
 
 ## Contributing
 
-Contributions are welcome.
+Contributions are welcome. The best way to contribute is to fork the repository, make focused changes in your fork, and open a pull request.
 
 Good contributions include:
 
-* new Vis2 YAML lessons
-* improved transition paths
-* better examples and false friends
-* image assets and diagrams
-* YAML validation tooling
-* UI improvements to Vis2
-* support for more languages
+- improving YAML lessons
+- adding missing interview topics
+- improving Python/C++/Java language-thinking sections
+- fixing YAML rendering issues
+- improving Vis2 or builder usability
+- improving documentation
 
-See `CONTRIBUTING.md` for more details.
+For the full contribution flow and expectations, see `CONTRIBUTING.md`.
 
----
+## Who It Is For
 
-## License
+AnyLanguageExpressaic is for:
 
-This project is licensed under the MIT License.
+- students preparing for DSA interviews
+- Python developers learning C++ or Java
+- Java developers moving to Python or C++
+- C++ developers learning higher-level language habits
+- educators creating cross-language lessons
+- builders experimenting with structured, high-signal data for small language models
 
----
+## Project Direction
 
-## Vision
+The project is moving toward a richer structured knowledge base that can support:
 
-Learn a concept once.
+- better DSA learning across languages
+- stronger revision workflows
+- AI-assisted lesson generation and cleanup
+- lightweight model-friendly knowledge retrieval
+- clearer visual rendering of programming concepts
 
-Then learn how each language wants you to think about it.
+The north star is simple: **teach language thinking, not just language syntax.**

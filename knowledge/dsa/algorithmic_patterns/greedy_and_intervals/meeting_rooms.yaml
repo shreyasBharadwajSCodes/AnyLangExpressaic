@@ -129,7 +129,9 @@ interview_questions:
   - question: What does heap size represent?
     answer: The number of rooms occupied after processing the current meeting.
 revision:
-  quick_summary: [Sort by start, heap stores active end times, pop when earliest end <= start.]
+  quick_summary:
+    - "Meeting Rooms is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Meeting room problems ask how many intervals are active at once, so the solution tracks reusable rooms by their end times. sort meetings by start, keep active end times in a min-heap, and reuse a room when the earliest end is before the next start."
   cheat_table:
     title: Meeting Rooms Cheat Table
     columns: [Need, Python, C++, Java]

@@ -323,10 +323,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Stack means LIFO; queue means FIFO; deque means both ends.
-    - Python list is fine for stack, deque for queue.
-    - C++ stack and queue pop methods return void.
-    - Java ArrayDeque is the usual stack/queue choice.
+    - "Stack Queue Deque Readiness is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Stack means LIFO; queue means FIFO; deque means both ends. Python list is fine for stack, deque for queue. C++ stack and queue pop methods return void. Java ArrayDeque is the usual stack/queue choice."
   cheat_table:
     title: Stack Queue Deque Revision
     columns:

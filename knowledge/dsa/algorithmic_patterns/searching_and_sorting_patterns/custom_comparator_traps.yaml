@@ -127,7 +127,9 @@ interview_questions:
   - question: Why avoid a - b in Java comparators?
     answer: The subtraction can overflow and produce the wrong sign.
 revision:
-  quick_summary: [Python prefers keys, C++ comparator is strict bool, Java uses compare helpers.]
+  quick_summary:
+    - "Custom Comparator Traps is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Python prefers keys. C++ comparator is strict bool. Java uses compare helpers."
   cheat_table:
     title: Comparator Trap Table
     columns: [Language, Avoid, Prefer]

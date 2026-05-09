@@ -12,19 +12,18 @@ assets:
     alt: Linked list nodes with prev, curr, next, dummy, and tail pointers labeled.
 lesson:
   - explain:
-      title: Pointer Tracker
+      title: Linked List Mental Model
       body: >
         Linked list problems are pointer-mutation problems. Track curr as the node
         being processed, prev as the node before it or reversed prefix, next_node as
         the saved original next pointer, and dummy/tail for building results.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Linked-list algorithms change references between nodes, not array indices.
-        Before rewiring a pointer, save the next node that keeps access to the
-        untouched suffix. The method is about mutation order: save, rewire, advance.
-        Dummy nodes are used when the output head may change while a tail pointer
-        keeps building the result.
+        Linked-list methods are reference rewiring methods. The algorithm must save
+        any pointer it will need before changing next links. The usual strategy is to
+        name handles such as prev, curr, next_node, dummy, and tail, then update them
+        in an order that never loses the remaining list.
 
   - compare_table:
       title: Node Model
@@ -38,17 +37,41 @@ lesson:
       language: python
       title: Python Linked List Strategy
       body: References are object references; rebinding curr does not mutate the node, but assigning curr.next does.
+      default_instincts:
+        - Treat node variables as object references, not copied nodes.
+        - Save next_node before changing curr.next.
+        - Use dummy and tail when the result head may change.
       behind_the_scenes: ["Use is None for missing node checks.", "No manual deallocation."]
+      avoid:
+        - Comparing node values when the algorithm needs node identity.
+        - Changing curr.next before saving the original suffix.
+        - Assuming rebinding curr mutates the caller variable.
   - language_lens:
       language: cpp
       title: C++ Linked List Strategy
       body: Pointers can be null and must be checked before dereferencing.
+      default_instincts:
+        - Check ListNode* for nullptr before using arrow access.
+        - Save nextNode before rewiring curr->next.
+        - Use dummy nodes carefully and return dummy->next when building results.
       behind_the_scenes: ["node->next dereferences node.", "Ownership/deletion is usually handled by judge in interview platforms."]
+      avoid:
+        - Dereferencing curr or curr->next before null checks.
+        - Losing ownership of the remaining suffix during rewiring.
+        - Returning pointers to local stack-allocated dummy nodes incorrectly.
   - language_lens:
       language: java
       title: Java Linked List Strategy
       body: References point to node objects; changing node.next mutates the structure visible to all aliases.
+      default_instincts:
+        - Treat ListNode variables as references to shared node objects.
+        - Save nextNode before changing curr.next.
+        - Use dummy and tail references to build output lists cleanly.
       behind_the_scenes: ["null checks are required.", "GC handles unused nodes."]
+      avoid:
+        - Forgetting null checks before curr.next.
+        - Using equals when reference identity is the algorithmic question.
+        - Adding new nodes when the problem expects pointer rewiring.
 examples:
   - code_compare:
       title: Reverse List
@@ -123,7 +146,9 @@ interview_questions:
   - question: What does dummy protect?
     answer: It gives a stable handle to the result head while tail moves.
 revision:
-  quick_summary: [Track curr, prev, and next_node, Check null before dereference, Dummy nodes simplify building.]
+  quick_summary:
+    - "Linked List is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Track curr. prev. and next_node. Check null before dereference. Dummy nodes simplify building."
   cheat_table:
     title: Linked List Cheat Table
     columns: [Need, Python, C++, Java]

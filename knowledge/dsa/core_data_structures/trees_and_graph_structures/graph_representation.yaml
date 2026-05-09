@@ -18,12 +18,12 @@ lesson:
         graph, node as the current vertex, nei as one neighbor from adj[node], weight
         when edges are weighted, and visited/dist as traversal state.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Graph representation decides how edges are stored before any traversal or
-        shortest-path method begins. The method starts by clarifying labels, direction,
-        weights, and density. An adjacency list makes neighbor iteration efficient;
-        a matrix makes edge-existence checks direct but costs much more space.
+        Graph representation methods decide how edges are stored before traversal.
+        The strategy starts with labels, direction, and weights: indexed nodes can use
+        list or vector adjacency, sparse labels often need maps, and undirected edges
+        must be inserted in both directions.
 
   - compare_table:
       title: Representation Choices
@@ -36,17 +36,41 @@ lesson:
       language: python
       title: Python Strategy
       body: Use list of lists for 0..n-1 nodes, defaultdict(list) when labels are sparse or arbitrary.
+      default_instincts:
+        - Use object references for nodes and lists/dicts for adjacency.
+        - Name helper return values by the subtree or component summary they represent.
+        - Use iterative traversal if recursion depth can be too large.
       behind_the_scenes: ["[[] for _ in range(n)] creates independent lists.", "[[]] * n aliases rows."]
+      avoid:
+        - Comparing node values when identity is needed.
+        - Using shared rows or adjacency lists by multiplication.
+        - Forgetting to add both directions for undirected edges.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: Use vector<vector<int>> for unweighted indexed graphs; vector<vector<pair<int,int>>> for weighted graphs.
+      default_instincts:
+        - Check pointers before dereferencing node fields.
+        - Pass adjacency and large structures by reference.
+        - Use vectors for indexed graphs and maps for sparse labels.
       behind_the_scenes: ["Pass adj by const reference to helpers.", "For undirected edges, add both directions."]
+      avoid:
+        - Dereferencing nullptr.
+        - Copying adjacency lists into recursive helpers.
+        - Using int bounds where tree values need long long sentinels.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use List<List<Integer>> or List<List<int[]>>; initialize every inner list.
+      default_instincts:
+        - Use null checks before reading node fields.
+        - Use helper classes or methods for DSU, trie, and traversal state.
+        - Initialize every inner adjacency list.
       behind_the_scenes: ["adj.get(u).add(v) fails if adj[u] list was not created.", "int[] pair often stores {neighbor, weight}."]
+      avoid:
+        - Forgetting inner-list initialization.
+        - Using == for object value equality when equals is needed.
+        - Mutating key objects used in maps or sets.
 examples:
   - code_compare:
       title: Build Unweighted Undirected Graph
@@ -127,7 +151,9 @@ interview_questions:
   - question: How do you represent an undirected edge?
     answer: Add v to adj[u] and u to adj[v].
 revision:
-  quick_summary: [adj stores graph shape, node is current vertex, nei iterates outgoing edges, visited/dist stores traversal state.]
+  quick_summary:
+    - "Graph Representation is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: adj stores graph shape. node is current vertex. nei iterates outgoing edges. visited/dist stores traversal state."
   cheat_table:
     title: Graph Representation Cheat Table
     columns: [Need, Python, C++, Java]

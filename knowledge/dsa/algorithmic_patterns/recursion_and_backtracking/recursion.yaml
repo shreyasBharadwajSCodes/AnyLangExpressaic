@@ -148,7 +148,9 @@ interview_questions:
   - question: What causes stack overflow?
     answer: Recursion depth grows too large before reaching base cases.
 revision:
-  quick_summary: [Base case stops, state defines subproblem, return value serves caller, progress makes calls smaller.]
+  quick_summary:
+    - "Recursion is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Base case stops. state defines subproblem. return value serves caller. progress makes calls smaller."
   cheat_table:
     title: Recursion Cheat Table
     columns: [Need, Reminder]

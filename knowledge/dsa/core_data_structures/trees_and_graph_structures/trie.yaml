@@ -18,12 +18,12 @@ lesson:
         ch as the current character, child as the next edge, and is_end as whether a
         complete word stops at this node.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A trie walks one character per level. Each edge represents the next character
-        in a prefix, and the terminal marker separates complete words from prefixes
-        that only lead to longer words. The method is to create missing child edges
-        while inserting and follow existing edges while searching.
+        Trie methods walk characters through shared prefix nodes. The current node
+        represents the prefix already consumed, children represent next characters,
+        and terminal markers distinguish a complete word from a prefix of longer
+        words.
 
   - compare_table:
       title: Child Storage
@@ -36,14 +36,38 @@ lesson:
       language: python
       title: Python Strategy
       body: Use dict children for clarity; defaultdict can help but explicit creation is easier to explain.
+      default_instincts:
+        - Use object references for nodes and lists/dicts for adjacency.
+        - Name helper return values by the subtree or component summary they represent.
+        - Use iterative traversal if recursion depth can be too large.
+      avoid:
+        - Comparing node values when identity is needed.
+        - Using shared rows or adjacency lists by multiplication.
+        - Forgetting to add both directions for undirected edges.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: Use array<Node*,26> or vector<Node*> for lowercase; unordered_map for flexible alphabets.
+      default_instincts:
+        - Check pointers before dereferencing node fields.
+        - Pass adjacency and large structures by reference.
+        - Use vectors for indexed graphs and maps for sparse labels.
+      avoid:
+        - Dereferencing nullptr.
+        - Copying adjacency lists into recursive helpers.
+        - Using int bounds where tree values need long long sentinels.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use TrieNode[] children = new TrieNode[26] for lowercase interview problems.
+      default_instincts:
+        - Use null checks before reading node fields.
+        - Use helper classes or methods for DSU, trie, and traversal state.
+        - Initialize every inner adjacency list.
+      avoid:
+        - Forgetting inner-list initialization.
+        - Using == for object value equality when equals is needed.
+        - Mutating key objects used in maps or sets.
 examples:
   - code_compare:
       title: Insert Word
@@ -112,7 +136,9 @@ interview_questions:
   - question: What is is_end for?
     answer: It distinguishes a complete stored word from a prefix that merely leads to longer words.
 revision:
-  quick_summary: [node walks down characters, children store edges, is_end marks full words.]
+  quick_summary:
+    - "Trie is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: node walks down characters. children store edges. is_end marks full words."
   cheat_table:
     title: Trie Cheat Table
     columns: [Variable, Meaning]

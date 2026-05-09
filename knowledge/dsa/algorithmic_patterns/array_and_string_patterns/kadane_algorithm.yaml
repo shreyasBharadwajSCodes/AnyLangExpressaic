@@ -175,7 +175,9 @@ interview_questions:
   - question: Why initialize from nums[0]?
     answer: It correctly handles arrays where every value is negative.
 revision:
-  quick_summary: [cur is best ending here, best is best anywhere, restart when previous cur hurts.]
+  quick_summary:
+    - "Kadane Algorithm is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: cur is best ending here. best is best anywhere. restart when previous cur hurts."
   cheat_table:
     title: Kadane Cheat Table
     columns: [Decision, Formula]

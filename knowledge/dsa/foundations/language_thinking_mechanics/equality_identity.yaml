@@ -230,10 +230,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Equality and identity are different questions.
-    - Python == is usually value equality; is is identity.
-    - C++ pointer equality is address equality.
-    - Java object == is reference identity; equals is content when implemented.
+    - "Equality And Identity explains behind-the-scenes language behavior that affects references, copying, equality, memory, or mutation in interview code."
+    - "Behind the scenes: Equality and identity are different questions. Python == is usually value equality; is is identity. C++ pointer equality is address equality. Java object == is reference identity; equals is content when implemented."
   cheat_table:
     title: Equality Revision
     columns:

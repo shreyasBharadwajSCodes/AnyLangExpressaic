@@ -243,11 +243,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Big-O comes first; constants matter after.
-    - Dense small keys often favor arrays over hash maps.
-    - Python has higher per-operation overhead.
-    - C++ vector and Java primitive arrays are cache-friendly.
-    - Java boxing can be expensive.
+    - "Constant Factors In Interviews is about explaining cost clearly: name the input size, the dominant operation, and the hidden language or runtime cost."
+    - "Interview answer: Big-O comes first; constants matter after. Dense small keys often favor arrays over hash maps. Python has higher per-operation overhead. C++ vector and Java primitive arrays are cache-friendly. Java boxing can be expensive."
   cheat_table:
     title: Constant Factor Revision
     columns:

@@ -343,10 +343,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Write syntax that keeps the algorithm visible.
-    - Python is concise but aliasing and mutable defaults matter.
-    - C++ is powerful but copies, references, lifetimes, and overflow matter.
-    - Java is structured but boxed types, equality, null, and collection choices matter.
+    - "Syntax Readiness For Interviews is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Write syntax that keeps the algorithm visible. Python is concise but aliasing and mutable defaults matter. C++ is powerful but copies, references, lifetimes, and overflow matter. Java is structured but boxed types, equality, null, and collection choices matter."
   cheat_table:
     title: Interview Syntax Readiness Table
     columns:

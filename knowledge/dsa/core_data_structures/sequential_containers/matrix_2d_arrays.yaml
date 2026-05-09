@@ -18,12 +18,12 @@ lesson:
         (r, c), direction delta (dr, dc), next cell (nr, nc), and visited/state.
         Most bugs are swapped dimensions, bad bounds, or shared rows.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Matrix methods are coordinate methods. Every step should preserve the meaning
-        of row, column, next row, next column, and bounds. The structure is simple,
-        but the bugs are usually dimension swaps, checking grid cells before checking
-        bounds, or accidentally sharing rows while initializing a grid.
+        Matrix methods are coordinate methods. Every loop should make clear whether
+        r and c are current coordinates, nr and nc are candidate coordinates, and
+        rows and cols are bounds. The safe method order is compute candidate, check
+        bounds, then read or mutate the grid.
 
   - compare_table:
       title: 2D Structure Map
@@ -38,17 +38,41 @@ lesson:
       language: python
       title: Python Grid Strategy
       body: Use row comprehensions and explicit bounds; remember negative indices are valid and can hide boundary bugs.
+      default_instincts:
+        - Keep rows and cols separate and name candidate cells nr and nc.
+        - Check bounds before reading grid[nr][nc].
+        - Use row comprehensions so rows are independent.
       behind_the_scenes: ["[[0] * cols] * rows aliases rows.", "grid[-1][c] is valid but usually wrong."]
+      avoid:
+        - Using [[0] * cols] * rows for mutable grids.
+        - Letting negative indices pass as valid grid coordinates.
+        - Swapping row and column bounds.
   - language_lens:
       language: cpp
       title: C++ Grid Strategy
       body: vector<vector<int>> is clear for interviews; bounds are your responsibility.
+      default_instincts:
+        - Use vector<vector<T>> for clear interview grids.
+        - Check bounds before operator[] access.
+        - Store direction deltas as pairs or small arrays.
       behind_the_scenes: ["Rows are separate vectors.", "operator[] does not bounds-check."]
+      avoid:
+        - Reading grid[nr][nc] before proving nr and nc are in range.
+        - Using int rows with size_t loops carelessly.
+        - Assuming vector rows are one contiguous 2D block.
   - language_lens:
       language: java
       title: Java Grid Strategy
       body: int[][] is direct for primitive grids; each row is its own array.
+      default_instincts:
+        - Use grid.length for rows and grid[0].length for columns after empty checks.
+        - Use int[][] directions for neighbor moves.
+        - Mark visited before enqueueing grid BFS cells.
       behind_the_scenes: ["grid.length is row count.", "grid[0].length is column count if grid is non-empty."]
+      avoid:
+        - Reading grid[0] when grid.length is zero.
+        - Mixing row and column lengths.
+        - Assuming jagged arrays always have equal row lengths.
 examples:
   - code_compare:
       title: Visit Four Neighbors
@@ -112,7 +136,9 @@ interview_questions:
   - question: Why mark visited before enqueue?
     answer: It prevents the same cell from being enqueued repeatedly by multiple neighbors.
 revision:
-  quick_summary: [Track coordinates visually, Bounds before access, Avoid Python row aliasing.]
+  quick_summary:
+    - "Matrix / 2D Arrays is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Track coordinates visually. Bounds before access. Avoid Python row aliasing."
   cheat_table:
     title: Matrix Cheat Table
     columns: [Need, Python, C++, Java]

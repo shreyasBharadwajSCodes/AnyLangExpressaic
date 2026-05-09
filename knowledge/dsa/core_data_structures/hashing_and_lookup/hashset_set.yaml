@@ -18,13 +18,12 @@ lesson:
         seen as all accepted or visited values so far, and duplicate_found or answer
         as the output affected by membership.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A set answers membership questions about a chosen meaning of seen. The
-        algorithm must define whether seen means processed values, active-window
-        values, visited nodes, or forbidden states. Once that meaning is fixed, the
-        method is check membership at the right time, then add or remove at the point
-        that preserves the invariant.
+        Set methods answer membership questions. The strategy is to define what seen
+        means at the exact moment of the check: already processed values, active
+        window values, visited graph nodes, or forbidden states. Check-before-add and
+        add-before-check solve different problems.
 
   - compare_table:
       title: Set Operations
@@ -38,17 +37,41 @@ lesson:
       language: python
       title: Python Strategy
       body: Use set for average O(1) membership; elements must be hashable.
+      default_instincts:
+        - Use dict/set when key identity is clear and hashable.
+        - Use tuple keys for immutable compound state.
+        - Delete zero-count keys when active distinct count matters.
       behind_the_scenes: ["list is unhashable.", "tuple works if its contents are hashable."]
+      avoid:
+        - Using mutable list or dict as a key.
+        - Assuming dict or set order is sorted.
+        - Keeping zero counts when len(freq) is used as state.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: unordered_set gives average O(1); set gives sorted O(log n).
+      default_instincts:
+        - Use unordered_map/set for average lookup and map/set for sorted keys.
+        - Use find/count when you do not want insertion.
+        - Design custom hashes for compound keys deliberately.
       behind_the_scenes: ["Custom compound keys need a hash for unordered_set.", "Iteration order is unspecified."]
+      avoid:
+        - Using operator[] only to check existence.
+        - Forgetting unordered containers need hash support for custom keys.
+        - Assuming unordered_map iteration order is stable.
   - language_lens:
       language: java
       title: Java Strategy
       body: HashSet uses hashCode and equals; custom keys need both.
+      default_instincts:
+        - Use HashMap/HashSet with equals and hashCode aware keys.
+        - Use getOrDefault for counts and remove for zero counts.
+        - Use records or immutable classes for compound keys when possible.
       behind_the_scenes: ["HashSet<Integer> boxes ints.", "LinkedHashSet preserves insertion order if needed."]
+      avoid:
+        - Using == for object or String content equality.
+        - Mutating fields used by hashCode after insertion.
+        - Forgetting get can return null.
 examples:
   - code_compare:
       title: Contains Duplicate
@@ -103,7 +126,9 @@ interview_questions:
   - question: What does seen mean in duplicate detection?
     answer: It contains values already processed before the current x.
 revision:
-  quick_summary: [Set lookup is average O(1), Track seen before insertion, Custom keys need stable hashing.]
+  quick_summary:
+    - "Set / HashSet / unordered_set is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Set lookup is average O(1). Track seen before insertion. Custom keys need stable hashing."
   cheat_table:
     title: Set Cheat Table
     columns: [Need, Python, C++, Java]

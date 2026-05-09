@@ -1,143 +1,167 @@
 # Outputter Tools
 
-This folder contains the current local tools for reading, creating, and studying
-AnyLanguageExpressaic lesson YAML files.
+The `outputter` folder contains the local desktop tools used to view, study, and edit AnyLanguageExpressaic YAML lessons.
 
-The main tools are:
-
-```text
-outputter/src/vis2.py
-outputter/src/lesson_builder.py
-outputter/src/lesson_builder_vis2.py
-```
-
----
-
-## Vis2
-
-`vis2.py` is the main lesson viewer.
-
-It renders Vis2 YAML lessons into study modes:
-
-* Lesson mode for guided learning
-* Revision mode for quick interview prep
-* Transition mode for moving from one language to another
-* Raw Structure mode for inspecting filtered YAML
-
-Run:
-
-```bash
-python outputter/src/vis2.py
-```
-
-Vis2 opens `templates/vis2_welcome_template.yaml` by default when no usable
-local config is present.
-
----
-
-## Lesson Builder
-
-`lesson_builder.py` is the visual authoring tool for Vis2 YAML files.
-
-`lesson_builder_vis2.py` is the newer combined tool. It keeps the Vis2-like
-study surface as the main experience, while edit options appear only when users
-right-click or double-click a card.
-
-Run:
-
-```bash
-python outputter/src/lesson_builder.py
-python outputter/src/lesson_builder_vis2.py
-```
-
-You can also open it from Vis2 using:
+For most users, the recommended way to run the app is the packaged executable:
 
 ```text
-Ctrl+B
+vis2.exe
 ```
 
-or the **Builder Vis2** button.
+The Python source files are mainly for contributors and developers.
 
-The builder supports:
+## Run Vis2
 
-* adding lesson components
-* editing metadata
-* Vis2-style Lesson, Revision, Transition, and Raw Structure modes
-* right-click editing without leaving the reading view
-* adding custom YAML labels such as notes, categories, and future metadata
-  without disturbing the UI structure
-* creating explanations
-* creating language lenses
-* creating comparison tables
-* creating code comparisons
-* creating transition paths
-* creating revision summaries
-* creating revision tables
-* creating flashcards
-* adding components before or after cards from the right-click menu
-* dragging cards to reorder components
-* inline edit controls that appear only when needed
-* undo and redo
-* opening existing YAML
-* saving new YAML lessons
+Use the packaged executable when available:
 
----
+```text
+vis2.exe
+```
 
-## Suggested Workflow
+If the executable is inside the build output folder, run:
 
-1. Open the Lesson Builder.
-2. Prefer `lesson_builder_vis2.py` for a UI-first workflow.
-3. Start in Lesson mode to see how the lesson reads.
-4. Right-click a card to edit, add before/after, duplicate, delete, or edit YAML directly.
-5. Double-click a card for inline editing.
-6. Drag cards to reposition components.
-7. Right-click the page title area to edit lesson-level details.
-8. Save the lesson under `knowledge/`.
-9. Open the lesson folder in Vis2.
-10. Test Lesson, Revision, Transition, and Raw Structure modes.
+```text
+dist/vis2.exe
+```
 
----
+Vis2:
 
-## YAML Lesson Focus
+- opens a desktop YAML lesson viewer
+- remembers the last opened folder and file
+- renders lesson, revision, transition, and raw YAML views
+- lets you filter the visible languages
+- lets you move through YAML files in a folder
 
-Lessons should be interview-prep friendly and language-transition focused.
+On first launch, Vis2 opens the welcome template if no previous config is available.
 
-Good lessons should include:
+## Open The DSA Lessons
 
-* the shared concept
-* how each language wants the learner to think
-* short interview-style examples
-* language-specific traps
-* source-to-target transition paths
-* habit swaps
-* false friends
-* quick revision tables
-* flashcards
+After launching Vis2:
 
-The goal is not word-for-word syntax translation. The goal is to help students
-switch thinking between languages for coding interviews.
+1. Choose **Open YAML Folder**.
+2. Select `knowledge/dsa`.
+3. Pick a lesson from the sidebar.
+4. Switch between Lesson, Revision, Transition, and Raw views as needed.
 
----
+For the DSA booklet, open:
 
-## Dependencies
+```text
+knowledge/dsa/dsa_interview_booklet.yaml
+```
 
-Required:
+## Developer Source Run
+
+Most users should not need this section. Use it only if you are developing the tool or the executable is not available.
+
+Run commands from the repository root:
+
+```bash
+cd AnyLangExpressaic
+```
+
+Install the YAML dependency:
 
 ```bash
 pip install pyyaml
 ```
 
-Both tools use Python's built-in Tkinter GUI library.
+Run the viewer from source:
 
----
+```bash
+python outputter/src/vis2.py
+```
+
+The tools also use Python's built-in Tkinter GUI library. On most Windows Python installs, Tkinter is usually included.
+
+## Developer Builder
+
+Run the combined viewer/editor from source:
+
+```bash
+python outputter/src/lesson_builder_vis2.py
+```
+
+You can also open the builder from Vis2 with:
+
+```text
+Ctrl+B
+```
+
+Use the builder when you want to:
+
+- create a new YAML lesson
+- edit lesson metadata
+- edit cards inline
+- add explanations, language lenses, tables, examples, transitions, revision blocks, and flashcards
+- duplicate or delete cards
+- reorder lesson sections
+- edit raw YAML for a card
+- save a lesson under `knowledge/`
+
+## Recommended Workflow
+
+1. Run `vis2.exe`.
+2. Open `knowledge/dsa`.
+3. Read lessons in Lesson, Revision, and Transition views.
+4. Use the builder only when you need to edit or create YAML lessons.
+5. Save edited YAML under `knowledge/`.
+6. Reopen or refresh the lesson in Vis2.
+
+When editing DSA lessons, keep code comments focused on meaningful algorithm state, variable movement, or language-specific caveats. Avoid comments that explain obvious syntax.
 
 ## Local Config
 
-Vis2 may create a local ignored file:
+The tools may create:
 
 ```text
 vis2_config.yaml
 ```
 
-This stores the last opened lesson folder and file. It is ignored by Git and is
-not part of the lesson content.
+This stores local UI state such as the last opened YAML folder and file. It is not lesson content.
+
+## Common Issues
+
+If `vis2.exe` is not available, use the developer source run:
+
+```bash
+python outputter/src/vis2.py
+```
+
+If Python is not found:
+
+```bash
+py outputter/src/vis2.py
+```
+
+If source-mode YAML loading fails, check that `pyyaml` is installed:
+
+```bash
+python -m pip install pyyaml
+```
+
+If a YAML file does not render:
+
+- check indentation
+- avoid fragile inline strings with unquoted `: `
+- use `|` for code blocks
+- use `>` for longer prose blocks
+- avoid unnecessary Markdown characters inside YAML prose
+
+If the UI opens but no lesson appears, use **Open YAML Folder** and choose a folder that contains `.yaml` files.
+
+## What The Viewer Expects
+
+The best YAML lessons usually include:
+
+- `id`
+- `title`
+- `goal`
+- `lesson`
+- `examples`
+- `transitions`
+- `interview_questions`
+- `revision`
+- `notes`
+- `tlm_hooks`
+
+The viewer is intentionally flexible, but consistent lesson structure makes the content easier for humans and small language models to use.

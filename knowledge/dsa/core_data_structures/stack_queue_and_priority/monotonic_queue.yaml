@@ -19,25 +19,49 @@ lesson:
         best, stale condition as dq.front <= i - k, and ans as values recorded when
         the first full window ends.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A monotonic queue keeps useful window candidates in a deque. The front is the
-        current best candidate, old indices leave from the front, and dominated
-        candidates leave from the back. The method works because a newer, better
-        value can replace an older worse value for every future window.
+        Monotonic-queue methods keep only useful window candidates. The front is the
+        current best candidate, while the back removes candidates dominated by the
+        incoming value. Correctness depends on doing both removals: stale indices from
+        the front and dominated indices from the back.
 
   - language_lens:
       language: python
       title: Python Strategy
       body: Use collections.deque and store indices.
+      default_instincts:
+        - Use list for stack and deque for queue/deque behavior.
+        - Store indices when position or staleness matters.
+        - Represent heap entries as priority-payload tuples.
+      avoid:
+        - Using list.pop(0) for queue behavior.
+        - Storing values when the algorithm needs indices.
+        - Forgetting heapq is a min-heap.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: Use deque<int>; front/back expose candidate indices.
+      default_instincts:
+        - Use vector as a stack when you need back access or iteration.
+        - Use queue/deque for FIFO and both-ended behavior.
+        - Configure priority_queue for min-heap when needed.
+      avoid:
+        - Expecting pop to return a value.
+        - Calling top/front/back on empty containers.
+        - Forgetting C++ priority_queue is a max-heap by default.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use ArrayDeque<Integer>; peekFirst/peekLast make end roles explicit.
+      default_instincts:
+        - Use ArrayDeque for stack, queue, and deque patterns.
+        - Use PriorityQueue for min-heap priority processing.
+        - Use indices in deques for sliding-window expiration.
+      avoid:
+        - Using legacy Stack by habit.
+        - Adding null to ArrayDeque.
+        - Using subtraction comparators in PriorityQueue.
 examples:
   - code_compare:
       title: Sliding Window Maximum
@@ -111,7 +135,9 @@ interview_questions:
   - question: Why store indices instead of values?
     answer: Indices let you remove stale elements that left the window.
 revision:
-  quick_summary: [Store useful indices, Front is best, Back removes dominated candidates, Stale boundary is i-k.]
+  quick_summary:
+    - "Monotonic Queue is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Store useful indices. Front is best. Back removes dominated candidates. Stale boundary is i-k."
   cheat_table:
     title: Monotonic Queue Cheat Table
     columns: [Need, Python, C++, Java]

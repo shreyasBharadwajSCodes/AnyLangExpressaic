@@ -234,10 +234,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Space complexity counts extra memory that grows with input.
-    - Recursion stack counts.
-    - Copies and slices count.
-    - Primitive arrays are much more compact than boxed/object containers.
+    - "Space Complexity Discussions is about explaining cost clearly: name the input size, the dominant operation, and the hidden language or runtime cost."
+    - "Interview answer: Space complexity counts extra memory that grows with input. Recursion stack counts. Copies and slices count. Primitive arrays are much more compact than boxed/object containers."
   cheat_table:
     title: Space Complexity Revision
     columns:

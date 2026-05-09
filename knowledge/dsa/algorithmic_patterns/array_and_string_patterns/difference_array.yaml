@@ -2,8 +2,15 @@
 title: Difference Array
 category: dsa
 level: intermediate
-languages: [python, cpp, java]
-tags: [difference_array, range_update, prefix_sum, interview]
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - difference_array
+  - range_update
+  - prefix_sum
+  - interview
 goal: Teach difference arrays for efficient range updates across Python, C++, and Java with clear boundary handling and reconstruction.
 assets:
   difference_array_trace:
@@ -14,9 +21,10 @@ lesson:
   - explain:
       title: Pattern Mental Model
       body: >
-        A difference array stores changes at boundaries. To add delta over [l, r],
-        add delta at l and subtract delta at r + 1. A final prefix scan reconstructs
-        the actual values.
+        A difference array stores changes at boundaries. To add delta over an
+        inclusive left-to-right range, add delta at the left index and subtract
+        delta at the index immediately after the right boundary. A final prefix
+        scan reconstructs the actual values.
   - explain:
       title: How The Algorithm Works
       body: >
@@ -26,11 +34,20 @@ lesson:
         powerful when all updates are known before the final array is needed.
   - compare_table:
       title: When To Use
-      columns: [Signal, Brute Force, Difference Array]
+      columns:
+        - Signal
+        - Brute Force
+        - Difference Array
       rows:
-        - ["many range increments", "O(q*n)", "O(q+n)"]
-        - ["offline updates", "apply each cell", "mark boundaries"]
-        - ["booking counts", "increment every time slot", "sweep prefix"]
+        - - "many range increments"
+          - "O(q*n)"
+          - "O(q+n)"
+        - - "offline updates"
+          - "apply each cell"
+          - "mark boundaries"
+        - - "booking counts"
+          - "increment every time slot"
+          - "sweep prefix"
   - language_lens:
       language: python
       title: Python Strategy
@@ -56,15 +73,15 @@ lesson:
         - Keep index guards explicit before reading outgoing or boundary positions.
       avoid:
         - Using int for accumulated values under large constraints.
-        - Reading nums[i-k], diff[r+1], or s[right] before bounds are valid.
+        - Reading an outgoing index, cancellation index, or right pointer before bounds are valid.
         - Relying on unchecked vector indexing while the invariant is still forming.
       behind_the_scenes:
-        - diff[r + 1] needs allocated space or a boundary guard.
+        - The cancellation position needs allocated space or a boundary guard.
         - Prefix reconstruction is linear and cache-friendly.
   - language_lens:
       language: java
       title: Java Strategy
-      body: Use long[] for large range updates and be explicit about inclusive ranges.
+      body: Use long arrays for large range updates and be explicit about inclusive ranges.
       default_instincts:
         - Use long for sums and prefix values when constraints can grow.
         - Use primitive arrays for fixed alphabets or fixed-size numeric state.
@@ -128,19 +145,23 @@ examples:
 transitions:
   python_to_cpp:
     title: Python difference arrays to C++
-    mindset_shift: [From safe integers to long long update accumulation, From flexible list to fixed vector size.]
+    mindset_shift:
+      - From safe integers to long long update accumulation.
+      - From flexible list to fixed vector size.
     habit_swaps:
-      - python: "diff = [0] * (n + 1)"
+      - python: "create a zero-filled diff list with one extra slot"
         cpp: "vector<long long> diff(n + 1, 0)"
     false_friends:
       - term: boundary
         warning: Allocate r+1 space or guard when r is the last index.
   python_to_java:
     title: Python difference arrays to Java
-    mindset_shift: [From list to long array, From tuple updates to int[] updates.]
+    mindset_shift:
+      - From list to long array.
+      - From tuple updates to Java int array updates.
     habit_swaps:
       - python: "for l, r, delta in updates"
-        java: "for (int[] update : updates)"
+        java: "loop through each update array and unpack its fields"
     false_friends:
       - term: int totals
         warning: Many updates can overflow int; use long when constraints are large.
@@ -150,20 +171,28 @@ interview_questions:
   - question: When is a difference array best?
     answer: When many offline range updates can be applied before final values are needed.
 revision:
-  quick_summary: [Mark l with +delta, mark r+1 with -delta, prefix-scan to rebuild values.]
+  quick_summary:
+    - "Difference array is an interview pattern for many offline range updates where updating every index would be too slow."
+    - "Working idea: mark the left boundary with delta, mark the position after the right boundary with negative delta, then prefix-scan to rebuild values."
   cheat_table:
     title: Difference Array Cheat Table
-    columns: [Action, Formula]
+    columns:
+      - Action
+      - Formula
     rows:
-      - ["start update", "diff[l] += delta"]
-      - ["end update", "diff[r+1] -= delta"]
-      - ["rebuild", "running += diff[i]"]
+      - - "start update"
+        - "diff at left index increases by delta"
+      - - "end update"
+        - "diff immediately after right index decreases by delta"
+      - - "rebuild"
+        - "running total absorbs diff at each index"
   flashcards:
-    - question: Is [l, r] inclusive here?
+    - question: Is the range inclusive here?
       answer: Yes; that is why cancellation happens at r + 1.
 notes:
   - Difference arrays are usually offline; if queries and updates interleave, consider Fenwick or segment tree.
 tlm_hooks:
-  possible_tasks: [trace_difference_array, generate_range_update_drills]
+  possible_tasks:
+    - trace_difference_array
+    - generate_range_update_drills
   context: Focus on boundary marks, one-past-end cancellation, and prefix reconstruction.
-

@@ -199,11 +199,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Java has primitives and object references.
-    - Reference values are passed by value.
-    - int[] is compact; List<Integer> boxes.
-    - HashMap keys need equals and hashCode.
-    - String is immutable.
+    - "Java Internal Mechanics explains behind-the-scenes language behavior that affects references, copying, equality, memory, or mutation in interview code."
+    - "Behind the scenes: Java has primitives and object references. Reference values are passed by value. int[] is compact; List<Integer> boxes. HashMap keys need equals and hashCode. String is immutable."
   cheat_table:
     title: Java Mechanics Revision
     columns:

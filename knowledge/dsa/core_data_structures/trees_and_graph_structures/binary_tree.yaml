@@ -18,12 +18,12 @@ lesson:
         recursively ask left and right for information, combine those results, and
         return one value upward. Track node, left_result, right_result, and answer.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Binary-tree methods process one node and ask children for subtree answers.
-        The algorithm must define what a call returns upward, such as height, sum,
-        validity, or best contribution. Null children provide the base case, and the
-        parent combines left and right results into its own return value.
+        Binary-tree methods ask each node to combine information from its children.
+        The strategy is to define what the helper returns for one subtree, handle the
+        null subtree, recurse left and right, and combine those returned summaries at
+        the current node.
 
   - compare_table:
       title: Node Access
@@ -37,14 +37,38 @@ lesson:
       language: python
       title: Python Strategy
       body: Recursion is natural; watch recursion depth for skewed trees.
+      default_instincts:
+        - Use object references for nodes and lists/dicts for adjacency.
+        - Name helper return values by the subtree or component summary they represent.
+        - Use iterative traversal if recursion depth can be too large.
+      avoid:
+        - Comparing node values when identity is needed.
+        - Using shared rows or adjacency lists by multiplication.
+        - Forgetting to add both directions for undirected edges.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: TreeNode* may be null; check before node->val.
+      default_instincts:
+        - Check pointers before dereferencing node fields.
+        - Pass adjacency and large structures by reference.
+        - Use vectors for indexed graphs and maps for sparse labels.
+      avoid:
+        - Dereferencing nullptr.
+        - Copying adjacency lists into recursive helpers.
+        - Using int bounds where tree values need long long sentinels.
   - language_lens:
       language: java
       title: Java Strategy
       body: TreeNode references may be null; helper methods make recursion clean.
+      default_instincts:
+        - Use null checks before reading node fields.
+        - Use helper classes or methods for DSU, trie, and traversal state.
+        - Initialize every inner adjacency list.
+      avoid:
+        - Forgetting inner-list initialization.
+        - Using == for object value equality when equals is needed.
+        - Mutating key objects used in maps or sets.
 examples:
   - code_compare:
       title: Maximum Depth
@@ -104,7 +128,9 @@ interview_questions:
   - question: What does a recursive tree helper usually return?
     answer: A summary of the current subtree, such as height, sum, validity, or best path contribution.
 revision:
-  quick_summary: [At each node, get child results, combine, return upward.]
+  quick_summary:
+    - "Binary Tree is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: At each node. get child results. combine. return upward."
   cheat_table:
     title: Tree Cheat Table
     columns: [Need, Python, C++, Java]

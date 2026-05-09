@@ -18,13 +18,12 @@ lesson:
         Track i as current index, x as current value, st as unresolved indices, and
         ans[j] as the answer filled when current x resolves index j.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A monotonic stack keeps candidates in a value order so the current item can
-        resolve earlier unresolved positions. Each index is pushed once and popped
-        when a stronger current value makes it no longer useful. The stack content is
-        not arbitrary history; it is the remaining candidates that still need an
-        answer.
+        Monotonic-stack methods keep unresolved indices whose values follow an order.
+        The current value resolves earlier candidates that are now proven to have
+        found their next greater, next smaller, or boundary. Each index is pushed once
+        and popped once, which is why the method stays linear.
 
   - compare_table:
       title: Common Forms
@@ -38,14 +37,38 @@ lesson:
       language: python
       title: Python Strategy
       body: Use list as stack and store indices so distance and stale position are available.
+      default_instincts:
+        - Use list for stack and deque for queue/deque behavior.
+        - Store indices when position or staleness matters.
+        - Represent heap entries as priority-payload tuples.
+      avoid:
+        - Using list.pop(0) for queue behavior.
+        - Storing values when the algorithm needs indices.
+        - Forgetting heapq is a min-heap.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: vector<int> is often simpler than stack<int> because you can inspect back and pop_back.
+      default_instincts:
+        - Use vector as a stack when you need back access or iteration.
+        - Use queue/deque for FIFO and both-ended behavior.
+        - Configure priority_queue for min-heap when needed.
+      avoid:
+        - Expecting pop to return a value.
+        - Calling top/front/back on empty containers.
+        - Forgetting C++ priority_queue is a max-heap by default.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use ArrayDeque<Integer> and store indices, not values.
+      default_instincts:
+        - Use ArrayDeque for stack, queue, and deque patterns.
+        - Use PriorityQueue for min-heap priority processing.
+        - Use indices in deques for sliding-window expiration.
+      avoid:
+        - Using legacy Stack by habit.
+        - Adding null to ArrayDeque.
+        - Using subtraction comparators in PriorityQueue.
 examples:
   - code_compare:
       title: Next Greater Element
@@ -109,7 +132,9 @@ interview_questions:
   - question: Why is monotonic stack O(n)?
     answer: Each index is pushed once and popped at most once.
 revision:
-  quick_summary: [Store unresolved indices, Maintain value order, Current item resolves popped indices.]
+  quick_summary:
+    - "Monotonic Stack is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Store unresolved indices. Maintain value order. Current item resolves popped indices."
   cheat_table:
     title: Monotonic Stack Cheat Table
     columns: [Need, Python, C++, Java]

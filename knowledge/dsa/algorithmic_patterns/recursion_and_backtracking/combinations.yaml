@@ -131,7 +131,9 @@ interview_questions:
   - question: Why pass x + 1 into the next call?
     answer: It prevents reusing earlier choices and avoids generating the same combination in different orders.
 revision:
-  quick_summary: [Order does not matter, start moves forward, prune when not enough candidates remain.]
+  quick_summary:
+    - "Combinations is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Order does not matter. start moves forward. prune when not enough candidates remain."
   cheat_table:
     title: Combinations Cheat Table
     columns: [State, Meaning]

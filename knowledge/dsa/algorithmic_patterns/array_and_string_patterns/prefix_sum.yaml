@@ -168,7 +168,9 @@ interview_questions:
   - question: What earlier prefix is needed for sum k ending now?
     answer: pref - k.
 revision:
-  quick_summary: [Range sum is prefix difference, Subarray count uses earlier prefix counts, Use wide numeric types.]
+  quick_summary:
+    - "Prefix Sum is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Range sum is prefix difference. Subarray count uses earlier prefix counts. Use wide numeric types."
   cheat_table:
     title: Prefix Sum Cheat Table
     columns: [Need, Formula]

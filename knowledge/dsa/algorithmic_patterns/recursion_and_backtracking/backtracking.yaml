@@ -140,7 +140,9 @@ interview_questions:
   - question: What does unchoose restore?
     answer: The exact state that existed before the current choice.
 revision:
-  quick_summary: [Choose, recurse, unchoose, copy when recording.]
+  quick_summary:
+    - "Backtracking is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Choose. recurse. unchoose. copy when recording."
   cheat_table:
     title: Backtracking Cheat Table
     columns: [Need, Python, C++, Java]

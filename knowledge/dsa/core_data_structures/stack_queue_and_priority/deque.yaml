@@ -17,12 +17,12 @@ lesson:
         A deque supports both ends. Track front as the oldest or next-to-expire item,
         back as the newest candidate, and x or i as the incoming value/index.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A deque is useful when both ends have meaning. The method begins by naming
-        the role of the front and the role of the back, such as oldest versus newest
-        or best candidate versus incoming candidate. Correctness comes from using
-        the right end for each state transition.
+        Deque methods use both ends with different meanings. One end might represent
+        the oldest candidate and the other the newest candidate, or one end may be
+        urgent work and the other normal work. The strategy is to label front and
+        back roles before coding.
 
   - compare_table:
       title: Deque Operations
@@ -37,17 +37,41 @@ lesson:
       language: python
       title: Python Strategy
       body: collections.deque gives O(1) operations at both ends.
+      default_instincts:
+        - Use list for stack and deque for queue/deque behavior.
+        - Store indices when position or staleness matters.
+        - Represent heap entries as priority-payload tuples.
       behind_the_scenes: ["Middle indexing is not the main purpose."]
+      avoid:
+        - Using list.pop(0) for queue behavior.
+        - Storing values when the algorithm needs indices.
+        - Forgetting heapq is a min-heap.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: deque is a concrete container with front/back operations and iteration.
+      default_instincts:
+        - Use vector as a stack when you need back access or iteration.
+        - Use queue/deque for FIFO and both-ended behavior.
+        - Configure priority_queue for min-heap when needed.
       behind_the_scenes: ["Not one contiguous block like vector."]
+      avoid:
+        - Expecting pop to return a value.
+        - Calling top/front/back on empty containers.
+        - Forgetting C++ priority_queue is a max-heap by default.
   - language_lens:
       language: java
       title: Java Strategy
       body: ArrayDeque is the usual Deque implementation.
+      default_instincts:
+        - Use ArrayDeque for stack, queue, and deque patterns.
+        - Use PriorityQueue for min-heap priority processing.
+        - Use indices in deques for sliding-window expiration.
       behind_the_scenes: ["Does not allow null elements."]
+      avoid:
+        - Using legacy Stack by habit.
+        - Adding null to ArrayDeque.
+        - Using subtraction comparators in PriorityQueue.
 examples:
   - code_compare:
       title: Basic Both-End Simulation
@@ -99,7 +123,9 @@ interview_questions:
   - question: When choose deque over queue?
     answer: When both ends matter, such as simulations or monotonic windows.
 revision:
-  quick_summary: [Deque is both-ended, Track which end has which meaning.]
+  quick_summary:
+    - "Deque is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Deque is both-ended. Track which end has which meaning."
   cheat_table:
     title: Deque Cheat Table
     columns: [Need, Python, C++, Java]

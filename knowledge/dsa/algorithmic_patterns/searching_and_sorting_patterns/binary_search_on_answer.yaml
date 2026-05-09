@@ -141,7 +141,9 @@ interview_questions:
   - question: What does first true mean?
     answer: The smallest answer value that satisfies the predicate.
 revision:
-  quick_summary: [Search answer values, prove monotonicity, use safe bounds and midpoint.]
+  quick_summary:
+    - "Binary Search On Answer is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Search answer values. prove monotonicity. use safe bounds and midpoint."
   cheat_table:
     title: Answer Search Cheat Table
     columns: [Need, Rule]

@@ -197,11 +197,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Python names refer to objects.
-    - Assignment aliases; explicit copy is needed for independence.
-    - Lists are dynamic arrays of references.
-    - Dict and set are hash tables requiring hashable keys.
-    - Syntax can hide copying and O(n) work.
+    - "Python Internal Mechanics explains behind-the-scenes language behavior that affects references, copying, equality, memory, or mutation in interview code."
+    - "Behind the scenes: Python names refer to objects. Assignment aliases; explicit copy is needed for independence. Lists are dynamic arrays of references. Dict and set are hash tables requiring hashable keys. Syntax can hide copying and O(n) work."
   cheat_table:
     title: Python Mechanics Revision
     columns:

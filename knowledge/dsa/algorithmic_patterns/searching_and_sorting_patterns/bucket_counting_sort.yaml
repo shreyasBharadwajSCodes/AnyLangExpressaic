@@ -161,7 +161,9 @@ interview_questions:
   - question: Why do top-k frequency buckets have size n + 1?
     answer: A value can appear from 1 to n times, so frequency n needs an index.
 revision:
-  quick_summary: [Count values when range is small, Bucket by frequency for top-k, Initialize every Java bucket.]
+  quick_summary:
+    - "Bucket Sort And Counting Sort is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Count values when range is small. Bucket by frequency for top-k. Initialize every Java bucket."
   cheat_table:
     title: Bucket Counting Cheat Table
     columns: [Need, Structure]

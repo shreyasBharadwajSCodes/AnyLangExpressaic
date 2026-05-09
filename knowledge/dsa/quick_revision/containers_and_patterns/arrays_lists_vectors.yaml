@@ -31,6 +31,15 @@ lesson:
       Java int[] stores primitive values, and Java ArrayList<Integer> stores boxed
       object references.
 
+- explain:
+    title: Method Strategy
+    body: >
+      Sequential containers store values in index order, so most algorithms depend on
+      stable meanings for i, write, left, right, or size. The method choice is usually
+      about access pattern: index reads are cheap, appends are cheap on average, but
+      front insertion and middle deletion shift many elements. In interviews, first
+      decide whether you need fixed size, dynamic growth, copying, or in-place mutation.
+
 - compare_table:
     title: First Mapping
     columns:

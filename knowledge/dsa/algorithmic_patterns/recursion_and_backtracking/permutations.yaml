@@ -139,7 +139,9 @@ interview_questions:
   - question: What does used[i] protect?
     answer: It prevents using the same input position twice in one permutation.
 revision:
-  quick_summary: [Choose unused item, recurse, undo path and used flag.]
+  quick_summary:
+    - "Permutations is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Choose unused item. recurse. undo path and used flag."
   cheat_table:
     title: Permutations Cheat Table
     columns: [State, Meaning]

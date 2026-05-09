@@ -245,10 +245,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Convert data into the algorithm's natural shape once when possible.
-    - Cast before arithmetic in C++ and Java.
-    - Python int avoids overflow but conversions still cost time.
-    - Java has a primitive versus boxed conversion split.
+    - "Type Conversion And Casting is an interview implementation topic: state the contract, choose safe types and helpers, and handle edge cases deliberately."
+    - "Implementation answer: Convert data into the algorithm's natural shape once when possible. Cast before arithmetic in C++ and Java. Python int avoids overflow but conversions still cost time. Java has a primitive versus boxed conversion split."
   cheat_table:
     title: Conversion Revision
     columns:

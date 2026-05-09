@@ -18,12 +18,12 @@ lesson:
         distinct, and best_count. In sliding windows, the outgoing value must be
         decremented just as carefully as the incoming value is incremented.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A frequency map stores counts as algorithmic state. Each update must mirror
-        the movement of data into or out of the active region. In whole-array counts
-        you mostly increment; in window methods the decrement and zero-removal are
-        just as important because they define active distinct values.
+        Frequency-map methods maintain counts as state changes. The strategy is to
+        update incoming and outgoing values symmetrically, and to decide whether
+        zero-count keys should stay or be removed. If distinct count matters, zero
+        keys usually must be removed.
 
   - compare_table:
       title: Frequency Tools
@@ -37,17 +37,41 @@ lesson:
       language: python
       title: Python Strategy
       body: Counter is compact; dict with get is clearer when you must control zero deletion.
+      default_instincts:
+        - Use dict/set when key identity is clear and hashable.
+        - Use tuple keys for immutable compound state.
+        - Delete zero-count keys when active distinct count matters.
       behind_the_scenes: ["Counter can keep zero or negative counts.", "Deleting zero-count keys keeps distinct logic clean."]
+      avoid:
+        - Using mutable list or dict as a key.
+        - Assuming dict or set order is sorted.
+        - Keeping zero counts when len(freq) is used as state.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: unordered_map[x]++ is convenient because missing keys become zero first.
+      default_instincts:
+        - Use unordered_map/set for average lookup and map/set for sorted keys.
+        - Use find/count when you do not want insertion.
+        - Design custom hashes for compound keys deliberately.
       behind_the_scenes: ["operator[] inserts.", "Use erase when count becomes zero if distinct keys matter."]
+      avoid:
+        - Using operator[] only to check existence.
+        - Forgetting unordered containers need hash support for custom keys.
+        - Assuming unordered_map iteration order is stable.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use getOrDefault, merge, or compute; keep zero-removal explicit for window problems.
+      default_instincts:
+        - Use HashMap/HashSet with equals and hashCode aware keys.
+        - Use getOrDefault for counts and remove for zero counts.
+        - Use records or immutable classes for compound keys when possible.
       behind_the_scenes: ["Integer counts are boxed.", "get returns null if absent."]
+      avoid:
+        - Using == for object or String content equality.
+        - Mutating fields used by hashCode after insertion.
+        - Forgetting get can return null.
 examples:
   - code_compare:
       title: Count Frequencies
@@ -112,7 +136,9 @@ interview_questions:
   - question: When should zero-count keys be removed?
     answer: When distinct-key count or exact active-window contents matter.
 revision:
-  quick_summary: [Frequency maps track counts, Window counts need increment and decrement symmetry.]
+  quick_summary:
+    - "Counter / Frequency Map is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Frequency maps track counts. Window counts need increment and decrement symmetry."
   cheat_table:
     title: Frequency Cheat Table
     columns: [Need, Python, C++, Java]

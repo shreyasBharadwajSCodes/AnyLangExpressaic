@@ -123,7 +123,9 @@ interview_questions:
   - question: Why record path before the loop?
     answer: Every prefix of choices is already a valid subset.
 revision:
-  quick_summary: [Record current path, choose later candidates, pop before next candidate.]
+  quick_summary:
+    - "Subsets is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Record current path. choose later candidates. pop before next candidate."
   cheat_table:
     title: Subsets Cheat Table
     columns: [State, Meaning]

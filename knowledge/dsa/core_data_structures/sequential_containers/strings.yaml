@@ -19,14 +19,13 @@ lesson:
         substring window, and ans or builder stores constructed output. Python and
         Java strings are immutable; C++ std::string is mutable.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        Strings are indexed sequences, but they are not always mutable sequences.
-        Most string algorithms track positions such as left, right, i, and ch while
-        avoiding repeated substring construction. The method begins by deciding
-        whether you are only reading characters, building a new result, or mutating
-        a character buffer. That decision changes the right container in each
-        language.
+        String methods are usually index methods. Decide whether the string is only
+        being read, whether characters must be changed, or whether a new output is
+        being built. The main cost questions are substring allocation, repeated
+        concatenation, and character model differences such as bytes, code units, or
+        Unicode characters.
 
   - compare_table:
       title: Core Operations
@@ -41,26 +40,50 @@ lesson:
       language: python
       title: Python String Strategy
       body: Use indexing and slicing for clarity, but remember slices allocate and strings are immutable.
+      default_instincts:
+        - Use indices for windows and list-plus-join for repeated building.
+        - Remember each character read is a one-character string.
+        - Treat slices as allocated new strings.
       behind_the_scenes:
         - Python characters are one-character strings.
         - Slicing creates a new string.
         - Repeated concatenation in loops can be costly.
+      avoid:
+        - Concatenating strings repeatedly in large loops.
+        - Using slices when pointer boundaries are enough.
+        - Forgetting Unicode characters may not match byte-count assumptions.
   - language_lens:
       language: cpp
       title: C++ String Strategy
       body: std::string supports indexing and mutation; substr copies, and char arithmetic assumes a character encoding pattern such as ASCII digits.
+      default_instincts:
+        - Use string indexing for mutable ASCII-style interview tasks.
+        - Use substr with start and length, not end index.
+        - Cast to unsigned char before ctype or 256-array indexing.
       behind_the_scenes:
         - s.substr(pos, len) uses length, not end index.
         - char can be signed, so be careful when indexing 256-size arrays.
         - string comparison with == checks content.
+      avoid:
+        - Passing signed char directly to ctype functions.
+        - Assuming substr second argument is an end position.
+        - Ignoring encoding assumptions in char arithmetic.
   - language_lens:
       language: java
       title: Java String Strategy
       body: String is immutable, charAt reads characters, and StringBuilder or char[] carries mutable construction.
+      default_instincts:
+        - Use charAt for reads and StringBuilder or char[] for mutation/building.
+        - Remember substring uses start inclusive and end exclusive.
+        - Use equals for String content comparison.
       behind_the_scenes:
         - substring uses start inclusive and end exclusive.
         - char is a UTF-16 code unit.
         - Use equals for string content comparison.
+      avoid:
+        - Using == for String content.
+        - Building many intermediate Strings in loops.
+        - Assuming char always means a full Unicode character.
 examples:
   - code_compare:
       title: Scan Characters
@@ -141,9 +164,8 @@ interview_questions:
     answer: left, right, current character, and the state that proves the window invariant.
 revision:
   quick_summary:
-    - Track indices and active substring boundaries visually.
-    - Python and Java strings are immutable; C++ string can mutate.
-    - Substring operations often allocate.
+    - "Strings is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: Track indices and active substring boundaries visually. Python and Java strings are immutable; C++ string can mutate. Substring operations often allocate."
   cheat_table:
     title: String Cheat Table
     columns: [Need, Python, C++, Java]

@@ -323,10 +323,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Sliding window is for contiguous ranges.
-    - Fixed windows maintain exact size.
-    - Variable windows expand right and shrink left until valid.
-    - Keep state incremental; do not rescan the window.
+    - "Sliding Window is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Sliding window is for contiguous ranges. Fixed windows maintain exact size. Variable windows expand right and shrink left until valid. Keep state incremental; do not rescan the window."
   cheat_table:
     title: Sliding Window Revision
     columns:

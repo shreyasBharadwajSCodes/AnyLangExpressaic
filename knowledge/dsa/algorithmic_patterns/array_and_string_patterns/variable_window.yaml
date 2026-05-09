@@ -218,7 +218,9 @@ interview_questions:
   - question: Why do shortest-window problems update answer inside the shrink loop?
     answer: Every valid window before removing left is a candidate, and shrinking may find a shorter one.
 revision:
-  quick_summary: [Expand with right, shrink with left, preserve a named invariant, update answer at the correct moment.]
+  quick_summary:
+    - "Variable Window is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Expand with right. shrink with left. preserve a named invariant. update answer at the correct moment."
   cheat_table:
     title: Variable Window Cheat Table
     columns: [Pattern, Shrink While, Answer Update]

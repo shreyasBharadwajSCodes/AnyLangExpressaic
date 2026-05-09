@@ -343,11 +343,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Built-ins should make the algorithm clearer.
-    - Know whether an operation mutates or returns a copy.
-    - Hash maps differ most on missing keys and custom equality.
-    - Heaps have different defaults across languages.
-    - Comparator correctness matters in C++ and Java.
+    - "Common Built-ins Cheat Sheet is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Working idea: Built-ins should make the algorithm clearer. Know whether an operation mutates or returns a copy. Hash maps differ most on missing keys and custom equality. Heaps have different defaults across languages. Comparator correctness matters in C++ and Java."
   cheat_table:
     title: Built-ins Interview Cheat Table
     columns:

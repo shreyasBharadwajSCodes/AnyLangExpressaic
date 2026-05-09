@@ -232,10 +232,8 @@ interview_questions:
 
 revision:
   quick_summary:
-    - Amortized analysis spreads rare expensive work over many operations.
-    - Dynamic array append is amortized O(1).
-    - Hash operations are average O(1), not guaranteed O(1).
-    - Monotonic stack/deque loops are often O(n) total.
+    - "Amortized Analysis is about explaining cost clearly: name the input size, the dominant operation, and the hidden language or runtime cost."
+    - "Interview answer: Amortized analysis spreads rare expensive work over many operations. Dynamic array append is amortized O(1). Hash operations are average O(1), not guaranteed O(1). Monotonic stack/deque loops are often O(n) total."
   cheat_table:
     title: Amortized Revision
     columns:

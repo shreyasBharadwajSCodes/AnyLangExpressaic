@@ -131,7 +131,9 @@ interview_questions:
   - question: What must you justify in a greedy solution?
     answer: Why the local choice is safe and can be part of some optimal solution.
 revision:
-  quick_summary: [Choose the safe local best, maintain an invariant, explain with exchange or stays-ahead reasoning.]
+  quick_summary:
+    - "Greedy Algorithms is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Working idea: Greedy algorithms repeatedly make a locally safe choice while keeping an invariant that proves earlier choices do not need to change. Interview answer: state the chosen order, the active state, and why exchange or stays-ahead reasoning makes the local choice safe."
   cheat_table:
     title: Greedy Cheat Table
     columns: [Signal, Likely Tool]

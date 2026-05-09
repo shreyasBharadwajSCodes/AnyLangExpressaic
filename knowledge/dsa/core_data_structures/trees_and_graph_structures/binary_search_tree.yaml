@@ -18,12 +18,11 @@ lesson:
         valid range inherited from ancestors. Track node, low, high, and whether
         node.val stays inside that range.
   - explain:
-      title: How The Structure Works
+      title: Method Strategy
       body: >
-        A BST carries sorted-order constraints through the whole subtree, not only
-        through parent-child relationships. The method is to pass ancestor bounds or
-        use inorder traversal to preserve global ordering. Bounds must be wide enough
-        to handle minimum and maximum node values safely.
+        BST methods rely on global ancestor constraints, not only parent-child checks.
+        Search and validation both use the sorted-order invariant, but validation must
+        carry low and high bounds down the tree so every node respects all ancestors.
 
   - compare_table:
       title: BST Operations
@@ -37,14 +36,38 @@ lesson:
       language: python
       title: Python Strategy
       body: Use None bounds or float infinities; Python int avoids overflow.
+      default_instincts:
+        - Use object references for nodes and lists/dicts for adjacency.
+        - Name helper return values by the subtree or component summary they represent.
+        - Use iterative traversal if recursion depth can be too large.
+      avoid:
+        - Comparing node values when identity is needed.
+        - Using shared rows or adjacency lists by multiplication.
+        - Forgetting to add both directions for undirected edges.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: Use long long bounds to avoid int min/max edge issues.
+      default_instincts:
+        - Check pointers before dereferencing node fields.
+        - Pass adjacency and large structures by reference.
+        - Use vectors for indexed graphs and maps for sparse labels.
+      avoid:
+        - Dereferencing nullptr.
+        - Copying adjacency lists into recursive helpers.
+        - Using int bounds where tree values need long long sentinels.
   - language_lens:
       language: java
       title: Java Strategy
       body: Use long bounds for validation when node values are int.
+      default_instincts:
+        - Use null checks before reading node fields.
+        - Use helper classes or methods for DSU, trie, and traversal state.
+        - Initialize every inner adjacency list.
+      avoid:
+        - Forgetting inner-list initialization.
+        - Using == for object value equality when equals is needed.
+        - Mutating key objects used in maps or sets.
 examples:
   - code_compare:
       title: Validate BST With Bounds
@@ -104,7 +127,9 @@ interview_questions:
   - question: Why are ancestor bounds needed?
     answer: A node can satisfy its parent locally but still violate an older ancestor bound.
 revision:
-  quick_summary: [BST validity is range-based, Inorder traversal is sorted, Use wide bounds.]
+  quick_summary:
+    - "Binary Search Tree is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
+    - "Interview working idea: BST validity is range-based. Inorder traversal is sorted. Use wide bounds."
   cheat_table:
     title: BST Cheat Table
     columns: [Need, Key Variables]
