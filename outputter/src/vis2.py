@@ -1374,6 +1374,8 @@ class Vis2App:
         if file_value:
             target = self._resolve_lesson_path(file_value)
             label.bind("<Button-1>", lambda _event, path=target: self.open_booklet_lesson(path))
+            #ttk.Button(row, text="Open", command=lambda path=target: self.open_booklet_lesson(path)).pack(side=tk.RIGHT, padx=(8, 0))
+        else:
             tk.Label(row, text="No file", bg=SURFACE, fg=MUTED, font=("Segoe UI", 9)).pack(side=tk.RIGHT)
 
     def _resolve_lesson_path(self, file_value):
