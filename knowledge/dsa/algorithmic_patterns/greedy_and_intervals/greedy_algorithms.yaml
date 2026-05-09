@@ -1,0 +1,149 @@
+id: greedy_algorithms
+title: Greedy Algorithms
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [greedy, sorting, heap, intervals, interview]
+goal: Teach greedy algorithm design across Python, C++, and Java with proof intuition, sort/heap choices, and implementation caveats.
+assets:
+  greedy_choice:
+    type: image
+    path: assets/dsa/greedy_algorithms/choice.png
+    alt: Greedy choice made from sorted candidates while maintaining an invariant.
+lesson:
+  - explain:
+      title: Greedy Mental Model
+      body: >
+        Greedy algorithms make the locally best safe choice and never revisit it.
+        The interview skill is not just coding; it is explaining why the choice does
+        not block an optimal solution.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Make the locally best choice only after choosing an order that makes it safe.
+        The proof idea is part of the method: once a candidate is accepted, explain
+        why replacing it later would not improve the answer. The code usually tracks
+        a compact invariant such as last chosen end, active heap, or remaining need.
+  - compare_table:
+      title: Common Greedy Shapes
+      columns: [Shape, Data Structure, Invariant]
+      rows:
+        - ["sort by finish time", "sorted intervals", "chosen intervals do not overlap"]
+        - ["pick smallest/largest available", "heap", "best candidate at top"]
+        - ["scan sorted events", "counter", "active state is current truth"]
+        - ["exchange argument", "proof", "greedy choice can replace optimal choice"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Key-based sorting and heapq make greedy code compact; remember heapq is a min-heap.
+      default_instincts:
+        - Use key functions to make the greedy order visible.
+        - Name active state such as end, rooms, active, or best.
+        - Encode event tie order directly in tuple keys when using sweep line.
+      avoid:
+        - Sorting by a field without knowing why that order is safe.
+        - Forgetting to clarify whether touching endpoints overlap.
+        - Using heap state without defining what heap[0] represents.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Sort comparators must be strict; priority_queue is max-heap by default.
+      default_instincts:
+        - Use strict sort comparators for interval orderings.
+        - Configure priority_queue direction explicitly for min-heap needs.
+        - Use clear event structs or pairs when tie order matters.
+      avoid:
+        - Assuming priority_queue is a min-heap.
+        - Using non-strict interval comparators.
+        - Ignoring endpoint tie-breaking in sweep-line events.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use Comparator helpers for safe ordering; PriorityQueue is min-heap by default.
+      default_instincts:
+        - Use Comparator.comparingInt or compare helpers for interval sorting.
+        - Use PriorityQueue for earliest-ending active intervals.
+        - Represent events with int[] or small classes and explicit tie-breakers.
+      avoid:
+        - Using a[0] - b[0] in comparators.
+        - Forgetting to initialize list buckets or event containers.
+        - Leaving endpoint semantics implicit.
+examples:
+  - code_compare:
+      title: Maximum Non-Overlapping Intervals
+      idea: Pick the interval that finishes earliest.
+      python: |
+        intervals.sort(key=lambda p: p[1])
+        count = 0
+        end = float("-inf")
+
+        for s, e in intervals:
+            if s >= end:
+                # Earliest finishing compatible interval leaves maximum room later.
+                count += 1
+                end = e
+      cpp: |
+        sort(intervals.begin(), intervals.end(), [](const auto& a, const auto& b) {
+            return a[1] < b[1];
+        });
+        int count = 0, end = INT_MIN;
+
+        for (auto& in : intervals) {
+            int s = in[0], e = in[1];
+            if (s >= end) {
+                // Earliest finishing compatible interval leaves maximum room later.
+                count++;
+                end = e;
+            }
+        }
+      java: |
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[1]));
+        int count = 0, end = Integer.MIN_VALUE;
+
+        for (int[] in : intervals) {
+            int s = in[0], e = in[1];
+            if (s >= end) {
+                // Earliest finishing compatible interval leaves maximum room later.
+                count++;
+                end = e;
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python greedy to C++
+    mindset_shift: [From key functions to strict comparators, From min-heap default to max-heap default.]
+    habit_swaps:
+      - python: "intervals.sort(key=lambda p: p[1])"
+        cpp: "sort with comparator returning a[1] < b[1]"
+    false_friends:
+      - term: priority queue direction
+        warning: C++ priority_queue is max-heap by default.
+  python_to_java:
+    title: Python greedy to Java
+    mindset_shift: [From tuple/list keys to Comparator helpers, From Python int to int/long choices.]
+    habit_swaps:
+      - python: "key=lambda p: p[1]"
+        java: "Comparator.comparingInt(a -> a[1])"
+    false_friends:
+      - term: comparator subtraction
+        warning: Use Integer.compare/comparingInt instead of a[1] - b[1].
+interview_questions:
+  - question: What must you justify in a greedy solution?
+    answer: Why the local choice is safe and can be part of some optimal solution.
+revision:
+  quick_summary: [Choose the safe local best, maintain an invariant, explain with exchange or stays-ahead reasoning.]
+  cheat_table:
+    title: Greedy Cheat Table
+    columns: [Signal, Likely Tool]
+    rows:
+      - ["finish earliest", "sort by end"]
+      - ["best available repeatedly", "heap"]
+      - ["events over time", "sort events"]
+  flashcards:
+    - question: Is sorting alone a proof of greedy correctness?
+      answer: No; explain why that sorted choice is safe.
+notes:
+  - State the greedy invariant in one sentence before coding.
+tlm_hooks:
+  possible_tasks: [explain_greedy_proof, generate_greedy_choice_drills]
+  context: Focus on choice, invariant, and sort/heap direction.

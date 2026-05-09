@@ -1,4 +1,4 @@
-id: hashmap_dictionary
+﻿id: hashmap_dictionary
 title: Dictionary / HashMap / unordered_map
 category: dsa
 level: beginner_to_intermediate
@@ -125,16 +125,22 @@ examples:
       idea: Count occurrences of each value.
       python: |
         freq = {}
+
         for x in nums:
+            # Missing x reads as 0 through get, then we store the new count.
             freq[x] = freq.get(x, 0) + 1
       cpp: |
         unordered_map<int, int> freq;
+
         for (int x : nums) {
+            // operator[] inserts x with value 0 if it is missing.
             freq[x]++;
         }
       java: |
         Map<Integer, Integer> freq = new HashMap<>();
+
         for (int x : nums) {
+            // getOrDefault avoids null arithmetic for a first-time key.
             freq.put(x, freq.getOrDefault(x, 0) + 1);
         }
       note: >
@@ -145,17 +151,23 @@ examples:
       idea: Store only the first index for each value.
       python: |
         first = {}
+
         for i, x in enumerate(nums):
+            # Only write when x has not appeared before.
             if x not in first:
                 first[x] = i
       cpp: |
         unordered_map<int, int> first;
+
         for (int i = 0; i < nums.size(); i++) {
+            // count checks existence without overwriting the first index.
             if (!first.count(nums[i])) first[nums[i]] = i;
         }
       java: |
         Map<Integer, Integer> first = new HashMap<>();
+
         for (int i = 0; i < nums.length; i++) {
+            // putIfAbsent preserves the earliest index automatically.
             first.putIfAbsent(nums[i], i);
         }
       note: >
@@ -182,27 +194,39 @@ examples:
       python: |
         count = 0
         pref = 0
+
+        # Empty prefix lets a subarray from index 0 be counted.
         seen = {0: 1}
+
         for x in nums:
             pref += x
+            # Need an earlier prefix equal to pref - k.
             count += seen.get(pref - k, 0)
             seen[pref] = seen.get(pref, 0) + 1
       cpp: |
         long long pref = 0;
         long long count = 0;
         unordered_map<long long, int> seen;
+
+        // Empty prefix lets a subarray from index 0 be counted.
         seen[0] = 1;
+
         for (int x : nums) {
             pref += x;
+            // Need an earlier prefix equal to pref - k.
             if (seen.count(pref - k)) count += seen[pref - k];
             seen[pref]++;
         }
       java: |
         long pref = 0, count = 0;
         Map<Long, Integer> seen = new HashMap<>();
+
+        // Empty prefix lets a subarray from index 0 be counted.
         seen.put(0L, 1);
+
         for (int x : nums) {
             pref += x;
+            // Need an earlier prefix equal to pref - k.
             count += seen.getOrDefault(pref - k, 0);
             seen.put(pref, seen.getOrDefault(pref, 0) + 1);
         }

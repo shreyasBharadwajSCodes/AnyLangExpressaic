@@ -128,79 +128,57 @@ chapters:
         lessons:
           - title: Arrays / Lists / Vectors
             file: knowledge/dsa/quick_revision/containers_and_patterns/arrays_lists_vectors.yaml
-            status: planned
           - title: Strings
             file: knowledge/dsa/core_data_structures/sequential_containers/strings.yaml
-            status: planned
           - title: String Builders And Buffers
             file: knowledge/dsa/core_data_structures/sequential_containers/string_builders_buffers.yaml
-            status: planned
           - title: Matrix / 2D Arrays
             file: knowledge/dsa/core_data_structures/sequential_containers/matrix_2d_arrays.yaml
-            status: planned
           - title: Linked List
             file: knowledge/dsa/core_data_structures/sequential_containers/linked_list.yaml
-            status: planned
 
       - title: Hashing And Lookup
         lessons:
           - title: Dictionary / HashMap / unordered_map
             file: knowledge/dsa/quick_revision/containers_and_patterns/hashmap_dictionary.yaml
-            status: planned
           - title: Set / HashSet / unordered_set
             file: knowledge/dsa/core_data_structures/hashing_and_lookup/hashset_set.yaml
-            status: planned
           - title: Ordered Maps And Tree Maps
             file: knowledge/dsa/core_data_structures/hashing_and_lookup/ordered_maps_tree_maps.yaml
-            status: planned
           - title: Counter / Frequency Map
             file: knowledge/dsa/core_data_structures/hashing_and_lookup/counter_frequency_map.yaml
-            status: planned
           - title: Custom Hashing / Compound Keys
             file: knowledge/dsa/core_data_structures/hashing_and_lookup/custom_hashing_compound_keys.yaml
-            status: planned
           - title: Collision And Hash Quality
             file: knowledge/dsa/core_data_structures/hashing_and_lookup/hash_collision_quality.yaml
-            status: planned
 
       - title: Stack Queue And Priority
         lessons:
           - title: Stack
             file: knowledge/dsa/core_data_structures/stack_queue_and_priority/stack.yaml
-            status: planned
           - title: Queue
             file: knowledge/dsa/core_data_structures/stack_queue_and_priority/queue.yaml
-            status: planned
           - title: Deque
             file: knowledge/dsa/core_data_structures/stack_queue_and_priority/deque.yaml
-            status: planned
           - title: Heap / Priority Queue
             file: knowledge/dsa/core_data_structures/stack_queue_and_priority/heap_priority_queue.yaml
-            status: planned
           - title: Monotonic Stack
             file: knowledge/dsa/core_data_structures/stack_queue_and_priority/monotonic_stack.yaml
-            status: planned
           - title: Monotonic Queue
             file: knowledge/dsa/core_data_structures/stack_queue_and_priority/monotonic_queue.yaml
-            status: planned
 
       - title: Trees And Graph Structures
         lessons:
           - title: Binary Tree
             file: knowledge/dsa/core_data_structures/trees_and_graph_structures/binary_tree.yaml
-            status: planned
           - title: Binary Search Tree
             file: knowledge/dsa/core_data_structures/trees_and_graph_structures/binary_search_tree.yaml
-            status: planned
           - title: Trie
             file: knowledge/dsa/core_data_structures/trees_and_graph_structures/trie.yaml
-            status: planned
           - title: Graph Representation
             file: knowledge/dsa/core_data_structures/trees_and_graph_structures/graph_representation.yaml
-            status: planned
           - title: Union Find / Disjoint Set
             file: knowledge/dsa/core_data_structures/trees_and_graph_structures/union_find.yaml
-            status: planned
 
   - id: algorithmic_patterns
     title: Algorithmic Patterns
@@ -210,88 +188,63 @@ chapters:
         lessons:
           - title: Two Pointers
             file: knowledge/dsa/quick_revision/must_know_patterns/two_pointers.yaml
-            status: planned
           - title: Fast And Slow Pointers
             file: knowledge/dsa/algorithmic_patterns/array_and_string_patterns/fast_slow_pointers.yaml
-            status: planned
           - title: Sliding Window
             file: knowledge/dsa/quick_revision/must_know_patterns/sliding_window.yaml
-            status: planned
           - title: Fixed Window
             file: knowledge/dsa/algorithmic_patterns/array_and_string_patterns/fixed_window.yaml
-            status: planned
           - title: Variable Window
             file: knowledge/dsa/algorithmic_patterns/array_and_string_patterns/variable_window.yaml
-            status: planned
           - title: Prefix Sum
             file: knowledge/dsa/algorithmic_patterns/array_and_string_patterns/prefix_sum.yaml
-            status: planned
           - title: Difference Array
             file: knowledge/dsa/algorithmic_patterns/array_and_string_patterns/difference_array.yaml
-            status: planned
           - title: Kadane Algorithm
             file: knowledge/dsa/algorithmic_patterns/array_and_string_patterns/kadane_algorithm.yaml
-            status: planned
 
       - title: Searching And Sorting Patterns
         lessons:
           - title: Binary Search
             file: knowledge/dsa/quick_revision/must_know_patterns/binary_search.yaml
-            status: planned
           - title: Binary Search On Answer
             file: knowledge/dsa/algorithmic_patterns/searching_and_sorting_patterns/binary_search_on_answer.yaml
-            status: planned
           - title: Lower Bound And Upper Bound
             file: knowledge/dsa/algorithmic_patterns/searching_and_sorting_patterns/lower_upper_bound.yaml
-            status: planned
           - title: Sorting And Comparators
             file: knowledge/dsa/quick_revision/containers_and_patterns/sorting_comparators.yaml
-            status: planned
           - title: Custom Comparator Traps
             file: knowledge/dsa/algorithmic_patterns/searching_and_sorting_patterns/custom_comparator_traps.yaml
-            status: planned
           - title: Bucket Sort And Counting Sort
             file: knowledge/dsa/algorithmic_patterns/searching_and_sorting_patterns/bucket_counting_sort.yaml
-            status: planned
 
       - title: Recursion And Backtracking
         lessons:
           - title: Recursion
             file: knowledge/dsa/algorithmic_patterns/recursion_and_backtracking/recursion.yaml
-            status: planned
           - title: Backtracking
             file: knowledge/dsa/algorithmic_patterns/recursion_and_backtracking/backtracking.yaml
-            status: planned
           - title: Subsets
             file: knowledge/dsa/algorithmic_patterns/recursion_and_backtracking/subsets.yaml
-            status: planned
           - title: Permutations
             file: knowledge/dsa/algorithmic_patterns/recursion_and_backtracking/permutations.yaml
-            status: planned
           - title: Combinations
             file: knowledge/dsa/algorithmic_patterns/recursion_and_backtracking/combinations.yaml
-            status: planned
           - title: N-Queens Style Search
             file: knowledge/dsa/algorithmic_patterns/recursion_and_backtracking/n_queens_style_search.yaml
-            status: planned
 
       - title: Greedy And Intervals
         lessons:
           - title: Greedy Algorithms
             file: knowledge/dsa/algorithmic_patterns/greedy_and_intervals/greedy_algorithms.yaml
-            status: planned
           - title: Interval Problems
             file: knowledge/dsa/algorithmic_patterns/greedy_and_intervals/interval_problems.yaml
-            status: planned
           - title: Merge Intervals
             file: knowledge/dsa/algorithmic_patterns/greedy_and_intervals/merge_intervals.yaml
-            status: planned
           - title: Meeting Rooms
             file: knowledge/dsa/algorithmic_patterns/greedy_and_intervals/meeting_rooms.yaml
-            status: planned
           - title: Sweep Line
             file: knowledge/dsa/algorithmic_patterns/greedy_and_intervals/sweep_line.yaml
-            status: planned
 
   - id: graph_tree_algorithms
     title: Graph And Tree Algorithms

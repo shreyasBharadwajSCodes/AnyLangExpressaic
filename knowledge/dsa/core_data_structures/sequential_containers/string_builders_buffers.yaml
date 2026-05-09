@@ -1,0 +1,117 @@
+﻿id: string_builders_buffers
+title: String Builders And Buffers
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [strings, builders, buffers, interview]
+goal: Teach how to build strings efficiently and visibly across Python, C++, and Java, with attention to output buffers and key variables.
+assets:
+  builder_flow:
+    type: image
+    path: assets/dsa/string_builders_buffers/builder-flow.png
+    alt: Pieces appended into a buffer and converted into a final string.
+lesson:
+  - explain:
+      title: Builder Strategy
+      body: >
+        A builder separates construction from final output. Track piece as the current
+        text fragment, builder as the growing mutable buffer, and ans as the final
+        immutable result. This avoids repeated full-string copies.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Builders separate temporary construction from the final immutable string.
+        The algorithm keeps appending accepted pieces into a mutable buffer, then
+        materializes the final string once. This matters in interview loops because
+        repeated string concatenation can repeatedly copy earlier content.
+
+  - compare_table:
+      title: Builder Choices
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Append char/string", "list.append", "string.push_back / +=", "StringBuilder.append"]
+        - ["Final string", "''.join(parts)", "ans", "sb.toString()"]
+        - ["Many output lines", "list + '\\n'.join", "cout with '\\n' / ostringstream", "StringBuilder"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Collect pieces in a list and join once; this keeps each append cheap and makes final construction explicit.
+      behind_the_scenes: ["''.join(parts) allocates the final string once.", "parts contains references to string pieces."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: std::string is mutable and push_back works for characters; reserve capacity when final size is predictable.
+      behind_the_scenes: ["string can reallocate as it grows.", "reserve reduces reallocations."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: StringBuilder is the default for repeated string construction.
+      behind_the_scenes: ["String is immutable.", "StringBuilder grows an internal char/byte buffer."]
+examples:
+  - code_compare:
+      title: Build From Characters
+      idea: Append only lowercase letters.
+      python: |
+        parts = []
+
+        for ch in s:
+            # parts is the mutable buffer; each append stores one accepted piece.
+            if ch.islower():
+                parts.append(ch)
+
+        # join creates the final immutable string once.
+        ans = ''.join(parts)
+      cpp: |
+        string ans;
+
+        for (char ch : s) {
+            // ans itself is the mutable buffer in C++.
+            if (islower((unsigned char)ch)) ans.push_back(ch);
+        }
+      java: |
+        StringBuilder sb = new StringBuilder();
+
+        for (char ch : s.toCharArray()) {
+            // sb is the mutable buffer; append does not create the final String yet.
+            if (Character.isLowerCase(ch)) sb.append(ch);
+        }
+
+        String ans = sb.toString();
+transitions:
+  python_to_java:
+    title: Python list-plus-join to Java StringBuilder
+    mindset_shift: [From collecting list pieces to mutating a builder object.]
+    habit_swaps:
+      - python: "parts.append(ch); ''.join(parts)"
+        java: "sb.append(ch); sb.toString()"
+    false_friends:
+      - term: plus in loop
+        warning: Repeated Java String + in loops can allocate many strings.
+  python_to_cpp:
+    title: Python builder habit to C++
+    mindset_shift: [From separate list buffer to mutable string as buffer.]
+    habit_swaps:
+      - python: "parts.append(ch)"
+        cpp: "ans.push_back(ch)"
+    false_friends: []
+interview_questions:
+  - question: What variable should represent the mutable buffer?
+    answer: In Python use parts, in C++ often ans string, and in Java StringBuilder sb.
+  - question: When is reserve useful?
+    answer: When final size is predictable and repeated growth may reallocate.
+revision:
+  quick_summary: [Builders avoid repeated full-string copies, Track current piece and final output separately.]
+  cheat_table:
+    title: Builder Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["append", "parts.append(x)", "ans.push_back(c)", "sb.append(x)"]
+      - ["finish", "''.join(parts)", "ans", "sb.toString()"]
+  flashcards:
+    - question: What is Java's standard mutable string builder?
+      answer: StringBuilder.
+notes:
+  - In explanations, call out exactly when the final string is materialized.
+tlm_hooks:
+  possible_tasks: [generate_builder_templates, explain_output_buffering]
+  context: Focus on string construction variables and allocation behavior.

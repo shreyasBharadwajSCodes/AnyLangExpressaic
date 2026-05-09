@@ -103,24 +103,35 @@ examples:
       title: Fixed Window Maximum Sum
       idea: Maintain sum of exactly k elements.
       python: |
+        # First valid window is nums[0:k].
         cur = sum(nums[:k])
         best = cur
+
         for right in range(k, len(nums)):
+            # nums[right] enters; nums[right - k] leaves to keep size exactly k.
             cur += nums[right] - nums[right - k]
             best = max(best, cur)
       cpp: |
         long long cur = 0;
+
+        // First valid window is nums[0..k-1].
         for (int i = 0; i < k; i++) cur += nums[i];
         long long best = cur;
+
         for (int right = k; right < nums.size(); right++) {
+            // nums[right] enters; nums[right - k] leaves to keep size exactly k.
             cur += nums[right] - nums[right - k];
             best = max(best, cur);
         }
       java: |
         long cur = 0;
+
+        // First valid window is nums[0..k-1].
         for (int i = 0; i < k; i++) cur += nums[i];
         long best = cur;
+
         for (int right = k; right < nums.length; right++) {
+            // nums[right] enters; nums[right - k] leaves to keep size exactly k.
             cur += nums[right] - nums[right - k];
             best = Math.max(best, cur);
         }
@@ -132,30 +143,44 @@ examples:
       python: |
         seen = set()
         left = best = 0
+
         for right, ch in enumerate(s):
+            # If ch is already inside the window, move left until it is removed.
             while ch in seen:
                 seen.remove(s[left])
                 left += 1
+
+            # Now [left, right] has unique characters.
             seen.add(ch)
             best = max(best, right - left + 1)
       cpp: |
         vector<int> seen(256, 0);
         int left = 0, best = 0;
+
         for (int right = 0; right < s.size(); right++) {
+            // Cast to unsigned char before using char as a 0..255 index.
             while (seen[(unsigned char)s[right]]) {
+                // Remove characters from the left until s[right] is no longer duplicated.
                 seen[(unsigned char)s[left++]] = 0;
             }
+
+            // Now [left, right] has unique characters.
             seen[(unsigned char)s[right]] = 1;
             best = max(best, right - left + 1);
         }
       java: |
         Set<Character> seen = new HashSet<>();
         int left = 0, best = 0;
+
         for (int right = 0; right < s.length(); right++) {
             char ch = s.charAt(right);
+
+            // If ch is already inside the window, move left until it is removed.
             while (seen.contains(ch)) {
                 seen.remove(s.charAt(left++));
             }
+
+            // Now [left, right] has unique characters.
             seen.add(ch);
             best = Math.max(best, right - left + 1);
         }
@@ -168,8 +193,12 @@ examples:
       python: |
         left = cur = 0
         best = float("inf")
+
         for right, x in enumerate(nums):
+            # Expand until the current window may satisfy the target.
             cur += x
+
+            # Positive numbers make shrinking safe: removing left can only reduce sum.
             while cur >= target:
                 best = min(best, right - left + 1)
                 cur -= nums[left]
@@ -177,8 +206,12 @@ examples:
       cpp: |
         int left = 0, best = INT_MAX;
         long long cur = 0;
+
         for (int right = 0; right < nums.size(); right++) {
+            // Expand until the current window may satisfy the target.
             cur += nums[right];
+
+            // Positive numbers make shrinking safe: removing left can only reduce sum.
             while (cur >= target) {
                 best = min(best, right - left + 1);
                 cur -= nums[left++];
@@ -187,8 +220,12 @@ examples:
       java: |
         int left = 0, best = Integer.MAX_VALUE;
         long cur = 0;
+
         for (int right = 0; right < nums.length; right++) {
+            // Expand until the current window may satisfy the target.
             cur += nums[right];
+
+            // Positive numbers make shrinking safe: removing left can only reduce sum.
             while (cur >= target) {
                 best = Math.min(best, right - left + 1);
                 cur -= nums[left++];

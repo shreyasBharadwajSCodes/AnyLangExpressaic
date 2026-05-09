@@ -1,0 +1,121 @@
+﻿id: binary_tree
+title: Binary Tree
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [binary_tree, recursion, dfs, bfs, interview]
+goal: Teach binary tree representation and traversal across Python, C++, and Java with clear tracking of node, left/right child, return value, and recursion stack.
+assets:
+  binary_tree_node_tracker:
+    type: image
+    path: assets/dsa/binary_tree/node-tracker.png
+    alt: Current binary tree node with left child, right child, returned values, and accumulated answer.
+lesson:
+  - explain:
+      title: Tree Recursion Model
+      body: >
+        Binary tree problems revolve around node. At each node, inspect node.val,
+        recursively ask left and right for information, combine those results, and
+        return one value upward. Track node, left_result, right_result, and answer.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Binary-tree methods process one node and ask children for subtree answers.
+        The algorithm must define what a call returns upward, such as height, sum,
+        validity, or best contribution. Null children provide the base case, and the
+        parent combines left and right results into its own return value.
+
+  - compare_table:
+      title: Node Access
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Null check", "node is None", "node == nullptr", "node == null"]
+        - ["Value", "node.val", "node->val", "node.val"]
+        - ["Left child", "node.left", "node->left", "node.left"]
+        - ["Right child", "node.right", "node->right", "node.right"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Recursion is natural; watch recursion depth for skewed trees.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: TreeNode* may be null; check before node->val.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: TreeNode references may be null; helper methods make recursion clean.
+examples:
+  - code_compare:
+      title: Maximum Depth
+      idea: Return height from each node.
+      python: |
+        def depth(node):
+            # Empty subtree contributes height 0.
+            if node is None:
+                return 0
+
+            # Ask each child for its subtree height.
+            left = depth(node.left)
+            right = depth(node.right)
+
+            # Current node adds one level above the taller child.
+            return 1 + max(left, right)
+      cpp: |
+        int depth(TreeNode* node) {
+            // Empty subtree contributes height 0.
+            if (node == nullptr) return 0;
+
+            // Ask each child for its subtree height.
+            int left = depth(node->left);
+            int right = depth(node->right);
+
+            // Current node adds one level above the taller child.
+            return 1 + max(left, right);
+        }
+      java: |
+        private int depth(TreeNode node) {
+            // Empty subtree contributes height 0.
+            if (node == null) return 0;
+
+            // Ask each child for its subtree height.
+            int left = depth(node.left);
+            int right = depth(node.right);
+
+            // Current node adds one level above the taller child.
+            return 1 + Math.max(left, right);
+        }
+transitions:
+  python_to_cpp:
+    title: Python tree references to C++ pointers
+    mindset_shift: [From None checks to nullptr checks before dereference.]
+    habit_swaps:
+      - python: "node.left"
+        cpp: "node->left"
+    false_friends: [{term: dereference, warning: node->val is invalid if node is null.}]
+  python_to_java:
+    title: Python tree references to Java references
+    mindset_shift: [Similar object references with explicit null.]
+    habit_swaps:
+      - python: "node is None"
+        java: "node == null"
+    false_friends: []
+interview_questions:
+  - question: What does a recursive tree helper usually return?
+    answer: A summary of the current subtree, such as height, sum, validity, or best path contribution.
+revision:
+  quick_summary: [At each node, get child results, combine, return upward.]
+  cheat_table:
+    title: Tree Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["null", "None", "nullptr", "null"]
+      - ["value", "node.val", "node->val", "node.val"]
+  flashcards:
+    - question: What is stack space for a skewed tree DFS?
+      answer: O(n).
+notes:
+  - Draw return arrows from children to parent when dry-running recursive tree logic.
+tlm_hooks:
+  possible_tasks: [trace_tree_recursion, generate_binary_tree_drills]
+  context: Focus on node, child results, and returned subtree summaries.

@@ -69,7 +69,7 @@ lesson:
         pointed-to values.
       default_instincts:
         - Use == for values and strings.
-        - Compare pointers carefully: address versus contents.
+        - "Compare pointers carefully: address versus contents."
         - Define operator== for custom structs when needed.
         - Provide hash support for unordered_map custom keys.
       behind_the_scenes:

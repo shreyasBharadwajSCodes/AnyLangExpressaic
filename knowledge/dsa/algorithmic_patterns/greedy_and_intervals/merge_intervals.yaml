@@ -1,0 +1,140 @@
+id: merge_intervals
+title: Merge Intervals
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [merge_intervals, intervals, sorting, interview]
+goal: Teach merge intervals across Python, C++, and Java with current merged interval state and endpoint caveats.
+assets:
+  merge_intervals_trace:
+    type: image
+    path: assets/dsa/merge_intervals/merge-trace.png
+    alt: Sorted intervals merging into a current interval and output list.
+lesson:
+  - explain:
+      title: Merge Mental Model
+      body: >
+        Sort by start. Keep the last merged interval as the active interval. If the
+        next interval starts before or at the active end, extend the end; otherwise
+        start a new merged interval.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Sort intervals by start and keep the last merged interval as the active block.
+        If the next start reaches inside the active block, extend the active end. If
+        it starts after the active end, the old block is finished and a new block
+        begins.
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Lists are mutable; updating merged[-1][1] changes the stored interval.
+      default_instincts:
+        - Use key functions to make the greedy order visible.
+        - Name active state such as end, rooms, active, or best.
+        - Encode event tie order directly in tuple keys when using sweep line.
+      avoid:
+        - Sorting by a field without knowing why that order is safe.
+        - Forgetting to clarify whether touching endpoints overlap.
+        - Using heap state without defining what heap[0] represents.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector<vector<int>> can update merged.back()[1] directly.
+      default_instincts:
+        - Use strict sort comparators for interval orderings.
+        - Configure priority_queue direction explicitly for min-heap needs.
+        - Use clear event structs or pairs when tie order matters.
+      avoid:
+        - Assuming priority_queue is a min-heap.
+        - Using non-strict interval comparators.
+        - Ignoring endpoint tie-breaking in sweep-line events.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use List<int[]> for dynamic output, then convert to int[][] if needed.
+      default_instincts:
+        - Use Comparator.comparingInt or compare helpers for interval sorting.
+        - Use PriorityQueue for earliest-ending active intervals.
+        - Represent events with int[] or small classes and explicit tie-breakers.
+      avoid:
+        - Using a[0] - b[0] in comparators.
+        - Forgetting to initialize list buckets or event containers.
+        - Leaving endpoint semantics implicit.
+examples:
+  - code_compare:
+      title: Merge Overlapping Intervals
+      idea: Last merged interval absorbs overlaps.
+      python: |
+        intervals.sort(key=lambda p: p[0])
+        merged = []
+
+        for s, e in intervals:
+            if not merged or s > merged[-1][1]:
+                # No overlap with active interval; start a new merged block.
+                merged.append([s, e])
+            else:
+                # Overlap: keep the earlier start and extend the active end if needed.
+                merged[-1][1] = max(merged[-1][1], e)
+      cpp: |
+        sort(intervals.begin(), intervals.end());
+        vector<vector<int>> merged;
+
+        for (auto& in : intervals) {
+            int s = in[0], e = in[1];
+            if (merged.empty() || s > merged.back()[1]) {
+                // No overlap with active interval; start a new merged block.
+                merged.push_back({s, e});
+            } else {
+                // Overlap: keep the earlier start and extend the active end if needed.
+                merged.back()[1] = max(merged.back()[1], e);
+            }
+        }
+      java: |
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));
+        List<int[]> merged = new ArrayList<>();
+
+        for (int[] in : intervals) {
+            int s = in[0], e = in[1];
+            if (merged.isEmpty() || s > merged.get(merged.size() - 1)[1]) {
+                // No overlap with active interval; start a new merged block.
+                merged.add(new int[]{s, e});
+            } else {
+                // Overlap: keep the earlier start and extend the active end if needed.
+                int[] last = merged.get(merged.size() - 1);
+                last[1] = Math.max(last[1], e);
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python merge intervals to C++
+    mindset_shift: [From list append to vector push_back, Same active-last interval model.]
+    habit_swaps:
+      - python: "merged[-1][1]"
+        cpp: "merged.back()[1]"
+    false_friends: [{term: touching intervals, warning: Use s > end to merge touching closed intervals; use s >= end for half-open separation.}]
+  python_to_java:
+    title: Python merge intervals to Java
+    mindset_shift: [From dynamic list of lists to List<int[]> and explicit comparator.]
+    habit_swaps:
+      - python: "merged.append([s,e])"
+        java: "merged.add(new int[]{s,e})"
+    false_friends: [{term: array aliasing, warning: Mutating last[1] mutates the stored interval object, which is intended here.}]
+interview_questions:
+  - question: Why sort by start?
+    answer: Once starts are ordered, only the last merged interval can overlap the next interval.
+revision:
+  quick_summary: [Sort by start, compare next start to active end, extend or append.]
+  cheat_table:
+    title: Merge Intervals Cheat Table
+    columns: [Condition, Action]
+    rows:
+      - ["s > active_end", "append new interval"]
+      - ["s <= active_end", "active_end = max(active_end, e)"]
+  flashcards:
+    - question: What is the active interval?
+      answer: The last interval already placed in merged.
+notes:
+  - Clarify whether touching endpoints should merge.
+tlm_hooks:
+  possible_tasks: [trace_merge_intervals, generate_endpoint_drills]
+  context: Focus on active merged interval and endpoint semantics.

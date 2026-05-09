@@ -1,0 +1,237 @@
+﻿id: variable_window
+title: Variable Window
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [variable_window, sliding_window, two_pointers, hashmap, interview]
+goal: Teach variable-size sliding windows with clear validity invariants, shrink timing, and Python/C++/Java count-management differences.
+assets:
+  variable_window_invariant:
+    type: image
+    path: assets/dsa/variable_window/invariant.png
+    alt: Window with left and right boundaries, validity condition, count state, and best answer.
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        A variable window grows with right and shrinks with left until a validity
+        condition is restored or exploited. The key is naming the invariant: what
+        makes the current [left, right] valid, invalid, or answer-worthy.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Grow the window by moving right, then move left until the named invariant is
+        restored or until every valid short window has been recorded. Longest-window
+        problems usually update after shrinking; shortest-window problems often
+        update while shrinking. The method works only when moving left changes state
+        predictably enough to preserve the invariant.
+  - compare_table:
+      title: Common Forms
+      columns: [Goal, Expand, Shrink, Answer Moment]
+      rows:
+        - ["longest valid", "add right", "while invalid", "after shrink"]
+        - ["shortest valid", "add right", "while valid", "inside shrink loop"]
+        - ["at most k distinct", "increment count", "while distinct > k", "after shrink"]
+        - ["sum at least target positive", "add value", "while sum >= target", "inside shrink loop"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Dicts and sets make state compact. Delete zero-count keys when distinct key count is part of the invariant.
+      default_instincts:
+        - Track boundary meanings in names such as left, right, i, pref, or window.
+        - Use dict/list state instead of rebuilding slices or subarrays.
+        - Let Python int handle size, but still choose the right invariant.
+      avoid:
+        - Slicing every window or prefix range inside the loop.
+        - Letting negative indices hide an out-of-window read.
+        - Updating best before the maintained state is valid.
+      behind_the_scenes:
+        - freq.get(x, 0) avoids KeyError.
+        - del freq[x] changes len(freq), which is often the distinct count.
+        - Slicing the window for checks adds hidden O(window) work.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use vectors for small alphabets and unordered_map for arbitrary keys. Be deliberate because mp[x] inserts missing keys.
+      default_instincts:
+        - Use long long for sums, prefix values, and answer ranges.
+        - Use vector state for fixed ranges and unordered_map for sparse keys.
+        - Keep index guards explicit before reading outgoing or boundary positions.
+      avoid:
+        - Using int for accumulated values under large constraints.
+        - Reading nums[i-k], diff[r+1], or s[right] before bounds are valid.
+        - Relying on unchecked vector indexing while the invariant is still forming.
+      behind_the_scenes:
+        - unordered_map[key] creates a zero value if absent.
+        - Erase zero-count keys when mp.size() represents distinct count.
+        - Use long long for running sums under large constraints.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: HashMap state is explicit with getOrDefault, put, and remove. Primitive arrays are faster for fixed alphabets.
+      default_instincts:
+        - Use long for sums and prefix values when constraints can grow.
+        - Use primitive arrays for fixed alphabets or fixed-size numeric state.
+        - Use HashMap with getOrDefault/remove when keys are sparse.
+      avoid:
+        - Using int where running totals can overflow.
+        - Creating substrings repeatedly to represent the current window.
+        - Leaving zero counts in maps when map size means distinct active values.
+      behind_the_scenes:
+        - map.get(k) may return null.
+        - Removing zero-count keys keeps map.size() meaningful.
+        - long is safer for sum windows.
+examples:
+  - code_compare:
+      title: Longest Subarray With At Most K Distinct
+      idea: Keep shrinking until the distinct-count invariant is restored.
+      python: |
+        freq = {}
+        left = best = 0
+
+        for right, x in enumerate(nums):
+            freq[x] = freq.get(x, 0) + 1
+
+            while len(freq) > k:
+                out = nums[left]
+                freq[out] -= 1
+                if freq[out] == 0:
+                    # Removing zero keeps len(freq) equal to active distinct values.
+                    del freq[out]
+                left += 1
+
+            # After the while loop, [left, right] satisfies at most k distinct.
+            best = max(best, right - left + 1)
+      cpp: |
+        unordered_map<int, int> freq;
+        int left = 0, best = 0;
+
+        for (int right = 0; right < nums.size(); right++) {
+            freq[nums[right]]++;
+
+            while (freq.size() > k) {
+                int out = nums[left];
+                if (--freq[out] == 0) {
+                    // Erasing keeps freq.size() equal to active distinct values.
+                    freq.erase(out);
+                }
+                left++;
+            }
+
+            // After shrinking, [left, right] satisfies at most k distinct.
+            best = max(best, right - left + 1);
+        }
+      java: |
+        Map<Integer, Integer> freq = new HashMap<>();
+        int left = 0, best = 0;
+
+        for (int right = 0; right < nums.length; right++) {
+            freq.put(nums[right], freq.getOrDefault(nums[right], 0) + 1);
+
+            while (freq.size() > k) {
+                int out = nums[left];
+                int next = freq.get(out) - 1;
+                if (next == 0) {
+                    // Removing zero keeps freq.size() equal to active distinct values.
+                    freq.remove(out);
+                } else {
+                    freq.put(out, next);
+                }
+                left++;
+            }
+
+            // After shrinking, [left, right] satisfies at most k distinct.
+            best = Math.max(best, right - left + 1);
+        }
+  - code_compare:
+      title: Minimum Positive Sum Window
+      idea: Record answer while the window is valid, then shrink to find shorter valid windows.
+      python: |
+        left = 0
+        cur = 0
+        best = float("inf")
+
+        for right, x in enumerate(nums):
+            cur += x
+
+            while cur >= target:
+                # Current window is valid; try it before removing nums[left].
+                best = min(best, right - left + 1)
+                cur -= nums[left]
+                left += 1
+      cpp: |
+        int left = 0, best = INT_MAX;
+        long long cur = 0;
+
+        for (int right = 0; right < nums.size(); right++) {
+            cur += nums[right];
+
+            while (cur >= target) {
+                // Current window is valid; try it before removing nums[left].
+                best = min(best, right - left + 1);
+                cur -= nums[left++];
+            }
+        }
+      java: |
+        int left = 0, best = Integer.MAX_VALUE;
+        long cur = 0;
+
+        for (int right = 0; right < nums.length; right++) {
+            cur += nums[right];
+
+            while (cur >= target) {
+                // Current window is valid; try it before removing nums[left].
+                best = Math.min(best, right - left + 1);
+                cur -= nums[left++];
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python variable window to C++
+    mindset_shift: [From dict convenience to explicit insertion and erasure, From safe int to long long sums.]
+    habit_swaps:
+      - python: "freq[x] = freq.get(x, 0) + 1"
+        cpp: "freq[x]++"
+      - python: "del freq[out]"
+        cpp: "freq.erase(out)"
+    false_friends:
+      - term: map size
+        warning: Leaving zero-count keys makes size no longer mean active distinct count.
+      - term: operator[]
+        warning: C++ unordered_map operator[] inserts missing keys.
+  python_to_java:
+    title: Python variable window to Java
+    mindset_shift: [From direct dict arithmetic to getOrDefault and explicit put/remove, From Python int to long for sums.]
+    habit_swaps:
+      - python: "freq.get(x, 0)"
+        java: "freq.getOrDefault(x, 0)"
+      - python: "del freq[out]"
+        java: "freq.remove(out)"
+    false_friends:
+      - term: null count
+        warning: Java get can return null for missing keys.
+interview_questions:
+  - question: What is the first thing to define in a variable-window problem?
+    answer: The invariant that says whether the current window is valid.
+  - question: Why remove zero-count keys?
+    answer: So the number of keys equals the number of active distinct values.
+  - question: Why do shortest-window problems update answer inside the shrink loop?
+    answer: Every valid window before removing left is a candidate, and shrinking may find a shorter one.
+revision:
+  quick_summary: [Expand with right, shrink with left, preserve a named invariant, update answer at the correct moment.]
+  cheat_table:
+    title: Variable Window Cheat Table
+    columns: [Pattern, Shrink While, Answer Update]
+    rows:
+      - ["longest at most", "invalid", "after shrink"]
+      - ["shortest at least", "valid", "inside shrink"]
+      - ["distinct count", "freq.size > k", "after zero removals"]
+  flashcards:
+    - question: What does left represent?
+      answer: The first index still inside the active window.
+notes:
+  - This pattern usually needs non-negative numbers or count-style monotonicity; negative numbers can break sum-window logic.
+tlm_hooks:
+  possible_tasks: [trace_variable_window, generate_shrink_timing_drills]
+  context: Focus on validity invariants, zero-count removal, and answer timing.
+

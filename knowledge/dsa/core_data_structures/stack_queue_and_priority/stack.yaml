@@ -1,0 +1,124 @@
+﻿id: stack
+title: Stack
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [stack, lifo, parsing, dfs, interview]
+goal: Teach stack usage across Python, C++, and Java with clear tracking of top element, push/pop order, and invariant.
+assets:
+  stack_top_tracker:
+    type: image
+    path: assets/dsa/stack/top-tracker.png
+    alt: Stack with top element, incoming token, and pop operation.
+lesson:
+  - explain:
+      title: Stack Strategy
+      body: >
+        A stack is last-in, first-out. Track st as unresolved items, top as st's last
+        item, and x as the current input. Every push means x is waiting for a future
+        match; every pop means the current x resolved the previous top.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A stack stores unresolved items in last-in first-out order. The top item is
+        the only candidate that can be resolved next. The method is to define what
+        unresolved means, push when a value waits for future information, and pop
+        when the current input resolves the top.
+
+  - compare_table:
+      title: Stack Operations
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Push", "st.append(x)", "st.push(x)", "st.push(x)"]
+        - ["Peek", "st[-1]", "st.top()", "st.peek()"]
+        - ["Pop", "st.pop()", "st.pop()", "st.pop()"]
+        - ["Empty", "not st", "st.empty()", "st.isEmpty()"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: list is the standard stack; append and pop at end are amortized O(1).
+      behind_the_scenes: ["st[-1] fails on empty.", "list pop from end is efficient."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: stack adapter is good for pure LIFO; vector is useful when iteration is needed.
+      behind_the_scenes: ["pop returns void.", "top on empty is invalid."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use ArrayDeque through Deque; old Stack is usually avoided.
+      behind_the_scenes: ["pop throws on empty.", "Deque<Integer> boxes ints."]
+examples:
+  - code_compare:
+      title: Valid Parentheses
+      idea: st holds unmatched opening brackets.
+      python: |
+        st = []
+
+        for ch in s:
+            # Opening bracket waits for a future closing bracket.
+            if ch == '(':
+                st.append(ch)
+            elif not st:
+                # Closing bracket arrived with no opener to match.
+                return False
+            else:
+                # Current closing bracket resolves the latest opener.
+                st.pop()
+      cpp: |
+        stack<char> st;
+
+        for (char ch : s) {
+            // Opening bracket waits for a future closing bracket.
+            if (ch == '(') st.push(ch);
+            // Closing bracket arrived with no opener to match.
+            else if (st.empty()) return false;
+            // Current closing bracket resolves the latest opener.
+            else st.pop();
+        }
+      java: |
+        Deque<Character> st = new ArrayDeque<>();
+
+        for (char ch : s.toCharArray()) {
+            // Opening bracket waits for a future closing bracket.
+            if (ch == '(') st.push(ch);
+            // Closing bracket arrived with no opener to match.
+            else if (st.isEmpty()) return false;
+            // Current closing bracket resolves the latest opener.
+            else st.pop();
+        }
+transitions:
+  python_to_cpp:
+    title: Python stack to C++ stack
+    mindset_shift: [From pop returning value to pop returning void.]
+    habit_swaps:
+      - python: "x = st.pop()"
+        cpp: "x = st.top(); st.pop();"
+    false_friends: [{term: pop, warning: C++ pop does not return a value.}]
+  python_to_java:
+    title: Python stack to Java Deque
+    mindset_shift: [From list end to ArrayDeque top.]
+    habit_swaps:
+      - python: "st.append(x)"
+        java: "st.push(x)"
+    false_friends: [{term: Stack, warning: Java Stack is legacy; prefer ArrayDeque.}]
+interview_questions:
+  - question: What does st represent in parentheses matching?
+    answer: Opening brackets that have not yet been matched.
+revision:
+  quick_summary: [Stack is LIFO, Always check empty before peek/pop, C++ pop returns void.]
+  cheat_table:
+    title: Stack Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["push", "append", "push", "push"]
+      - ["peek", "[-1]", "top", "peek"]
+      - ["pop", "pop", "pop void", "pop"]
+  flashcards:
+    - question: What is LIFO?
+      answer: Last in, first out.
+notes:
+  - Explain what unresolved items are stored in st before coding.
+tlm_hooks:
+  possible_tasks: [trace_stack_algorithm, generate_stack_drills]
+  context: Focus on top element and unresolved-state invariant.

@@ -1,0 +1,129 @@
+﻿id: counter_frequency_map
+title: Counter / Frequency Map
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [counter, frequency_map, hashmap, interview]
+goal: Teach frequency maps across Python, C++, and Java with clear tracking of current value, count changes, distinct count, and zero-removal logic.
+assets:
+  frequency_tracker:
+    type: image
+    path: assets/dsa/counter_frequency_map/frequency-tracker.png
+    alt: Current value x updating freq[x], distinct count, and max frequency.
+lesson:
+  - explain:
+      title: Frequency Strategy
+      body: >
+        A frequency map tracks how many times each value appears. Watch x, freq[x],
+        distinct, and best_count. In sliding windows, the outgoing value must be
+        decremented just as carefully as the incoming value is incremented.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A frequency map stores counts as algorithmic state. Each update must mirror
+        the movement of data into or out of the active region. In whole-array counts
+        you mostly increment; in window methods the decrement and zero-removal are
+        just as important because they define active distinct values.
+
+  - compare_table:
+      title: Frequency Tools
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Count all", "Counter", "unordered_map<T,int>", "HashMap<T,Integer>"]
+        - ["Increment", "freq[x]+=1", "freq[x]++", "put/getOrDefault"]
+        - ["Default zero", "get(x,0)", "operator[]", "getOrDefault"]
+        - ["Remove zero", "del freq[x]", "erase(x)", "remove(x)"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Counter is compact; dict with get is clearer when you must control zero deletion.
+      behind_the_scenes: ["Counter can keep zero or negative counts.", "Deleting zero-count keys keeps distinct logic clean."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: unordered_map[x]++ is convenient because missing keys become zero first.
+      behind_the_scenes: ["operator[] inserts.", "Use erase when count becomes zero if distinct keys matter."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use getOrDefault, merge, or compute; keep zero-removal explicit for window problems.
+      behind_the_scenes: ["Integer counts are boxed.", "get returns null if absent."]
+examples:
+  - code_compare:
+      title: Count Frequencies
+      idea: Build freq from nums.
+      python: |
+        freq = {}
+
+        for x in nums:
+            # Read missing x as 0, then store the incremented count.
+            freq[x] = freq.get(x, 0) + 1
+      cpp: |
+        unordered_map<int, int> freq;
+
+        // operator[] inserts missing x with value 0, then increments it.
+        for (int x : nums) freq[x]++;
+      java: |
+        Map<Integer, Integer> freq = new HashMap<>();
+
+        for (int x : nums) {
+            // getOrDefault avoids null when x appears for the first time.
+            freq.put(x, freq.getOrDefault(x, 0) + 1);
+        }
+  - code_compare:
+      title: Decrement Window Count
+      idea: Remove outgoing value cleanly.
+      python: |
+        # out is leaving the active window, so its count must shrink.
+        freq[out] -= 1
+
+        # Removing zero keeps len(freq) equal to active distinct count.
+        if freq[out] == 0:
+            del freq[out]
+      cpp: |
+        // Prefix decrement gives the count after removing out.
+        if (--freq[out] == 0) freq.erase(out);
+      java: |
+        // Compute the count after removing out from the active window.
+        int next = freq.get(out) - 1;
+
+        if (next == 0) freq.remove(out);
+        else freq.put(out, next);
+transitions:
+  python_to_cpp:
+    title: Python Counter to C++ frequency map
+    mindset_shift: [From get defaults to operator insertion.]
+    habit_swaps:
+      - python: "freq.get(x, 0) + 1"
+        cpp: "freq[x]++"
+    false_friends:
+      - term: read
+        warning: C++ freq[x] inserts x.
+  python_to_java:
+    title: Python Counter to Java HashMap counts
+    mindset_shift: [From direct arithmetic to getOrDefault/put.]
+    habit_swaps:
+      - python: "freq[x] = freq.get(x, 0) + 1"
+        java: "freq.put(x, freq.getOrDefault(x, 0) + 1)"
+    false_friends:
+      - term: null
+        warning: Java get can return null for missing keys.
+interview_questions:
+  - question: When should zero-count keys be removed?
+    answer: When distinct-key count or exact active-window contents matter.
+revision:
+  quick_summary: [Frequency maps track counts, Window counts need increment and decrement symmetry.]
+  cheat_table:
+    title: Frequency Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["increment", "get + 1", "freq[x]++", "getOrDefault + put"]
+      - ["remove zero", "del", "erase", "remove"]
+  flashcards:
+    - question: What does distinct count track?
+      answer: Keys with positive counts.
+notes:
+  - In dry runs, write freq after each incoming and outgoing value.
+tlm_hooks:
+  possible_tasks: [generate_frequency_drills, trace_window_counts]
+  context: Focus on count-changing variables and zero-removal logic.

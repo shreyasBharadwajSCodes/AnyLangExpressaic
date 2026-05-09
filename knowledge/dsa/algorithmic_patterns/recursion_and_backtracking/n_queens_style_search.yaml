@@ -1,0 +1,163 @@
+id: n_queens_style_search
+title: N-Queens Style Search
+category: dsa
+level: advanced
+languages: [python, cpp, java]
+tags: [n_queens, backtracking, constraints, search, interview]
+goal: Teach constraint-based backtracking with columns and diagonals across Python, C++, and Java.
+assets:
+  n_queens_diagonals:
+    type: image
+    path: assets/dsa/n_queens_style_search/diagonals.png
+    alt: Board showing column, row, row-col diagonal, and row+col diagonal constraints.
+lesson:
+  - explain:
+      title: Constraint Search Mental Model
+      body: >
+        N-Queens style problems place one decision per row and maintain sets of
+        forbidden columns and diagonals. The board is just output; the real state is
+        which constraints are occupied.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Place one decision per row and maintain fast constraint state outside the
+        board. Columns and diagonals tell whether a square is legal in O(1). The
+        board is the visible answer, but columns, main diagonals, and anti-diagonals
+        are the real algorithmic state.
+  - compare_table:
+      title: Constraint Keys
+      columns: [Constraint, Key]
+      rows:
+        - ["column", "c"]
+        - ["main diagonal", "r - c"]
+        - ["anti diagonal", "r + c"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Sets make constraint membership direct; list of strings is convenient for output.
+      default_instincts:
+        - Define what each call returns or what path state it owns.
+        - Use append/pop symmetry for shared mutable paths.
+        - Copy path only when recording an answer.
+      avoid:
+        - Appending path itself into answers without copying.
+        - Forgetting to undo state before the next branch.
+        - Ignoring recursion depth on very deep inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use vector<int> or unordered_set<int> for constraints; vector<string> board is mutable.
+      default_instincts:
+        - Pass shared path/state by reference and copy only recorded answers.
+        - Pass read-only input containers by const reference.
+        - Use helper functions when recursive lambdas would distract from the algorithm.
+      avoid:
+        - Passing vector path by value on every recursive call unintentionally.
+        - Forgetting to pop_back or clear a used flag after recursion.
+        - Returning references to local recursive state.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: boolean arrays are faster than sets when bounds are known; char[][] or char[] rows help board mutation.
+      default_instincts:
+        - Use private helper methods with explicit state parameters or fields.
+        - Use boolean arrays for used/constraint state when size is known.
+        - Record new ArrayList<>(path) for completed answers.
+      avoid:
+        - Calling ans.add(path) for a mutable path.
+        - Forgetting to remove the last path element after recursion.
+        - Trying to mutate String board rows directly.
+examples:
+  - code_compare:
+      title: Place Queens By Row
+      idea: Try safe columns in the current row.
+      python: |
+        def dfs(r):
+            if r == n:
+                ans.append(["".join(row) for row in board])
+                return
+
+            for c in range(n):
+                d1, d2 = r - c, r + c
+                if c in cols or d1 in diag1 or d2 in diag2:
+                    continue
+
+                cols.add(c); diag1.add(d1); diag2.add(d2)
+                board[r][c] = "Q"
+                dfs(r + 1)
+                # Undo all three constraints plus the visible board cell.
+                board[r][c] = "."
+                cols.remove(c); diag1.remove(d1); diag2.remove(d2)
+      cpp: |
+        void dfs(int r) {
+            if (r == n) {
+                ans.push_back(board);
+                return;
+            }
+
+            for (int c = 0; c < n; c++) {
+                int d1 = r - c + n - 1, d2 = r + c;
+                if (cols[c] || diag1[d1] || diag2[d2]) continue;
+
+                cols[c] = diag1[d1] = diag2[d2] = 1;
+                board[r][c] = 'Q';
+                dfs(r + 1);
+                // Undo all three constraints plus the visible board cell.
+                board[r][c] = '.';
+                cols[c] = diag1[d1] = diag2[d2] = 0;
+            }
+        }
+      java: |
+        void dfs(int r) {
+            if (r == n) {
+                ans.add(buildBoard(board));
+                return;
+            }
+
+            for (int c = 0; c < n; c++) {
+                int d1 = r - c + n - 1, d2 = r + c;
+                if (cols[c] || diag1[d1] || diag2[d2]) continue;
+
+                cols[c] = diag1[d1] = diag2[d2] = true;
+                board[r][c] = 'Q';
+                dfs(r + 1);
+                // Undo all three constraints plus the visible board cell.
+                board[r][c] = '.';
+                cols[c] = diag1[d1] = diag2[d2] = false;
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python set constraints to C++ arrays
+    mindset_shift: [From set keys that can be negative to shifted array indices.]
+    habit_swaps:
+      - python: "d1 = r - c"
+        cpp: "d1 = r - c + n - 1"
+    false_friends: [{term: negative diagonal, warning: Array indices cannot be negative, so shift r-c.}]
+  python_to_java:
+    title: Python set constraints to Java arrays
+    mindset_shift: [From flexible sets to boolean arrays and shifted diagonal keys.]
+    habit_swaps:
+      - python: "board rows as lists"
+        java: "char[][] board"
+    false_friends: [{term: String mutation, warning: Java String is immutable; use char arrays for board edits.}]
+interview_questions:
+  - question: Why does r - c identify a diagonal?
+    answer: Cells on the same main diagonal have the same row-column difference.
+revision:
+  quick_summary: [One row at a time, track columns and two diagonals, undo every changed constraint.]
+  cheat_table:
+    title: N-Queens Cheat Table
+    columns: [Constraint, Key]
+    rows:
+      - ["column", "c"]
+      - ["main diagonal", "r-c"]
+      - ["anti diagonal", "r+c"]
+  flashcards:
+    - question: Why shift r-c in C++ and Java arrays?
+      answer: r-c can be negative.
+notes:
+  - "This pattern applies to Sudoku-like constraint search too: maintain fast validity state outside the board."
+tlm_hooks:
+  possible_tasks: [trace_n_queens, generate_constraint_search_drills]
+  context: Focus on constraint keys, board mutation, and undo symmetry.

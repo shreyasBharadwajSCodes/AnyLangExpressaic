@@ -1,0 +1,128 @@
+﻿id: monotonic_queue
+title: Monotonic Queue
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [monotonic_queue, deque, sliding_window, interview]
+goal: Teach monotonic queue patterns for sliding-window max/min with clear tracking of indices, stale removal, dominance removal, and answer timing.
+assets:
+  monotonic_queue_tracker:
+    type: image
+    path: assets/dsa/monotonic_queue/tracker.png
+    alt: Deque of indices maintaining decreasing values for sliding window maximum.
+lesson:
+  - explain:
+      title: Monotonic Queue Strategy
+      body: >
+        A monotonic queue is a deque of useful indices. For window maximum, values
+        decrease from front to back. Track i as current index, dq.front as current
+        best, stale condition as dq.front <= i - k, and ans as values recorded when
+        the first full window ends.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A monotonic queue keeps useful window candidates in a deque. The front is the
+        current best candidate, old indices leave from the front, and dominated
+        candidates leave from the back. The method works because a newer, better
+        value can replace an older worse value for every future window.
+
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use collections.deque and store indices.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use deque<int>; front/back expose candidate indices.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use ArrayDeque<Integer>; peekFirst/peekLast make end roles explicit.
+examples:
+  - code_compare:
+      title: Sliding Window Maximum
+      idea: dq.front always points to max of current window.
+      python: |
+        dq = deque()
+        ans = []
+
+        for i, x in enumerate(nums):
+            # Remove indices that are left of the current window [i-k+1, i].
+            while dq and dq[0] <= i - k:
+                dq.popleft()
+
+            # Remove smaller/equal values; x dominates them for future windows.
+            while dq and nums[dq[-1]] <= x:
+                dq.pop()
+
+            dq.append(i)
+
+            # First full window ends at i == k - 1.
+            if i >= k - 1:
+                ans.append(nums[dq[0]])
+      cpp: |
+        deque<int> dq;
+        vector<int> ans;
+
+        for (int i = 0; i < nums.size(); i++) {
+            // Remove indices that are left of the current window [i-k+1, i].
+            while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
+
+            // Remove smaller/equal values; nums[i] dominates them later.
+            while (!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
+
+            dq.push_back(i);
+
+            // First full window ends at i == k - 1.
+            if (i >= k - 1) ans.push_back(nums[dq.front()]);
+        }
+      java: |
+        Deque<Integer> dq = new ArrayDeque<>();
+        List<Integer> ans = new ArrayList<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            // Remove indices that are left of the current window [i-k+1, i].
+            while (!dq.isEmpty() && dq.peekFirst() <= i - k) dq.pollFirst();
+
+            // Remove smaller/equal values; nums[i] dominates them later.
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) dq.pollLast();
+
+            dq.offerLast(i);
+
+            // First full window ends at i == k - 1.
+            if (i >= k - 1) ans.add(nums[dq.peekFirst()]);
+        }
+transitions:
+  python_to_cpp:
+    title: Python monotonic queue to C++
+    mindset_shift: [Same deque logic with explicit front/back methods.]
+    habit_swaps:
+      - python: "dq[0], dq[-1]"
+        cpp: "dq.front(), dq.back()"
+    false_friends: []
+  python_to_java:
+    title: Python monotonic queue to Java
+    mindset_shift: [Index deque with named peek/poll end methods.]
+    habit_swaps:
+      - python: "dq.popleft()"
+        java: "dq.pollFirst()"
+    false_friends: []
+interview_questions:
+  - question: Why store indices instead of values?
+    answer: Indices let you remove stale elements that left the window.
+revision:
+  quick_summary: [Store useful indices, Front is best, Back removes dominated candidates, Stale boundary is i-k.]
+  cheat_table:
+    title: Monotonic Queue Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["front", "dq[0]", "dq.front()", "peekFirst"]
+      - ["back", "dq[-1]", "dq.back()", "peekLast"]
+  flashcards:
+    - question: When do you append answer?
+      answer: After the first full window, i >= k - 1.
+notes:
+  - In dry runs, write dq as indices and separately write their values.
+tlm_hooks:
+  possible_tasks: [trace_monotonic_queue, generate_window_max_drills]
+  context: Focus on stale removal and dominance removal variables.

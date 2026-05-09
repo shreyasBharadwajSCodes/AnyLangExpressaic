@@ -1,0 +1,157 @@
+id: permutations
+title: Permutations
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [permutations, backtracking, used_array, interview]
+goal: Teach permutation generation with used-state tracking and duplicate-safe choices across Python, C++, and Java.
+assets:
+  permutation_used:
+    type: image
+    path: assets/dsa/permutations/used-state.png
+    alt: Permutation path with used flags showing which elements are already chosen.
+lesson:
+  - explain:
+      title: Permutation Mental Model
+      body: >
+        A permutation path has ordered choices. At each depth, choose one unused
+        element. used[i] prevents the same input position from appearing twice in
+        the current permutation.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        A permutation fills positions in order. At each depth, choose one input
+        position that is not already used in the current path. The used array is the
+        guard that prevents reusing the same element position, and it must be undone
+        together with the path after each recursive branch.
+  - compare_table:
+      title: Key State
+      columns: [Variable, Meaning]
+      rows:
+        - ["path", "ordered partial permutation"]
+        - ["used[i]", "whether nums[i] is already in path"]
+        - ["depth", "path length"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Boolean lists and append/pop make used-state clear.
+      default_instincts:
+        - Define what each call returns or what path state it owns.
+        - Use append/pop symmetry for shared mutable paths.
+        - Copy path only when recording an answer.
+      avoid:
+        - Appending path itself into answers without copying.
+        - Forgetting to undo state before the next branch.
+        - Ignoring recursion depth on very deep inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector<int> used is simple; vector<bool> has special behavior, so int/char is often clearer.
+      default_instincts:
+        - Pass shared path/state by reference and copy only recorded answers.
+        - Pass read-only input containers by const reference.
+        - Use helper functions when recursive lambdas would distract from the algorithm.
+      avoid:
+        - Passing vector path by value on every recursive call unintentionally.
+        - Forgetting to pop_back or clear a used flag after recursion.
+        - Returning references to local recursive state.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: boolean[] used is direct; record new ArrayList<>(path).
+      default_instincts:
+        - Use private helper methods with explicit state parameters or fields.
+        - Use boolean arrays for used/constraint state when size is known.
+        - Record new ArrayList<>(path) for completed answers.
+      avoid:
+        - Calling ans.add(path) for a mutable path.
+        - Forgetting to remove the last path element after recursion.
+        - Trying to mutate String board rows directly.
+examples:
+  - code_compare:
+      title: Generate Permutations
+      idea: Pick one unused element for each position.
+      python: |
+        def dfs():
+            if len(path) == len(nums):
+                ans.append(path.copy())
+                return
+
+            for i, x in enumerate(nums):
+                if used[i]:
+                    continue
+                used[i] = True
+                path.append(x)
+                dfs()
+                # Undo both path and used so another branch can use nums[i].
+                path.pop()
+                used[i] = False
+      cpp: |
+        void dfs() {
+            if (path.size() == nums.size()) {
+                ans.push_back(path);
+                return;
+            }
+
+            for (int i = 0; i < nums.size(); i++) {
+                if (used[i]) continue;
+                used[i] = 1;
+                path.push_back(nums[i]);
+                dfs();
+                // Undo both path and used so another branch can use nums[i].
+                path.pop_back();
+                used[i] = 0;
+            }
+        }
+      java: |
+        void dfs() {
+            if (path.size() == nums.length) {
+                ans.add(new ArrayList<>(path));
+                return;
+            }
+
+            for (int i = 0; i < nums.length; i++) {
+                if (used[i]) continue;
+                used[i] = true;
+                path.add(nums[i]);
+                dfs();
+                // Undo both path and used so another branch can use nums[i].
+                path.remove(path.size() - 1);
+                used[i] = false;
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python permutations to C++
+    mindset_shift: [From bool list to int/char used vector, From path.copy to vector copy.]
+    habit_swaps:
+      - python: "used = [False] * n"
+        cpp: "vector<int> used(n, 0)"
+    false_friends: [{term: vector<bool>, warning: It is specialized; vector<int> or vector<char> is clearer in interviews.}]
+  python_to_java:
+    title: Python permutations to Java
+    mindset_shift: [From list booleans to boolean array, From copy() to new ArrayList.]
+    habit_swaps:
+      - python: "used[i] = False"
+        java: "used[i] = false"
+    false_friends: [{term: duplicate values, warning: used positions are not enough to avoid duplicate permutations when values repeat.}]
+interview_questions:
+  - question: What does used[i] protect?
+    answer: It prevents using the same input position twice in one permutation.
+revision:
+  quick_summary: [Choose unused item, recurse, undo path and used flag.]
+  cheat_table:
+    title: Permutations Cheat Table
+    columns: [State, Meaning]
+    rows:
+      - ["path length", "current depth"]
+      - ["used", "positions already chosen"]
+      - ["answer", "copy at full length"]
+  flashcards:
+    - question: How many permutations for n distinct elements?
+      answer: n!.
+notes:
+  - For duplicates, sort and skip same values when the previous equal value was not used.
+tlm_hooks:
+  possible_tasks: [trace_permutation_used, generate_permutation_drills]
+  context: Focus on used flags, ordered choices, and undo symmetry.

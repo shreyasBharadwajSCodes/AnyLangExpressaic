@@ -1,0 +1,160 @@
+﻿id: binary_search_on_answer
+title: Binary Search On Answer
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [binary_search, answer_search, monotonic_predicate, interview]
+goal: Teach binary search on answer with monotonic feasibility, safe numeric ranges, and language-specific overflow handling.
+assets:
+  answer_search_bounds:
+    type: image
+    path: assets/dsa/binary_search_on_answer/bounds.png
+    alt: Answer range where false values come before true feasible values.
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        Binary search on answer works when answers have a monotonic shape: all values
+        below a threshold fail and all values at or above it work, or the reverse.
+        The implementation searches values, not indices.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Search the answer value itself, not an array index. First define a predicate
+        that says whether a candidate answer works. If the predicate changes in one
+        direction only, such as false false true true, the loop can keep the working
+        half and discard the impossible half.
+  - compare_table:
+      title: Recognition Signals
+      columns: [Phrase, Feasible Meaning, Search Target]
+      rows:
+        - ["minimum capacity", "can finish within limit", "first true"]
+        - ["minimum speed", "arrives on time", "first true"]
+        - ["maximum minimum distance", "can place enough items", "last true"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Python int makes large ranges easy; focus on proving the predicate is monotonic.
+      default_instincts:
+        - Use key functions or bisect when they exactly match the sorted invariant.
+        - Keep lower/upper-bound meanings written in terms of first valid index.
+        - Prefer tuple keys for multi-field ordering.
+      avoid:
+        - Using bisect or bounds on unsorted data.
+        - Using reverse=True when only one field should be descending.
+        - Mixing inclusive and exclusive search templates.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use long long for answer bounds and predicate totals; lambdas capture input cleanly.
+      default_instincts:
+        - Use safe midpoint formulas for manual binary search.
+        - Use strict comparators and the same ordering for sort and lower_bound.
+        - Use long long for answer-search ranges and feasibility totals.
+      avoid:
+        - Returning <= from a comparator.
+        - Using lower_bound with a different ordering than sort.
+        - Using int bounds when the answer range can exceed int.
+      behind_the_scenes: ["left + (right-left)/2 avoids overflow.", "ceil division needs careful integer formula."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use long for bounds and totals; helper methods keep feasibility readable.
+      default_instincts:
+        - Use Comparator.comparing or Integer.compare/Long.compare for ordering.
+        - Write custom lower/upper-bound helpers when insertion point matters.
+        - Use long for answer search and feasibility totals.
+      avoid:
+        - Using subtraction inside comparators.
+        - Treating Arrays.binarySearch as lower_bound with duplicates.
+        - Letting int arithmetic overflow before assigning to long.
+      behind_the_scenes: ["int multiplication/addition can overflow before assignment to long.", "Use long casts early."]
+examples:
+  - code_compare:
+      title: Minimum Eating Speed
+      idea: Find first speed that finishes within h hours.
+      python: |
+        def ok(speed):
+            hours = 0
+            for pile in piles:
+                # Ceiling division: number of hours this pile needs at speed.
+                hours += (pile + speed - 1) // speed
+            return hours <= h
+
+        left, right = 1, max(piles)
+        while left < right:
+            mid = (left + right) // 2
+            if ok(mid):
+                # mid works; search for a smaller working speed.
+                right = mid
+            else:
+                left = mid + 1
+      cpp: |
+        auto ok = [&](long long speed) {
+            long long hours = 0;
+            for (int pile : piles) {
+                // Ceiling division: number of hours this pile needs at speed.
+                hours += (pile + speed - 1) / speed;
+            }
+            return hours <= h;
+        };
+
+        long long left = 1, right = *max_element(piles.begin(), piles.end());
+        while (left < right) {
+            long long mid = left + (right - left) / 2;
+            if (ok(mid)) right = mid;
+            else left = mid + 1;
+        }
+      java: |
+        long left = 1, right = Arrays.stream(piles).max().getAsInt();
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+            if (ok(piles, h, mid)) {
+                // mid works; search for a smaller working speed.
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python answer search to C++
+    mindset_shift: [From safe arithmetic to long long bounds, From nested def to lambda/helper.]
+    habit_swaps:
+      - python: "mid = (left + right) // 2"
+        cpp: "mid = left + (right - left) / 2"
+    false_friends:
+      - term: predicate
+        warning: Binary search is invalid unless feasibility is monotonic.
+  python_to_java:
+    title: Python answer search to Java
+    mindset_shift: [From nested function to helper method, From Python int to long bounds.]
+    habit_swaps:
+      - python: "def ok(speed)"
+        java: "private boolean ok(int[] piles, int h, long speed)"
+    false_friends:
+      - term: overflow
+        warning: Cast before arithmetic when products or sums can exceed int.
+interview_questions:
+  - question: What must be true before using answer search?
+    answer: The feasibility result must be monotonic across the answer range.
+  - question: What does first true mean?
+    answer: The smallest answer value that satisfies the predicate.
+revision:
+  quick_summary: [Search answer values, prove monotonicity, use safe bounds and midpoint.]
+  cheat_table:
+    title: Answer Search Cheat Table
+    columns: [Need, Rule]
+    rows:
+      - ["minimum feasible", "first true"]
+      - ["maximum feasible", "last true"]
+      - ["large bounds", "long long / long"]
+  flashcards:
+    - question: Why can mid be kept when feasible?
+      answer: It may be the smallest feasible answer.
+notes:
+  - State the false/true shape before coding the loop.
+tlm_hooks:
+  possible_tasks: [trace_answer_search, generate_monotonic_predicate_drills]
+  context: Focus on feasible predicate, bounds, and first-true loop.
+

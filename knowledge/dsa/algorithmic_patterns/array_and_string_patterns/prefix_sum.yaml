@@ -1,0 +1,187 @@
+﻿id: prefix_sum
+title: Prefix Sum
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [prefix_sum, subarray, hashmap, range_sum, interview]
+goal: Teach prefix sums and prefix-hash patterns across Python, C++, and Java with clear sum identity, overflow handling, and map behavior.
+assets:
+  prefix_sum_trace:
+    type: image
+    path: assets/dsa/prefix_sum/prefix-trace.png
+    alt: Prefix values showing subarray sum as prefix[right] minus prefix[left].
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        Prefix sum converts range sums into differences. If pref is the sum before
+        the current position plus processed values, then a subarray ending here has
+        sum k when an earlier prefix equals pref - k.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Replace repeated range sums with cumulative sums. A prefix value represents
+        everything before or through the current position, so a range becomes a
+        difference between two prefixes. For subarray-count problems, the map stores
+        how many earlier prefixes could pair with the current prefix to form the
+        target sum.
+  - compare_table:
+      title: Uses
+      columns: [Need, Technique, Key State]
+      rows:
+        - ["range sum queries", "prefix array", "prefix[r+1] - prefix[l]"]
+        - ["count subarrays sum k", "hash map of prefix counts", "seen[pref-k]"]
+        - ["largest zero-sum span", "first index of prefix", "first_seen[pref]"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Python integers avoid overflow, and dict counting is compact.
+      default_instincts:
+        - Track boundary meanings in names such as left, right, i, pref, or window.
+        - Use dict/list state instead of rebuilding slices or subarrays.
+        - Let Python int handle size, but still choose the right invariant.
+      avoid:
+        - Slicing every window or prefix range inside the loop.
+        - Letting negative indices hide an out-of-window read.
+        - Updating best before the maintained state is valid.
+      behind_the_scenes:
+        - "Initialize seen = {0: 1} to count subarrays starting at index 0."
+        - pref - k is the earlier prefix needed for a k-sum subarray.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use long long for prefix values; int can overflow even when array values are int.
+      default_instincts:
+        - Use long long for sums, prefix values, and answer ranges.
+        - Use vector state for fixed ranges and unordered_map for sparse keys.
+        - Keep index guards explicit before reading outgoing or boundary positions.
+      avoid:
+        - Using int for accumulated values under large constraints.
+        - Reading nums[i-k], diff[r+1], or s[right] before bounds are valid.
+        - Relying on unchecked vector indexing while the invariant is still forming.
+      behind_the_scenes:
+        - unordered_map<long long, int> is the usual count map.
+        - seen[pref]++ inserts missing prefixes with count zero first.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use long prefix sums and Map<Long,Integer> for prefix counts.
+      default_instincts:
+        - Use long for sums and prefix values when constraints can grow.
+        - Use primitive arrays for fixed alphabets or fixed-size numeric state.
+        - Use HashMap with getOrDefault/remove when keys are sparse.
+      avoid:
+        - Using int where running totals can overflow.
+        - Creating substrings repeatedly to represent the current window.
+        - Leaving zero counts in maps when map size means distinct active values.
+      behind_the_scenes:
+        - Use 0L so the key type is Long.
+        - getOrDefault avoids null on unseen prefixes.
+examples:
+  - code_compare:
+      title: Count Subarrays With Sum K
+      idea: Current prefix minus earlier prefix equals the subarray sum.
+      python: |
+        pref = 0
+        ans = 0
+        seen = {0: 1}
+
+        for x in nums:
+            pref += x
+            # Need earlier prefix = pref - k, so the gap sums to k.
+            ans += seen.get(pref - k, 0)
+            seen[pref] = seen.get(pref, 0) + 1
+      cpp: |
+        long long pref = 0, ans = 0;
+        unordered_map<long long, int> seen;
+        seen[0] = 1;
+
+        for (int x : nums) {
+            pref += x;
+            // Need earlier prefix = pref - k, so the gap sums to k.
+            if (seen.count(pref - k)) ans += seen[pref - k];
+            seen[pref]++;
+        }
+      java: |
+        long pref = 0, ans = 0;
+        Map<Long, Integer> seen = new HashMap<>();
+        seen.put(0L, 1);
+
+        for (int x : nums) {
+            pref += x;
+            // Need earlier prefix = pref - k, so the gap sums to k.
+            ans += seen.getOrDefault(pref - k, 0);
+            seen.put(pref, seen.getOrDefault(pref, 0) + 1);
+        }
+  - code_compare:
+      title: Range Sum Query Array
+      idea: Store sum of elements before each index.
+      python: |
+        pref = [0]
+        for x in nums:
+            pref.append(pref[-1] + x)
+
+        # Sum from l to r inclusive removes everything before l.
+        total = pref[r + 1] - pref[l]
+      cpp: |
+        vector<long long> pref(nums.size() + 1, 0);
+        for (int i = 0; i < nums.size(); i++) {
+            pref[i + 1] = pref[i] + nums[i];
+        }
+
+        // Sum from l to r inclusive removes everything before l.
+        long long total = pref[r + 1] - pref[l];
+      java: |
+        long[] pref = new long[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            pref[i + 1] = pref[i] + nums[i];
+        }
+
+        // Sum from l to r inclusive removes everything before l.
+        long total = pref[r + 1] - pref[l];
+transitions:
+  python_to_cpp:
+    title: Python prefix sums to C++
+    mindset_shift: [From overflow-free sums to long long prefix values, From dict get to unordered_map behavior.]
+    habit_swaps:
+      - python: "seen = {0: 1}"
+        cpp: "unordered_map<long long,int> seen; seen[0] = 1"
+      - python: "pref += x"
+        cpp: "long long pref; pref += x"
+    false_friends:
+      - term: int prefix
+        warning: Prefix sum can overflow int even if each element fits int.
+  python_to_java:
+    title: Python prefix sums to Java
+    mindset_shift: [From Python int to long, From dict to Map<Long,Integer>.]
+    habit_swaps:
+      - python: "seen.get(pref - k, 0)"
+        java: "seen.getOrDefault(pref - k, 0)"
+      - python: "0"
+        java: "0L for Long map keys"
+    false_friends:
+      - term: key type
+        warning: Map<Long,Integer> needs Long keys; use 0L, not plain 0.
+interview_questions:
+  - question: Why initialize prefix count with 0:1?
+    answer: It represents the empty prefix before the array, allowing subarrays starting at index 0.
+  - question: What earlier prefix is needed for sum k ending now?
+    answer: pref - k.
+revision:
+  quick_summary: [Range sum is prefix difference, Subarray count uses earlier prefix counts, Use wide numeric types.]
+  cheat_table:
+    title: Prefix Sum Cheat Table
+    columns: [Need, Formula]
+    rows:
+      - ["range l..r", "pref[r+1] - pref[l]"]
+      - ["subarray sum k", "earlier prefix = pref - k"]
+      - ["empty prefix", "seen[0] = 1"]
+  flashcards:
+    - question: Why use long long or long?
+      answer: Prefix sums can exceed individual element range.
+notes:
+  - Prefix sums handle negative numbers; sliding-sum windows often do not.
+tlm_hooks:
+  possible_tasks: [trace_prefix_counts, generate_range_sum_drills]
+  context: Focus on prefix identity, empty prefix, and wide numeric types.
+

@@ -1,0 +1,109 @@
+﻿id: ordered_maps_tree_maps
+title: Ordered Maps And Tree Maps
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [ordered_map, tree_map, sorted_keys, lookup, interview]
+goal: Teach ordered key-value structures and sorted-key thinking across Python, C++, and Java, with range-query variables and ordering caveats.
+assets:
+  ordered_key_tracker:
+    type: image
+    path: assets/dsa/ordered_maps_tree_maps/ordered-key-tracker.png
+    alt: Sorted keys with current key, lower key, higher key, and range boundaries.
+lesson:
+  - explain:
+      title: Ordered Lookup Strategy
+      body: >
+        Ordered maps keep keys sorted, which supports predecessor, successor, min,
+        max, and range-style queries. Track key as the current lookup, lo/hi as range
+        boundaries, and candidate as the nearest ordered key found.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Ordered maps keep keys navigable by sorted order. The method is not just
+        lookup by exact key; it is finding nearest keys such as floor, ceiling,
+        predecessor, or successor. Use them when sorted position matters more than
+        average constant-time lookup.
+
+  - compare_table:
+      title: Ordered Map Availability
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Sorted map", "use sorted keys or external library", "map", "TreeMap"]
+        - ["Min key", "min(keys)", "begin()", "firstKey()"]
+        - ["Lower bound", "bisect on sorted keys", "lower_bound", "ceilingKey()"]
+        - ["Predecessor", "bisect index - 1", "prev(it)", "floorKey()"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Core Python has insertion-ordered dict, not sorted dict. For interviews, sort keys when needed or use bisect with a sorted list if updates are limited.
+      behind_the_scenes: ["dict order is insertion order, not key order.", "bisect insertion into list is O(n)."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: map is a balanced tree with O(log n) insert, erase, find, and lower_bound.
+      behind_the_scenes: ["map iterates in sorted key order.", "Iterator predecessor requires begin check."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: TreeMap supports sorted keys with floorKey, ceilingKey, firstKey, and lastKey.
+      behind_the_scenes: ["Keys need natural ordering or Comparator.", "Operations are O(log n)."]
+examples:
+  - code_compare:
+      title: Find Ceiling Key
+      idea: Find the smallest key >= target.
+      python: |
+        # Python dict is not sorted by key, so create a sorted key view first.
+        keys = sorted(mp)
+
+        # i is the first position where target could be inserted.
+        i = bisect_left(keys, target)
+
+        # If i is inside the array, keys[i] is the ceiling key.
+        candidate = keys[i] if i < len(keys) else None
+      cpp: |
+        // lower_bound returns the first key that is not less than target.
+        auto it = mp.lower_bound(target);
+
+        if (it != mp.end()) candidate = it->first;
+      java: |
+        // ceilingKey directly means smallest key >= target.
+        Integer candidate = tree.ceilingKey(target);
+transitions:
+  python_to_cpp:
+    title: Python sorted keys to C++ map
+    mindset_shift: [From one-time sorted lists to maintained sorted tree.]
+    habit_swaps:
+      - python: "bisect_left(sorted_keys, x)"
+        cpp: "mp.lower_bound(x)"
+    false_friends:
+      - term: map
+        warning: C++ map is sorted; unordered_map is hash-based.
+  python_to_java:
+    title: Python sorted keys to Java TreeMap
+    mindset_shift: [From manual sorted-key handling to TreeMap navigation methods.]
+    habit_swaps:
+      - python: "floor via bisect"
+        java: "tree.floorKey(x)"
+    false_friends:
+      - term: HashMap
+        warning: HashMap has no sorted-key operations.
+interview_questions:
+  - question: When is an ordered map better than a hash map?
+    answer: When you need sorted iteration, predecessor/successor, min/max key, or range queries.
+revision:
+  quick_summary: [Ordered maps trade O(1) hash lookup for O(log n) sorted-key power.]
+  cheat_table:
+    title: Ordered Map Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["ceiling", "bisect_left", "lower_bound", "ceilingKey"]
+      - ["floor", "bisect - 1", "prev(upper_bound)", "floorKey"]
+  flashcards:
+    - question: Is Python dict sorted by key?
+      answer: No.
+notes:
+  - Track whether candidate means first >= key, last <= key, or exact key.
+tlm_hooks:
+  possible_tasks: [generate_ordered_map_drills, explain_floor_ceiling]
+  context: Focus on sorted-key variables and lower/floor/ceiling semantics.

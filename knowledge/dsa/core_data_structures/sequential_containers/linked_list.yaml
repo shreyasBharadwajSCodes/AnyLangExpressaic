@@ -1,0 +1,141 @@
+﻿id: linked_list
+title: Linked List
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [linked_list, pointers, references, interview]
+goal: Teach linked list handling across Python, C++, and Java with clear tracking of node references, next pointers, dummy nodes, and mutation order.
+assets:
+  linked_list_pointer_tracker:
+    type: image
+    path: assets/dsa/linked_list/pointer-tracker.png
+    alt: Linked list nodes with prev, curr, next, dummy, and tail pointers labeled.
+lesson:
+  - explain:
+      title: Pointer Tracker
+      body: >
+        Linked list problems are pointer-mutation problems. Track curr as the node
+        being processed, prev as the node before it or reversed prefix, next_node as
+        the saved original next pointer, and dummy/tail for building results.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Linked-list algorithms change references between nodes, not array indices.
+        Before rewiring a pointer, save the next node that keeps access to the
+        untouched suffix. The method is about mutation order: save, rewire, advance.
+        Dummy nodes are used when the output head may change while a tail pointer
+        keeps building the result.
+
+  - compare_table:
+      title: Node Model
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Node reference", "object reference", "ListNode*", "ListNode reference"]
+        - ["Null", "None", "nullptr", "null"]
+        - ["Next field", "node.next", "node->next", "node.next"]
+        - ["Dummy node", "ListNode(0)", "new ListNode(0)", "new ListNode(0)"]
+  - language_lens:
+      language: python
+      title: Python Linked List Strategy
+      body: References are object references; rebinding curr does not mutate the node, but assigning curr.next does.
+      behind_the_scenes: ["Use is None for missing node checks.", "No manual deallocation."]
+  - language_lens:
+      language: cpp
+      title: C++ Linked List Strategy
+      body: Pointers can be null and must be checked before dereferencing.
+      behind_the_scenes: ["node->next dereferences node.", "Ownership/deletion is usually handled by judge in interview platforms."]
+  - language_lens:
+      language: java
+      title: Java Linked List Strategy
+      body: References point to node objects; changing node.next mutates the structure visible to all aliases.
+      behind_the_scenes: ["null checks are required.", "GC handles unused nodes."]
+examples:
+  - code_compare:
+      title: Reverse List
+      idea: Save next before rewiring curr.next.
+      python: |
+        # prev is the reversed prefix; curr is the node being moved.
+        prev = None
+        curr = head
+
+        while curr:
+            # Save the original suffix before changing curr.next.
+            next_node = curr.next
+
+            # Reverse the pointer for this one node.
+            curr.next = prev
+
+            # Advance both handles: prev grows, curr moves to untouched suffix.
+            prev = curr
+            curr = next_node
+      cpp: |
+        // prev is the reversed prefix; curr is the node being moved.
+        ListNode* prev = nullptr;
+        ListNode* curr = head;
+
+        while (curr) {
+            // Save the original suffix before changing curr->next.
+            ListNode* nextNode = curr->next;
+
+            // Reverse the pointer for this one node.
+            curr->next = prev;
+
+            // Advance both handles: prev grows, curr moves to untouched suffix.
+            prev = curr;
+            curr = nextNode;
+        }
+      java: |
+        // prev is the reversed prefix; curr is the node being moved.
+        ListNode prev = null;
+        ListNode curr = head;
+
+        while (curr != null) {
+            // Save the original suffix before changing curr.next.
+            ListNode nextNode = curr.next;
+
+            // Reverse the pointer for this one node.
+            curr.next = prev;
+
+            // Advance both handles: prev grows, curr moves to untouched suffix.
+            prev = curr;
+            curr = nextNode;
+        }
+transitions:
+  python_to_cpp:
+    title: Python node references to C++ pointers
+    mindset_shift: [From safe object references to nullable raw pointers in platform structs.]
+    habit_swaps:
+      - python: "curr.next"
+        cpp: "curr->next"
+    false_friends:
+      - term: null dereference
+        warning: Check curr before curr->next.
+  python_to_java:
+    title: Python node references to Java references
+    mindset_shift: [Very similar reference mutation model, but with explicit types and null.]
+    habit_swaps:
+      - python: "while curr:"
+        java: "while (curr != null)"
+    false_friends: []
+interview_questions:
+  - question: Why save next_node before changing curr.next?
+    answer: Otherwise the rest of the original list can be lost.
+  - question: What does dummy protect?
+    answer: It gives a stable handle to the result head while tail moves.
+revision:
+  quick_summary: [Track curr, prev, and next_node, Check null before dereference, Dummy nodes simplify building.]
+  cheat_table:
+    title: Linked List Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["null", "None", "nullptr", "null"]
+      - ["next", "node.next", "node->next", "node.next"]
+      - ["loop", "while curr", "while (curr)", "while (curr != null)"]
+  flashcards:
+    - question: What variable prevents losing the suffix during reversal?
+      answer: next_node.
+notes:
+  - Say out loud which pointer owns the next step before rewiring links.
+tlm_hooks:
+  possible_tasks: [trace_linked_list_reversal, generate_pointer_drills]
+  context: Focus on node references, null checks, and mutation ordering.

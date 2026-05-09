@@ -1,4 +1,4 @@
-id: stl_vs_collections
+﻿id: stl_vs_collections
 title: STL vs Collections
 category: dsa
 level: beginner_to_intermediate
@@ -11,11 +11,11 @@ tags:
 - stl
 - data_structures
 - language_transition
-goal: 'Help learners understand how C++ STL containers, Python collections, and Java
-  Collections express the same data-structure ideas while encouraging different thinking
-  habits.
+goal: >
+  Help learners understand how C++ STL containers, Python collections, and Java
+    Collections express the same data-structure ideas while encouraging different thinking
+    habits.
 
-  '
 assets:
   collection_family:
     type: image
@@ -28,13 +28,13 @@ assets:
 lesson:
 - explain:
     title: Same ideas, different instincts
-    body: 'Python, C++, and Java all give you tools for storing many values: sequences,
+    body: >
+      Python, C++, and Java all give you tools for storing many values: sequences,
       maps, sets, queues, stacks, and heaps. The idea is shared, but each language
       trains a different instinct. Python favors direct built-in types. C++ asks you
       to choose containers by performance and memory behavior. Java asks you to think
       through interfaces and contracts.
 
-      '
 - image:
     asset: collection_family
     caption: Collections are best understood by what access pattern they support.
@@ -73,11 +73,11 @@ lesson:
 - language_lens:
     language: python
     title: How Python wants you to think
-    body: 'Start with the simplest built-in collection. Use list for ordered sequences,
+    body: >
+      Start with the simplest built-in collection. Use list for ordered sequences,
       dict for lookup, set for uniqueness, and deque for queue-like behavior. Python
       hides most memory details so you can focus on clarity.
 
-      '
     default_instincts:
     - Use literals when possible.
     - Prefer readable built-ins over custom structures.
@@ -89,11 +89,11 @@ lesson:
 - language_lens:
     language: cpp
     title: How C++ STL wants you to think
-    body: 'Choose the container whose guarantees match your access pattern. STL containers
+    body: >
+      Choose the container whose guarantees match your access pattern. STL containers
       expose tradeoffs around contiguous memory, iterator validity, ordering, allocation,
       and copying.
 
-      '
     default_instincts:
     - Prefer vector for general sequences.
     - Use unordered_map or unordered_set for average O(1) lookup.
@@ -106,10 +106,10 @@ lesson:
 - language_lens:
     language: java
     title: How Java Collections want you to think
-    body: 'Think in terms of interfaces first: List, Set, Map, Queue, and Deque. Then
+    body: >
+      Think in terms of interfaces first: List, Set, Map, Queue, and Deque. Then
       choose an implementation such as ArrayList, HashMap, TreeMap, HashSet, or ArrayDeque.
 
-      '
     default_instincts:
     - Code to interfaces when possible.
     - Choose implementation by ordering, lookup, and concurrency needs.
@@ -122,21 +122,22 @@ examples:
 - code_compare:
     title: Growable sequence
     idea: Store items in order and append new values.
-    python: 'nums = [10, 20, 30]
+    python: |
+      nums = [10, 20, 30]
 
       nums.append(40)
 
       print(nums[0])
 
-      '
-    cpp: 'vector<int> nums = {10, 20, 30};
+    cpp: |
+      vector<int> nums = {10, 20, 30};
 
       nums.push_back(40);
 
       cout << nums[0];
 
-      '
-    java: 'List<Integer> nums = new ArrayList<>();
+    java: |
+      List<Integer> nums = new ArrayList<>();
 
       nums.add(10);
 
@@ -148,23 +149,23 @@ examples:
 
       System.out.println(nums.get(0));
 
-      '
-    note: 'These look similar at the usage level, but C++ vector stores typed values
+    note: >
+      These look similar at the usage level, but C++ vector stores typed values
       contiguously, Java stores object references through an interface, and Python
       stores references in a flexible dynamic list.
 
-      '
 - code_compare:
     title: Fast lookup by key
     idea: Associate a key with a value.
-    python: 'ages = {"Ada": 36}
+    python: |
+      ages = {"Ada": 36}
 
       ages["Grace"] = 85
 
       print(ages["Ada"])
 
-      '
-    cpp: 'unordered_map<string, int> ages;
+    cpp: |
+      unordered_map<string, int> ages;
 
       ages["Ada"] = 36;
 
@@ -172,8 +173,8 @@ examples:
 
       cout << ages["Ada"];
 
-      '
-    java: 'Map<String, Integer> ages = new HashMap<>();
+    java: |
+      Map<String, Integer> ages = new HashMap<>();
 
       ages.put("Ada", 36);
 
@@ -181,15 +182,15 @@ examples:
 
       System.out.println(ages.get("Ada"));
 
-      '
-    note: 'The shared idea is hash-based lookup. The transition differences are syntax,
+    note: >
+      The shared idea is hash-based lookup. The transition differences are syntax,
       typing, key equality rules, and what happens when a key is absent.
 
-      '
 - code_compare:
     title: Queue behavior
     idea: Add at the back and remove from the front.
-    python: 'from collections import deque
+    python: |
+      from collections import deque
 
 
       q = deque()
@@ -198,26 +199,26 @@ examples:
 
       q.popleft()
 
-      '
-    cpp: 'queue<string> q;
+    cpp: |
+      queue<string> q;
 
       q.push("task");
 
       q.pop();
 
-      '
-    java: 'Queue<String> q = new ArrayDeque<>();
+    java: |
+      Queue<String> q = new ArrayDeque<>();
 
       q.add("task");
 
       q.poll();
 
 
-      // Java syntax'
-    note: 'Python exposes deque directly, C++ queue is an adapter over an underlying
+      // Java syntax
+    note: >
+      Python exposes deque directly, C++ queue is an adapter over an underlying
       container, and Java usually uses the Queue interface with ArrayDeque.
 
-      '
 transitions:
   python_to_cpp:
     title: Moving from Python collections to C++ STL
@@ -342,7 +343,6 @@ tlm_hooks:
   - generate_transition_quiz
   - suggest_missing_examples
   - convert_lesson_to_revision_notes
-  context: 'This concept is about language-transition thinking, not just syntax mapping.
+  context: >
+    This concept is about language-transition thinking, not just syntax mapping.
     Generated explanations should focus on habits, false friends, and mental shifts.
-
-    '

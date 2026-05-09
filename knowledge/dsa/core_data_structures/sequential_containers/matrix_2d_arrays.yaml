@@ -1,0 +1,130 @@
+﻿id: matrix_2d_arrays
+title: Matrix / 2D Arrays
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [matrix, grid, arrays, bfs, dfs, interview]
+goal: Teach matrix and grid handling across Python, C++, and Java with clear row/column tracking, bounds checks, direction arrays, and memory layout caveats.
+assets:
+  grid_coordinate_tracker:
+    type: image
+    path: assets/dsa/matrix_2d_arrays/grid-coordinate-tracker.png
+    alt: Matrix with r, c, nr, nc, rows, cols, and direction offsets marked.
+lesson:
+  - explain:
+      title: Grid Mental Model
+      body: >
+        Matrix problems are coordinate problems. Track rows, cols, current cell
+        (r, c), direction delta (dr, dc), next cell (nr, nc), and visited/state.
+        Most bugs are swapped dimensions, bad bounds, or shared rows.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Matrix methods are coordinate methods. Every step should preserve the meaning
+        of row, column, next row, next column, and bounds. The structure is simple,
+        but the bugs are usually dimension swaps, checking grid cells before checking
+        bounds, or accidentally sharing rows while initializing a grid.
+
+  - compare_table:
+      title: 2D Structure Map
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Create r x c zeros", "comprehension", "vector<vector<int>>", "int[][]"]
+        - ["Rows", "len(grid)", "grid.size()", "grid.length"]
+        - ["Cols", "len(grid[0])", "grid[0].size()", "grid[0].length"]
+        - ["Cell", "grid[r][c]", "grid[r][c]", "grid[r][c]"]
+        - ["Directions", "list of tuples", "vector<pair<int,int>>", "int[][]"]
+  - language_lens:
+      language: python
+      title: Python Grid Strategy
+      body: Use row comprehensions and explicit bounds; remember negative indices are valid and can hide boundary bugs.
+      behind_the_scenes: ["[[0] * cols] * rows aliases rows.", "grid[-1][c] is valid but usually wrong."]
+  - language_lens:
+      language: cpp
+      title: C++ Grid Strategy
+      body: vector<vector<int>> is clear for interviews; bounds are your responsibility.
+      behind_the_scenes: ["Rows are separate vectors.", "operator[] does not bounds-check."]
+  - language_lens:
+      language: java
+      title: Java Grid Strategy
+      body: int[][] is direct for primitive grids; each row is its own array.
+      behind_the_scenes: ["grid.length is row count.", "grid[0].length is column count if grid is non-empty."]
+examples:
+  - code_compare:
+      title: Visit Four Neighbors
+      idea: Compute next cells and check bounds.
+      python: |
+        # Each pair is a row/column movement from the current cell (r, c).
+        dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+        for dr, dc in dirs:
+            # Candidate next cell. Do not read grid[nr][nc] before bounds pass.
+            nr, nc = r + dr, c + dc
+
+            if 0 <= nr < rows and 0 <= nc < cols:
+                process(nr, nc)
+      cpp: |
+        // Each pair is a row/column movement from the current cell (r, c).
+        vector<pair<int,int>> dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+
+        for (auto [dr, dc] : dirs) {
+            // Candidate next cell. Check bounds before touching grid[nr][nc].
+            int nr = r + dr, nc = c + dc;
+
+            if (0 <= nr && nr < rows && 0 <= nc && nc < cols) {
+                process(nr, nc);
+            }
+        }
+      java: |
+        // Each row is {dr, dc}: movement from the current cell (r, c).
+        int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+
+        for (int[] d : dirs) {
+            // Candidate next cell. Check bounds before touching grid[nr][nc].
+            int nr = r + d[0], nc = c + d[1];
+
+            if (0 <= nr && nr < rows && 0 <= nc && nc < cols) {
+                process(nr, nc);
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python grid to C++ grid
+    mindset_shift: [From safe-looking negative indices to explicit invalid access risk.]
+    habit_swaps:
+      - python: "len(grid), len(grid[0])"
+        cpp: "grid.size(), grid[0].size()"
+    false_friends:
+      - term: bounds
+        warning: Python negative indices work; C++ negative indices are invalid.
+  python_to_java:
+    title: Python grid to Java grid
+    mindset_shift: [From list of lists to array of row arrays.]
+    habit_swaps:
+      - python: "len(grid)"
+        java: "grid.length"
+    false_friends:
+      - term: empty grid
+        warning: Check grid.length before grid[0].length.
+interview_questions:
+  - question: What are the five key variables in grid traversal?
+    answer: rows, cols, current cell r/c, direction dr/dc, next cell nr/nc, and visited state.
+  - question: Why mark visited before enqueue?
+    answer: It prevents the same cell from being enqueued repeatedly by multiple neighbors.
+revision:
+  quick_summary: [Track coordinates visually, Bounds before access, Avoid Python row aliasing.]
+  cheat_table:
+    title: Matrix Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["rows", "len(grid)", "grid.size()", "grid.length"]
+      - ["cols", "len(grid[0])", "grid[0].size()", "grid[0].length"]
+      - ["cell", "grid[r][c]", "grid[r][c]", "grid[r][c]"]
+  flashcards:
+    - question: What is the Python row alias trap?
+      answer: Using repeated inner lists such as [[0] * c] * r.
+notes:
+  - Draw the current cell and next cell when dry-running grid BFS/DFS.
+tlm_hooks:
+  possible_tasks: [generate_grid_drills, explain_direction_arrays, trace_matrix_bfs]
+  context: Focus on coordinate variables and bounds-safe traversal.

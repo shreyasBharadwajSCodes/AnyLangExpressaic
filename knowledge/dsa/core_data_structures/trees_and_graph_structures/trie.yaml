@@ -1,0 +1,130 @@
+﻿id: trie
+title: Trie
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [trie, prefix_tree, strings, interview]
+goal: Teach trie implementation across Python, C++, and Java with clear tracking of current node, character index, children, and terminal markers.
+assets:
+  trie_insert_tracker:
+    type: image
+    path: assets/dsa/trie/insert-tracker.png
+    alt: Trie insert path with current node, character, child edge, and end marker.
+lesson:
+  - explain:
+      title: Trie Strategy
+      body: >
+        A trie stores strings by shared prefixes. Track node as the current trie node,
+        ch as the current character, child as the next edge, and is_end as whether a
+        complete word stops at this node.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A trie walks one character per level. Each edge represents the next character
+        in a prefix, and the terminal marker separates complete words from prefixes
+        that only lead to longer words. The method is to create missing child edges
+        while inserting and follow existing edges while searching.
+
+  - compare_table:
+      title: Child Storage
+      columns: [Approach, Best For, Caveat]
+      rows:
+        - ["array size 26", "lowercase a-z", "fast but fixed alphabet"]
+        - ["hash map", "flexible chars", "more overhead"]
+        - ["Tree map", "ordered traversal", "slower"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use dict children for clarity; defaultdict can help but explicit creation is easier to explain.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use array<Node*,26> or vector<Node*> for lowercase; unordered_map for flexible alphabets.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use TrieNode[] children = new TrieNode[26] for lowercase interview problems.
+examples:
+  - code_compare:
+      title: Insert Word
+      idea: Walk or create child for each ch.
+      python: |
+        node = root
+
+        for ch in word:
+            # Missing edge means this prefix has not existed before.
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+
+            # Move down to the child representing ch.
+            node = node.children[ch]
+
+        # Mark only after the full word is consumed.
+        node.is_end = True
+      cpp: |
+        TrieNode* node = root;
+
+        for (char ch : word) {
+            // Fixed lowercase alphabet maps 'a'..'z' to 0..25.
+            int idx = ch - 'a';
+
+            // Missing pointer means this prefix has not existed before.
+            if (!node->child[idx]) node->child[idx] = new TrieNode();
+
+            // Move down to the child representing ch.
+            node = node->child[idx];
+        }
+
+        // Mark only after the full word is consumed.
+        node->isEnd = true;
+      java: |
+        TrieNode node = root;
+
+        for (char ch : word.toCharArray()) {
+            // Fixed lowercase alphabet maps 'a'..'z' to 0..25.
+            int idx = ch - 'a';
+
+            // Missing child means this prefix has not existed before.
+            if (node.child[idx] == null) node.child[idx] = new TrieNode();
+
+            // Move down to the child representing ch.
+            node = node.child[idx];
+        }
+
+        // Mark only after the full word is consumed.
+        node.isEnd = true;
+transitions:
+  python_to_cpp:
+    title: Python trie to C++ trie
+    mindset_shift: [From dict children to pointer arrays for fixed alphabets.]
+    habit_swaps:
+      - python: "children[ch]"
+        cpp: "child[ch - 'a']"
+    false_friends: [{term: allocation, warning: Created C++ nodes need lifetime management, usually accepted in platform problems.}]
+  python_to_java:
+    title: Python trie to Java trie
+    mindset_shift: [From dict children to array children or HashMap children.]
+    habit_swaps:
+      - python: "ch in children"
+        java: "child[idx] != null"
+    false_friends: []
+interview_questions:
+  - question: What is is_end for?
+    answer: It distinguishes a complete stored word from a prefix that merely leads to longer words.
+revision:
+  quick_summary: [node walks down characters, children store edges, is_end marks full words.]
+  cheat_table:
+    title: Trie Cheat Table
+    columns: [Variable, Meaning]
+    rows:
+      - ["node", "current trie node"]
+      - ["ch/idx", "current edge"]
+      - ["is_end", "word terminates here"]
+  flashcards:
+    - question: Why store children in an array of 26?
+      answer: Fast fixed-lowercase indexing.
+notes:
+  - During a dry run, draw the path for each inserted word and mark only terminal nodes.
+tlm_hooks:
+  possible_tasks: [trace_trie_insert, generate_trie_drills]
+  context: Focus on current node, child creation, and terminal markers.

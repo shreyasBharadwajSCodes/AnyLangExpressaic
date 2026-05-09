@@ -1,0 +1,147 @@
+id: meeting_rooms
+title: Meeting Rooms
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [meeting_rooms, intervals, heap, sweep_line, interview]
+goal: Teach meeting room allocation using min-heaps and sweep-line counts across Python, C++, and Java.
+assets:
+  meeting_rooms_heap:
+    type: image
+    path: assets/dsa/meeting_rooms/min-heap.png
+    alt: Meeting intervals sorted by start with min-heap of active end times.
+lesson:
+  - explain:
+      title: Room Allocation Model
+      body: >
+        Sort meetings by start time. A min-heap of end times represents rooms
+        currently occupied. If the earliest ending room finishes before the next
+        start, reuse it; otherwise allocate another room.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Process meetings in start-time order and keep a min-heap of active end times.
+        The smallest end time tells whether any room is free for the next meeting.
+        Pushing the current end after possible reuse makes heap size represent active
+        rooms.
+  - compare_table:
+      title: Approaches
+      columns: [Approach, State, Best For]
+      rows:
+        - ["min-heap", "active room end times", "return rooms needed"]
+        - ["two sorted arrays", "start pointer/end pointer", "count overlaps"]
+        - ["sweep line", "event deltas", "timeline counts"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: heapq is a min-heap of end times.
+      default_instincts:
+        - Use key functions to make the greedy order visible.
+        - Name active state such as end, rooms, active, or best.
+        - Encode event tie order directly in tuple keys when using sweep line.
+      avoid:
+        - Sorting by a field without knowing why that order is safe.
+        - Forgetting to clarify whether touching endpoints overlap.
+        - Using heap state without defining what heap[0] represents.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: priority_queue is max-heap by default, so use greater<int> for min-heap.
+      default_instincts:
+        - Use strict sort comparators for interval orderings.
+        - Configure priority_queue direction explicitly for min-heap needs.
+        - Use clear event structs or pairs when tie order matters.
+      avoid:
+        - Assuming priority_queue is a min-heap.
+        - Using non-strict interval comparators.
+        - Ignoring endpoint tie-breaking in sweep-line events.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: PriorityQueue<Integer> is a min-heap by default.
+      default_instincts:
+        - Use Comparator.comparingInt or compare helpers for interval sorting.
+        - Use PriorityQueue for earliest-ending active intervals.
+        - Represent events with int[] or small classes and explicit tie-breakers.
+      avoid:
+        - Using a[0] - b[0] in comparators.
+        - Forgetting to initialize list buckets or event containers.
+        - Leaving endpoint semantics implicit.
+examples:
+  - code_compare:
+      title: Minimum Meeting Rooms
+      idea: Heap size is the number of rooms currently occupied.
+      python: |
+        intervals.sort(key=lambda p: p[0])
+        heap = []
+
+        for s, e in intervals:
+            if heap and heap[0] <= s:
+                # Earliest room is free before this meeting starts.
+                heappop(heap)
+            heappush(heap, e)
+
+        rooms = len(heap)
+      cpp: |
+        sort(intervals.begin(), intervals.end());
+        priority_queue<int, vector<int>, greater<int>> heap;
+
+        for (auto& in : intervals) {
+            int s = in[0], e = in[1];
+            if (!heap.empty() && heap.top() <= s) {
+                // Earliest room is free before this meeting starts.
+                heap.pop();
+            }
+            heap.push(e);
+        }
+
+        int rooms = heap.size();
+      java: |
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+
+        for (int[] in : intervals) {
+            int s = in[0], e = in[1];
+            if (!heap.isEmpty() && heap.peek() <= s) {
+                // Earliest room is free before this meeting starts.
+                heap.poll();
+            }
+            heap.offer(e);
+        }
+
+        int rooms = heap.size();
+transitions:
+  python_to_cpp:
+    title: Python heapq to C++ meeting rooms
+    mindset_shift: [From min-heap default to explicit greater comparator.]
+    habit_swaps:
+      - python: "heap[0]"
+        cpp: "heap.top()"
+    false_friends: [{term: heap direction, warning: C++ priority_queue is max-heap unless configured.}]
+  python_to_java:
+    title: Python heapq to Java PriorityQueue
+    mindset_shift: [Both are min-heaps, but Java uses offer/poll/peek names.]
+    habit_swaps:
+      - python: "heappush(heap, e)"
+        java: "heap.offer(e)"
+    false_friends: [{term: endpoint touching, warning: Use <= to reuse a room when one meeting ends exactly as another starts.}]
+interview_questions:
+  - question: What does heap size represent?
+    answer: The number of rooms occupied after processing the current meeting.
+revision:
+  quick_summary: [Sort by start, heap stores active end times, pop when earliest end <= start.]
+  cheat_table:
+    title: Meeting Rooms Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["min end", "heap[0]", "heap.top with greater", "heap.peek"]
+      - ["free room", "heappop", "pop", "poll"]
+      - ["add room/end", "heappush", "push", "offer"]
+  flashcards:
+    - question: Why sort by start?
+      answer: Meetings are processed in chronological arrival order.
+notes:
+  - If multiple rooms can free before a meeting, popping one is enough for room count when adding the current meeting.
+tlm_hooks:
+  possible_tasks: [trace_meeting_rooms_heap, generate_room_allocation_drills]
+  context: Focus on active end times, heap direction, and endpoint reuse.

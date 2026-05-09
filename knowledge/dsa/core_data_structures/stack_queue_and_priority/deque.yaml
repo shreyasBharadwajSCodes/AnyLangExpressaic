@@ -1,0 +1,116 @@
+﻿id: deque
+title: Deque
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [deque, double_ended_queue, sliding_window, interview]
+goal: Teach deque usage across Python, C++, and Java with clear tracking of front/back operations, stale indices, and simulation state.
+assets:
+  deque_end_tracker:
+    type: image
+    path: assets/dsa/deque/end-tracker.png
+    alt: Deque with front, back, incoming item, and outgoing stale item.
+lesson:
+  - explain:
+      title: Deque Strategy
+      body: >
+        A deque supports both ends. Track front as the oldest or next-to-expire item,
+        back as the newest candidate, and x or i as the incoming value/index.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A deque is useful when both ends have meaning. The method begins by naming
+        the role of the front and the role of the back, such as oldest versus newest
+        or best candidate versus incoming candidate. Correctness comes from using
+        the right end for each state transition.
+
+  - compare_table:
+      title: Deque Operations
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Push back", "append", "push_back", "offerLast"]
+        - ["Push front", "appendleft", "push_front", "offerFirst"]
+        - ["Pop back", "pop", "pop_back", "pollLast"]
+        - ["Pop front", "popleft", "pop_front", "pollFirst"]
+        - ["Peek ends", "dq[0], dq[-1]", "front, back", "peekFirst, peekLast"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: collections.deque gives O(1) operations at both ends.
+      behind_the_scenes: ["Middle indexing is not the main purpose."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: deque is a concrete container with front/back operations and iteration.
+      behind_the_scenes: ["Not one contiguous block like vector."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: ArrayDeque is the usual Deque implementation.
+      behind_the_scenes: ["Does not allow null elements."]
+examples:
+  - code_compare:
+      title: Basic Both-End Simulation
+      idea: Add urgent items to front and normal items to back.
+      python: |
+        dq = deque()
+
+        # Back is normal arrival order; front is reserved for urgent work.
+        dq.append(normal)
+        dq.appendleft(urgent)
+
+        # popleft processes the front item first.
+        item = dq.popleft()
+      cpp: |
+        deque<int> dq;
+
+        // Back is normal arrival order; front is reserved for urgent work.
+        dq.push_back(normal);
+        dq.push_front(urgent);
+
+        // pop_front returns void, so read front first.
+        int item = dq.front();
+        dq.pop_front();
+      java: |
+        Deque<Integer> dq = new ArrayDeque<>();
+
+        // Back is normal arrival order; front is reserved for urgent work.
+        dq.offerLast(normal);
+        dq.offerFirst(urgent);
+
+        // pollFirst removes and returns the front item.
+        int item = dq.pollFirst();
+transitions:
+  python_to_cpp:
+    title: Python deque to C++ deque
+    mindset_shift: [Similar operations but C++ pop methods return void.]
+    habit_swaps:
+      - python: "x = dq.popleft()"
+        cpp: "x = dq.front(); dq.pop_front();"
+    false_friends: []
+  python_to_java:
+    title: Python deque to Java Deque
+    mindset_shift: [From append names to offer/poll names.]
+    habit_swaps:
+      - python: "appendleft"
+        java: "offerFirst"
+    false_friends: [{term: null, warning: ArrayDeque cannot store null.}]
+interview_questions:
+  - question: When choose deque over queue?
+    answer: When both ends matter, such as simulations or monotonic windows.
+revision:
+  quick_summary: [Deque is both-ended, Track which end has which meaning.]
+  cheat_table:
+    title: Deque Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["front push", "appendleft", "push_front", "offerFirst"]
+      - ["back pop", "pop", "pop_back", "pollLast"]
+  flashcards:
+    - question: What does deque stand for?
+      answer: Double-ended queue.
+notes:
+  - Label front and back meanings in the problem, not just in code.
+tlm_hooks:
+  possible_tasks: [generate_deque_drills, trace_deque_state]
+  context: Focus on front/back state and operation semantics.

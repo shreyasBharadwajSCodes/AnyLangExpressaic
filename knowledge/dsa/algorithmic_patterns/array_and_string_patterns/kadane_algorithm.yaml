@@ -1,0 +1,193 @@
+id: kadane_algorithm
+title: Kadane Algorithm
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [kadane, maximum_subarray, dynamic_programming, arrays, interview]
+goal: Teach Kadane's algorithm across Python, C++, and Java with clear current-best meaning, all-negative handling, and overflow-aware sums.
+assets:
+  kadane_trace:
+    type: image
+    path: assets/dsa/kadane_algorithm/kadane-trace.png
+    alt: Running current subarray sum and global best over an array.
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        Kadane tracks the best subarray ending at the current index and the best
+        subarray seen anywhere. At each element, choose whether to extend the previous
+        subarray or restart at the current element.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        At each index, decide whether the best subarray ending here should extend the
+        previous subarray or restart at the current value. cur means best sum ending
+        exactly here; best means best seen anywhere. Initializing from the first
+        element is what makes all-negative arrays work correctly.
+  - compare_table:
+      title: Key State
+      columns: [Variable, Meaning]
+      rows:
+        - ["cur", "best sum ending at current index"]
+        - ["best", "best sum seen anywhere"]
+        - ["x", "current value deciding extend versus restart"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Python int avoids overflow; initialize from nums[0] to handle all-negative arrays.
+      default_instincts:
+        - Name cur as the best sum ending at the current index.
+        - Initialize cur and best from nums[0], not 0.
+        - Track start only when the problem asks for subarray boundaries.
+      avoid:
+        - Starting best at 0 when all values may be negative.
+        - Recomputing subarray sums after each restart.
+        - Using Kadane when the problem needs a non-contiguous subsequence.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use long long when constraints allow large sums; initialize from the first element, not zero.
+      default_instincts:
+        - Use long long for cur and best when sums can exceed int.
+        - Start the loop at index 1 after seeding from nums[0].
+        - Keep boundary variables only if the answer needs indices.
+      avoid:
+        - Initializing best to 0 for non-empty maximum-subarray problems.
+        - Using int for cur when constraints allow large totals.
+        - Returning references or iterators to temporary boundary-tracking data.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use long for large sums and Math.max for extend-or-restart decisions.
+      default_instincts:
+        - Use long for cur and best when sums can exceed int.
+        - Seed cur and best from nums[0] for all-negative correctness.
+        - Use Math.max for the extend-versus-restart decision.
+      avoid:
+        - Starting best at 0 unless the empty subarray is explicitly allowed.
+        - Letting int overflow before assigning to long.
+        - Tracking indices without updating start when restarting at nums[i].
+examples:
+  - code_compare:
+      title: Maximum Subarray Sum
+      idea: Decide at each index whether to extend or restart.
+      python: |
+        cur = best = nums[0]
+
+        for x in nums[1:]:
+            # If cur is harmful, restart at x; otherwise extend with x.
+            cur = max(x, cur + x)
+            best = max(best, cur)
+      cpp: |
+        long long cur = nums[0], best = nums[0];
+
+        for (int i = 1; i < nums.size(); i++) {
+            long long x = nums[i];
+            // If cur is harmful, restart at x; otherwise extend with x.
+            cur = max(x, cur + x);
+            best = max(best, cur);
+        }
+      java: |
+        long cur = nums[0], best = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+            long x = nums[i];
+            // If cur is harmful, restart at x; otherwise extend with x.
+            cur = Math.max(x, cur + x);
+            best = Math.max(best, cur);
+        }
+  - code_compare:
+      title: Track Subarray Boundaries
+      idea: Record start when restarting.
+      python: |
+        cur = best = nums[0]
+        start = best_l = best_r = 0
+
+        for i in range(1, len(nums)):
+            if nums[i] > cur + nums[i]:
+                # Restart: the best subarray ending here begins at i.
+                cur = nums[i]
+                start = i
+            else:
+                cur += nums[i]
+
+            if cur > best:
+                best = cur
+                best_l, best_r = start, i
+      cpp: |
+        long long cur = nums[0], best = nums[0];
+        int start = 0, bestL = 0, bestR = 0;
+
+        for (int i = 1; i < nums.size(); i++) {
+            if (nums[i] > cur + nums[i]) {
+                // Restart: the best subarray ending here begins at i.
+                cur = nums[i];
+                start = i;
+            } else {
+                cur += nums[i];
+            }
+
+            if (cur > best) {
+                best = cur;
+                bestL = start; bestR = i;
+            }
+        }
+      java: |
+        long cur = nums[0], best = nums[0];
+        int start = 0, bestL = 0, bestR = 0;
+
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > cur + nums[i]) {
+                // Restart: the best subarray ending here begins at i.
+                cur = nums[i];
+                start = i;
+            } else {
+                cur += nums[i];
+            }
+
+            if (cur > best) {
+                best = cur;
+                bestL = start; bestR = i;
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python Kadane to C++
+    mindset_shift: [From no overflow worries to long long sums, From slicing convenience to indexed loops.]
+    habit_swaps:
+      - python: "for x in nums[1:]"
+        cpp: "for (int i = 1; i < nums.size(); i++)"
+    false_friends:
+      - term: zero initialization
+        warning: Starting best at 0 fails when all numbers are negative.
+  python_to_java:
+    title: Python Kadane to Java
+    mindset_shift: [From max built-in to Math.max, From Python int to long.]
+    habit_swaps:
+      - python: "cur = max(x, cur + x)"
+        java: "cur = Math.max(x, cur + x)"
+    false_friends:
+      - term: empty array
+        warning: Clarify behavior; standard Kadane assumes at least one element.
+interview_questions:
+  - question: What does cur mean?
+    answer: The best subarray sum that must end at the current element.
+  - question: Why initialize from nums[0]?
+    answer: It correctly handles arrays where every value is negative.
+revision:
+  quick_summary: [cur is best ending here, best is best anywhere, restart when previous cur hurts.]
+  cheat_table:
+    title: Kadane Cheat Table
+    columns: [Decision, Formula]
+    rows:
+      - ["extend or restart", "cur = max(x, cur + x)"]
+      - ["global best", "best = max(best, cur)"]
+      - ["all negative", "initialize from nums[0]"]
+  flashcards:
+    - question: What is the common all-negative bug?
+      answer: Initializing best to 0.
+notes:
+  - Kadane is a one-dimensional DP pattern; the state is just compressed into cur and best.
+tlm_hooks:
+  possible_tasks: [trace_kadane, generate_max_subarray_drills]
+  context: Focus on cur meaning, restart decision, and all-negative handling.

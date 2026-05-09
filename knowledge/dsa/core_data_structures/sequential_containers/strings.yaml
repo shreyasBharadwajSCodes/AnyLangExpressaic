@@ -1,0 +1,161 @@
+﻿id: strings
+title: Strings
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [strings, sequential_containers, interview, language_transition]
+goal: Teach string handling across Python, C++, and Java with clear tracking of indices, characters, substrings, mutability, and Unicode caveats.
+assets:
+  string_index_tracker:
+    type: image
+    path: assets/dsa/strings/string-index-tracker.png
+    alt: String characters with index pointers, current character, and result buffer.
+lesson:
+  - explain:
+      title: Mental Model
+      body: >
+        A string problem is usually an index-tracking problem. As you read code,
+        treat i as the current index, ch as the current character, left/right as a
+        substring window, and ans or builder stores constructed output. Python and
+        Java strings are immutable; C++ std::string is mutable.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Strings are indexed sequences, but they are not always mutable sequences.
+        Most string algorithms track positions such as left, right, i, and ch while
+        avoiding repeated substring construction. The method begins by deciding
+        whether you are only reading characters, building a new result, or mutating
+        a character buffer. That decision changes the right container in each
+        language.
+
+  - compare_table:
+      title: Core Operations
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Length", "len(s)", "s.size()", "s.length()"]
+        - ["Character", "s[i]", "s[i]", "s.charAt(i)"]
+        - ["Substring", "s[l:r]", "s.substr(l, len)", "s.substring(l, r)"]
+        - ["Mutable chars", "list(s)", "string copy", "char[]"]
+        - ["Build output", "list + ''.join", "string / ostringstream", "StringBuilder"]
+  - language_lens:
+      language: python
+      title: Python String Strategy
+      body: Use indexing and slicing for clarity, but remember slices allocate and strings are immutable.
+      behind_the_scenes:
+        - Python characters are one-character strings.
+        - Slicing creates a new string.
+        - Repeated concatenation in loops can be costly.
+  - language_lens:
+      language: cpp
+      title: C++ String Strategy
+      body: std::string supports indexing and mutation; substr copies, and char arithmetic assumes a character encoding pattern such as ASCII digits.
+      behind_the_scenes:
+        - s.substr(pos, len) uses length, not end index.
+        - char can be signed, so be careful when indexing 256-size arrays.
+        - string comparison with == checks content.
+  - language_lens:
+      language: java
+      title: Java String Strategy
+      body: String is immutable, charAt reads characters, and StringBuilder or char[] carries mutable construction.
+      behind_the_scenes:
+        - substring uses start inclusive and end exclusive.
+        - char is a UTF-16 code unit.
+        - Use equals for string content comparison.
+examples:
+  - code_compare:
+      title: Scan Characters
+      idea: Track i and ch while counting digits.
+      python: |
+        count = 0
+
+        for i, ch in enumerate(s):
+            # i tells where we are; ch is the one-character string being tested.
+            if ch.isdigit():
+                count += 1
+      cpp: |
+        int count = 0;
+
+        for (int i = 0; i < s.size(); i++) {
+            // ch is the byte/char at index i; cast before ctype functions.
+            char ch = s[i];
+            if (isdigit((unsigned char)ch)) count++;
+        }
+      java: |
+        int count = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            // charAt reads the UTF-16 code unit at index i.
+            char ch = s.charAt(i);
+            if (Character.isDigit(ch)) count++;
+        }
+  - code_compare:
+      title: Build Reversed Output
+      idea: Use a builder-like structure.
+      python: |
+        out = []
+
+        for ch in reversed(s):
+            # Append pieces first; join materializes the final string once.
+            out.append(ch)
+
+        ans = ''.join(out)
+      cpp: |
+        string ans;
+
+        for (int i = (int)s.size() - 1; i >= 0; i--) {
+            // std::string is mutable, so push_back extends the answer directly.
+            ans.push_back(s[i]);
+        }
+      java: |
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = s.length() - 1; i >= 0; i--) {
+            // StringBuilder is the mutable buffer; String stays immutable.
+            sb.append(s.charAt(i));
+        }
+
+        String ans = sb.toString();
+transitions:
+  python_to_cpp:
+    title: Python strings to C++ strings
+    mindset_shift: [From immutable string building to mutable std::string, From end-index slicing to start-plus-length substr.]
+    habit_swaps:
+      - python: "s[l:r]"
+        cpp: "s.substr(l, r - l)"
+    false_friends:
+      - term: substr
+        warning: C++ second argument is length, not end index.
+  python_to_java:
+    title: Python strings to Java strings
+    mindset_shift: [From bracket indexing to charAt, From list-plus-join to StringBuilder or char array.]
+    habit_swaps:
+      - python: "s[i]"
+        java: "s.charAt(i)"
+    false_friends:
+      - term: equality
+        warning: Java String content needs equals, not ==.
+interview_questions:
+  - question: Why avoid repeated string concatenation in loops?
+    answer: It can create many intermediate strings; use a builder-like structure.
+  - question: What variables should you track in a string window?
+    answer: left, right, current character, and the state that proves the window invariant.
+revision:
+  quick_summary:
+    - Track indices and active substring boundaries visually.
+    - Python and Java strings are immutable; C++ string can mutate.
+    - Substring operations often allocate.
+  cheat_table:
+    title: String Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["char at i", "s[i]", "s[i]", "s.charAt(i)"]
+      - ["substring l..r", "s[l:r]", "s.substr(l, r-l)", "s.substring(l, r)"]
+      - ["builder", "list + join", "string", "StringBuilder"]
+  flashcards:
+    - question: What does Java substring use?
+      answer: Start inclusive, end exclusive.
+notes:
+  - "For interview clarity, say exactly what left and right mean: inclusive, exclusive, or current candidate boundaries."
+tlm_hooks:
+  possible_tasks: [generate_string_drills, explain_index_tracker, compare_substring_semantics]
+  context: Focus on variable movement, immutable versus mutable strings, and substring costs.

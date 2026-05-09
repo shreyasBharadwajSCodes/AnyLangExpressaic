@@ -1,0 +1,235 @@
+﻿id: fast_slow_pointers
+title: Fast And Slow Pointers
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [fast_slow_pointers, linked_list, cycle_detection, two_pointers, interview]
+goal: Teach fast and slow pointer reasoning for cycle detection, middle finding, and pointer-speed problems across Python, C++, and Java.
+assets:
+  fast_slow_trace:
+    type: image
+    path: assets/dsa/fast_slow_pointers/fast-slow-trace.png
+    alt: Linked list trace where slow moves one step and fast moves two steps until they meet or fast reaches null.
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        Fast and slow pointers use different speeds to reveal structure. In linked
+        lists, slow moves one node and fast moves two nodes. If there is no cycle,
+        fast reaches null. If there is a cycle, fast eventually laps slow. For middle
+        finding, slow lands near the middle when fast reaches the end.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Use two handles over the same sequence but move them at different speeds.
+        The gap between them is the information source: in a linked-list cycle, fast
+        eventually laps slow; for middle finding, slow advances once for every two
+        fast moves. Correctness depends on checking the fast pointer before every
+        two-step move and comparing node identity, not stored values.
+  - compare_table:
+      title: Recognition Signals
+      columns: [Problem Signal, Use This Pattern, What To Track]
+      rows:
+        - ["cycle in linked list", "Floyd cycle detection", "slow, fast, meeting"]
+        - ["find middle", "slow one step, fast two steps", "slow final node"]
+        - ["happy number", "cycle in generated states", "slow value, fast value"]
+        - ["remove nth from end", "two pointers with gap", "lead pointer gap"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Python node variables are object references. Reassigning slow or fast only moves the handle; assigning node.next mutates the list.
+      default_instincts:
+        - Track boundary meanings in names such as left, right, i, pref, or window.
+        - Use dict/list state instead of rebuilding slices or subarrays.
+        - Let Python int handle size, but still choose the right invariant.
+      avoid:
+        - Slicing every window or prefix range inside the loop.
+        - Letting negative indices hide an out-of-window read.
+        - Updating best before the maintained state is valid.
+      behind_the_scenes:
+        - Use while fast and fast.next before taking fast.next.next.
+        - slow is fast checks whether both references point to the same node object.
+        - Python has no pointer syntax, but the reference behavior is still pointer-like.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: C++ uses raw ListNode* in most interview platforms, so null checks must happen before ->next.
+      default_instincts:
+        - Use long long for sums, prefix values, and answer ranges.
+        - Use vector state for fixed ranges and unordered_map for sparse keys.
+        - Keep index guards explicit before reading outgoing or boundary positions.
+      avoid:
+        - Using int for accumulated values under large constraints.
+        - Reading nums[i-k], diff[r+1], or s[right] before bounds are valid.
+        - Relying on unchecked vector indexing while the invariant is still forming.
+      behind_the_scenes:
+        - fast && fast->next protects fast->next->next.
+        - slow == fast compares pointer addresses, not node values.
+        - Do not dereference fast after it becomes nullptr.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Java variables hold references to node objects. Null checks are explicit, and reference equality with == is correct for meeting detection.
+      default_instincts:
+        - Use long for sums and prefix values when constraints can grow.
+        - Use primitive arrays for fixed alphabets or fixed-size numeric state.
+        - Use HashMap with getOrDefault/remove when keys are sparse.
+      avoid:
+        - Using int where running totals can overflow.
+        - Creating substrings repeatedly to represent the current window.
+        - Leaving zero counts in maps when map size means distinct active values.
+      behind_the_scenes:
+        - fast != null && fast.next != null must be checked in that order.
+        - slow == fast means the same node object, which is what cycle detection needs.
+        - Garbage collection handles unused nodes; the algorithm should not allocate new nodes.
+examples:
+  - code_compare:
+      title: Detect Linked List Cycle
+      idea: Fast pointer laps slow only when a cycle exists.
+      python: |
+        slow = head
+        fast = head
+
+        while fast and fast.next:
+            # slow advances one edge.
+            slow = slow.next
+
+            # fast advances two edges; loop guard made this safe.
+            fast = fast.next.next
+
+            # Same node object means fast has caught slow inside a cycle.
+            if slow is fast:
+                return True
+
+        # fast hit the end, so there is no cycle.
+        return False
+      cpp: |
+        ListNode* slow = head;
+        ListNode* fast = head;
+
+        while (fast && fast->next) {
+            // slow advances one edge.
+            slow = slow->next;
+
+            // fast advances two edges; loop guard made this safe.
+            fast = fast->next->next;
+
+            // Same pointer address means fast caught slow inside a cycle.
+            if (slow == fast) return true;
+        }
+
+        // fast reached nullptr, so there is no cycle.
+        return false;
+      java: |
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            // slow advances one edge.
+            slow = slow.next;
+
+            // fast advances two edges; loop guard made this safe.
+            fast = fast.next.next;
+
+            // Same node reference means fast caught slow inside a cycle.
+            if (slow == fast) return true;
+        }
+
+        // fast reached null, so there is no cycle.
+        return false;
+  - code_compare:
+      title: Find Middle Node
+      idea: Slow is at middle when fast reaches the end.
+      python: |
+        slow = head
+        fast = head
+
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        # For even length, this returns the second middle.
+        return slow
+      cpp: |
+        ListNode* slow = head;
+        ListNode* fast = head;
+
+        while (fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+
+        // For even length, this returns the second middle.
+        return slow;
+      java: |
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // For even length, this returns the second middle.
+        return slow;
+transitions:
+  python_to_cpp:
+    title: Python references to C++ pointers
+    mindset_shift:
+      - From attribute access that raises errors to pointer dereference that can be invalid.
+      - From is identity to pointer address equality.
+    habit_swaps:
+      - python: "while fast and fast.next"
+        cpp: "while (fast && fast->next)"
+      - python: "slow is fast"
+        cpp: "slow == fast"
+    false_friends:
+      - term: value equality
+        warning: Cycle meeting checks node identity, not node.val.
+      - term: null guard
+        warning: fast->next is invalid when fast is nullptr.
+  python_to_java:
+    title: Python references to Java references
+    mindset_shift:
+      - Similar reference movement, with explicit types and null checks.
+      - == is correct here because the algorithm needs same object identity.
+    habit_swaps:
+      - python: "while fast and fast.next"
+        java: "while (fast != null && fast.next != null)"
+      - python: "slow is fast"
+        java: "slow == fast"
+    false_friends:
+      - term: equals
+        warning: Do not use equals for cycle meeting unless the node class intentionally preserves identity semantics.
+interview_questions:
+  - question: Why does fast eventually meet slow in a cycle?
+    answer: Inside the cycle, fast gains one node per loop over slow, so the distance between them closes modulo cycle length.
+  - question: Why does the loop check both fast and fast.next?
+    answer: The algorithm reads fast.next.next, so fast and fast.next must both exist first.
+  - question: Which middle is returned for an even-length list?
+    answer: With both pointers starting at head and while fast and fast.next, slow returns the second middle.
+revision:
+  quick_summary:
+    - Slow moves one step; fast moves two.
+    - Null end means no cycle; meeting means cycle.
+    - In linked lists, compare node identity, not values.
+  cheat_table:
+    title: Fast Slow Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["safe loop", "fast and fast.next", "fast && fast->next", "fast != null && fast.next != null"]
+      - ["move slow", "slow = slow.next", "slow = slow->next", "slow = slow.next"]
+      - ["move fast", "fast = fast.next.next", "fast = fast->next->next", "fast = fast.next.next"]
+      - ["same node", "slow is fast", "slow == fast", "slow == fast"]
+  flashcards:
+    - question: What does fast reaching null prove?
+      answer: There is no linked-list cycle.
+    - question: Why should you not compare node values?
+      answer: Different nodes can hold the same value.
+notes:
+  - Before coding, state whether you need cycle detection, middle finding, or a fixed pointer gap.
+  - For linked-list problems, dry-run node identity by drawing nodes, not just values.
+tlm_hooks:
+  possible_tasks: [trace_fast_slow_cycle, generate_middle_node_drills, compare_reference_identity]
+  context: Focus on slow, fast, null guards, same-node checks, and even-length middle behavior.
+

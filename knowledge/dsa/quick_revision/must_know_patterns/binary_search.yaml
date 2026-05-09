@@ -105,28 +105,43 @@ examples:
       idea: First index with nums[i] >= target.
       python: |
         left, right = 0, len(nums)
+
         while left < right:
             mid = (left + right) // 2
+
             if nums[mid] < target:
+                # mid cannot be the first >= target, so discard through mid.
                 left = mid + 1
             else:
+                # mid might be the answer; keep it in the search range.
                 right = mid
+
         return left
       cpp: |
         int left = 0, right = nums.size();
+
         while (left < right) {
+            // Safe midpoint avoids overflow for large bounds.
             int mid = left + (right - left) / 2;
+
             if (nums[mid] < target) left = mid + 1;
+            // mid might be the answer; keep it in the search range.
             else right = mid;
         }
+
         return left;
       java: |
         int left = 0, right = nums.length;
+
         while (left < right) {
+            // Safe midpoint avoids int overflow for large bounds.
             int mid = left + (right - left) / 2;
+
             if (nums[mid] < target) left = mid + 1;
+            // mid might be the answer; keep it in the search range.
             else right = mid;
         }
+
         return left;
       note: >
         right is exclusive. The answer can be nums.length if all values are smaller.
@@ -135,20 +150,27 @@ examples:
       idea: Return index of target or -1.
       python: |
         left, right = 0, len(nums) - 1
+
         while left <= right:
             mid = (left + right) // 2
+
             if nums[mid] == target:
                 return mid
             if nums[mid] < target:
+                # Target, if present, must be strictly to the right of mid.
                 left = mid + 1
             else:
+                # Target, if present, must be strictly to the left of mid.
                 right = mid - 1
+
         return -1
       cpp: |
         int left = 0, right = (int)nums.size() - 1;
         while (left <= right) {
             int mid = left + (right - left) / 2;
+
             if (nums[mid] == target) return mid;
+            // Move past mid because this inclusive template has already tested it.
             if (nums[mid] < target) left = mid + 1;
             else right = mid - 1;
         }
@@ -157,7 +179,9 @@ examples:
         int left = 0, right = nums.length - 1;
         while (left <= right) {
             int mid = left + (right - left) / 2;
+
             if (nums[mid] == target) return mid;
+            // Move past mid because this inclusive template has already tested it.
             if (nums[mid] < target) left = mid + 1;
             else right = mid - 1;
         }
@@ -173,6 +197,7 @@ examples:
             cur = 0
             for w in weights:
                 if cur + w > cap:
+                    # Start a new day because this package would exceed cap.
                     days += 1
                     cur = 0
                 cur += w
@@ -182,8 +207,10 @@ examples:
         while left < right:
             mid = (left + right) // 2
             if feasible(mid):
+                # mid works, so try to find a smaller working capacity.
                 right = mid
             else:
+                # mid fails, so every smaller capacity fails too.
                 left = mid + 1
       cpp: |
         auto feasible = [&](long long cap) {
@@ -191,6 +218,7 @@ examples:
             long long cur = 0;
             for (int w : weights) {
                 if (cur + w > cap) {
+                    // Start a new day because this package would exceed cap.
                     days++;
                     cur = 0;
                 }
@@ -198,18 +226,50 @@ examples:
             }
             return days <= limit;
         };
+
+        long long left = *max_element(weights.begin(), weights.end());
+        long long right = accumulate(weights.begin(), weights.end(), 0LL);
+
+        while (left < right) {
+            long long mid = left + (right - left) / 2;
+            if (feasible(mid)) {
+                // mid works, so try to find a smaller working capacity.
+                right = mid;
+            } else {
+                // mid fails, so every smaller capacity fails too.
+                left = mid + 1;
+            }
+        }
       java: |
         private boolean feasible(int[] weights, long cap, int limit) {
             int days = 1;
             long cur = 0;
             for (int w : weights) {
                 if (cur + w > cap) {
+                    // Start a new day because this package would exceed cap.
                     days++;
                     cur = 0;
                 }
                 cur += w;
             }
             return days <= limit;
+        }
+
+        long left = 0, right = 0;
+        for (int w : weights) {
+            left = Math.max(left, w);
+            right += w;
+        }
+
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+            if (feasible(weights, mid, limit)) {
+                // mid works, so try to find a smaller working capacity.
+                right = mid;
+            } else {
+                // mid fails, so every smaller capacity fails too.
+                left = mid + 1;
+            }
         }
       note: >
         Search-on-answer needs a monotonic feasible predicate: if capacity works,

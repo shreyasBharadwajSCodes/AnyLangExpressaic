@@ -1,0 +1,151 @@
+id: lower_upper_bound
+title: Lower Bound And Upper Bound
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [lower_bound, upper_bound, binary_search, sorted_arrays, interview]
+goal: Teach lower and upper bound as insertion-point searches across Python, C++, and Java with clear duplicate handling.
+assets:
+  bounds_duplicates:
+    type: image
+    path: assets/dsa/lower_upper_bound/duplicates.png
+    alt: Sorted array with lower bound before duplicates and upper bound after duplicates.
+lesson:
+  - explain:
+      title: Bound Meaning
+      body: >
+        Lower bound is the first index where value >= target. Upper bound is the
+        first index where value > target. Together they describe the range of equal
+        values in a sorted array.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Treat binary search as an insertion-position problem. Lower bound finds the
+        first position where target could be inserted before equal values; upper
+        bound finds the first position after equal values. The equal range is the
+        half-open interval between those two positions.
+  - compare_table:
+      title: Bound Map
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["lower bound", "bisect_left", "lower_bound", "custom loop"]
+        - ["upper bound", "bisect_right", "upper_bound", "custom loop"]
+        - ["count target", "right-left", "ub-lb", "ub-lb"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use bisect_left/right when allowed; both require sorted data.
+      default_instincts:
+        - Use key functions or bisect when they exactly match the sorted invariant.
+        - Keep lower/upper-bound meanings written in terms of first valid index.
+        - Prefer tuple keys for multi-field ordering.
+      avoid:
+        - Using bisect or bounds on unsorted data.
+        - Using reverse=True when only one field should be descending.
+        - Mixing inclusive and exclusive search templates.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: lower_bound and upper_bound return iterators; subtract begin for indices on vectors.
+      default_instincts:
+        - Use safe midpoint formulas for manual binary search.
+        - Use strict comparators and the same ordering for sort and lower_bound.
+        - Use long long for answer-search ranges and feasibility totals.
+      avoid:
+        - Returning <= from a comparator.
+        - Using lower_bound with a different ordering than sort.
+        - Using int bounds when the answer range can exceed int.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Implement custom loops for insertion points; Arrays.binarySearch is exact-search oriented.
+      default_instincts:
+        - Use Comparator.comparing or Integer.compare/Long.compare for ordering.
+        - Write custom lower/upper-bound helpers when insertion point matters.
+        - Use long for answer search and feasibility totals.
+      avoid:
+        - Using subtraction inside comparators.
+        - Treating Arrays.binarySearch as lower_bound with duplicates.
+        - Letting int arithmetic overflow before assigning to long.
+examples:
+  - code_compare:
+      title: Count Occurrences In Sorted Array
+      idea: Equal values occupy [lower_bound, upper_bound).
+      python: |
+        left = bisect_left(nums, target)
+        right = bisect_right(nums, target)
+        # Half-open range [left, right) contains exactly target values.
+        count = right - left
+      cpp: |
+        auto lo = lower_bound(nums.begin(), nums.end(), target);
+        auto hi = upper_bound(nums.begin(), nums.end(), target);
+        // Half-open range [lo, hi) contains exactly target values.
+        int count = hi - lo;
+      java: |
+        int left = lowerBound(nums, target);
+        int right = upperBound(nums, target);
+        // Half-open range [left, right) contains exactly target values.
+        int count = right - left;
+  - code_compare:
+      title: Java Lower Bound Helper
+      idea: First index with nums[i] >= target.
+      python: |
+        # Equivalent library call.
+        i = bisect_left(nums, target)
+      cpp: |
+        int i = lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+      java: |
+        int lowerBound(int[] nums, int target) {
+            int left = 0, right = nums.length;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (nums[mid] < target) {
+                    // mid is too small, so the insertion point is after mid.
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+transitions:
+  python_to_cpp:
+    title: Python bisect to C++ bounds
+    mindset_shift: [From index return to iterator return, From list-only thinking to iterator ranges.]
+    habit_swaps:
+      - python: "bisect_left(nums, x)"
+        cpp: "lower_bound(nums.begin(), nums.end(), x) - nums.begin()"
+    false_friends:
+      - term: sorted order
+        warning: Bounds require the same ordering used by sorting.
+  python_to_java:
+    title: Python bisect to Java custom bounds
+    mindset_shift: [From library insertion points to handwritten lower/upper helper.]
+    habit_swaps:
+      - python: "bisect_right(nums, x)"
+        java: "custom upperBound loop with <= target check"
+    false_friends:
+      - term: Arrays.binarySearch
+        warning: It does not directly return lower bound when duplicates exist.
+interview_questions:
+  - question: How do you count duplicates with bounds?
+    answer: upper_bound(target) - lower_bound(target).
+  - question: What does lower_bound return if all values are smaller?
+    answer: n, the insertion position after the last element.
+revision:
+  quick_summary: [Lower is first >= target, Upper is first > target, Equal range is half-open.]
+  cheat_table:
+    title: Bound Cheat Table
+    columns: [Bound, Condition]
+    rows:
+      - ["lower", "first >= target"]
+      - ["upper", "first > target"]
+      - ["count", "upper - lower"]
+  flashcards:
+    - question: Why use half-open ranges?
+      answer: The length is simply right - left.
+notes:
+  - Bound helpers are insertion-point searches, not just exact searches.
+tlm_hooks:
+  possible_tasks: [trace_bounds_with_duplicates, generate_bound_drills]
+  context: Focus on duplicate ranges and insertion-point semantics.

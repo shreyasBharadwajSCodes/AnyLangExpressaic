@@ -1,0 +1,133 @@
+﻿id: queue
+title: Queue
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [queue, bfs, fifo, interview]
+goal: Teach queue usage across Python, C++, and Java with clear tracking of frontier, front node, and enqueue timing.
+assets:
+  bfs_queue_tracker:
+    type: image
+    path: assets/dsa/queue/bfs-queue-tracker.png
+    alt: BFS queue with front node, newly enqueued neighbors, and visited set.
+lesson:
+  - explain:
+      title: Queue Strategy
+      body: >
+        A queue is first-in, first-out. In BFS, q is the frontier, front/node is the
+        next item to process, and neighbors are appended to the back. Mark visited
+        before enqueueing to avoid duplicate queue entries.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A queue stores work in first-in first-out order. In BFS, the queue is the
+        frontier of nodes discovered but not fully processed. The method is to mark
+        a node visited before enqueueing it so multiple parents do not place the
+        same node into the frontier repeatedly.
+
+  - compare_table:
+      title: Queue Operations
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Push back", "q.append(x)", "q.push(x)", "q.offer(x)"]
+        - ["Read front", "q[0]", "q.front()", "q.peek()"]
+        - ["Pop front", "q.popleft()", "q.pop()", "q.poll()"]
+        - ["Empty", "not q", "q.empty()", "q.isEmpty()"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use collections.deque; list.pop(0) is O(n).
+      behind_the_scenes: ["popleft returns the removed value."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: queue adapter is good for FIFO; read front before pop.
+      behind_the_scenes: ["pop returns void.", "queue is not directly iterable."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use ArrayDeque through Deque for BFS queues.
+      behind_the_scenes: ["poll returns null when empty.", "offer appends at back."]
+examples:
+  - code_compare:
+      title: BFS Skeleton
+      idea: q tracks frontier and visited prevents duplicates.
+      python: |
+        q = deque([start])
+        visited = {start}
+
+        while q:
+            # Pop the oldest frontier node.
+            node = q.popleft()
+
+            for nei in adj[node]:
+                if nei not in visited:
+                    # Mark before enqueue so another parent cannot enqueue nei again.
+                    visited.add(nei)
+                    q.append(nei)
+      cpp: |
+        queue<int> q;
+        vector<int> visited(n);
+
+        q.push(start);
+        visited[start] = 1;
+
+        while (!q.empty()) {
+            // Read front before pop because queue::pop returns void.
+            int node = q.front(); q.pop();
+
+            for (int nei : adj[node]) {
+                // Mark before enqueue so another parent cannot enqueue nei again.
+                if (!visited[nei]) { visited[nei] = 1; q.push(nei); }
+            }
+        }
+      java: |
+        Deque<Integer> q = new ArrayDeque<>();
+        boolean[] visited = new boolean[n];
+
+        q.offer(start);
+        visited[start] = true;
+
+        while (!q.isEmpty()) {
+            // poll removes the oldest frontier node.
+            int node = q.poll();
+
+            for (int nei : adj.get(node)) {
+                // Mark before enqueue so another parent cannot enqueue nei again.
+                if (!visited[nei]) { visited[nei] = true; q.offer(nei); }
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python deque queue to C++ queue
+    mindset_shift: [From pop returning value to front then pop.]
+    habit_swaps:
+      - python: "node = q.popleft()"
+        cpp: "node = q.front(); q.pop();"
+    false_friends: [{term: pop, warning: C++ queue pop returns void.}]
+  python_to_java:
+    title: Python deque queue to Java ArrayDeque
+    mindset_shift: [From popleft to poll.]
+    habit_swaps:
+      - python: "q.append(x)"
+        java: "q.offer(x)"
+    false_friends: [{term: null, warning: poll can return null on empty queues.}]
+interview_questions:
+  - question: Why mark visited before enqueue?
+    answer: To prevent the same node from being enqueued by multiple parents.
+revision:
+  quick_summary: [Queue is FIFO, q is frontier, node comes from front, neighbors go to back.]
+  cheat_table:
+    title: Queue Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["push", "append", "push", "offer"]
+      - ["pop", "popleft", "front+pop", "poll"]
+  flashcards:
+    - question: Which traversal naturally uses a queue?
+      answer: BFS.
+notes:
+  - In dry runs, draw the queue before and after each BFS level.
+tlm_hooks:
+  possible_tasks: [trace_bfs_queue, generate_queue_drills]
+  context: Focus on frontier and visited timing.

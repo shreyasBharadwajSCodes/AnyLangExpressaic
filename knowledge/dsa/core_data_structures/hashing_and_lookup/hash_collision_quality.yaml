@@ -1,0 +1,105 @@
+﻿id: hash_collision_quality
+title: Collision And Hash Quality
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [hashing, collisions, hash_quality, performance, interview]
+goal: Teach practical hash collision and hash-quality reasoning for interviews across Python, C++, and Java without overcomplicating normal hash-map use.
+assets:
+  collision_buckets:
+    type: image
+    path: assets/dsa/hash_collision_quality/collision-buckets.png
+    alt: Multiple keys landing in the same hash bucket and affecting lookup.
+lesson:
+  - explain:
+      title: Hash Quality Strategy
+      body: >
+        Hash tables are average O(1), not magic. Track key, hash(key), bucket, and
+        equality check. Good keys spread across buckets; bad keys collide and degrade
+        performance. In most interviews, mention average-case and ensure custom keys
+        have correct equality/hash behavior.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Hash tables first choose a bucket from the hash, then use equality inside
+        that bucket. The method assumes keys spread well enough for average constant
+        time. For interviews, the practical point is to use stable immutable keys
+        and make custom equality and hash behavior agree.
+
+  - compare_table:
+      title: Collision Map
+      columns: [Concern, Python, C++, Java]
+      rows:
+        - ["Average lookup", "dict/set O(1)", "unordered_map O(1)", "HashMap O(1)"]
+        - ["Worst case", "collisions", "collisions", "collisions/tree bins in modern Java"]
+        - ["Custom key", "__hash__/__eq__", "hash functor + ==", "hashCode + equals"]
+        - ["Mutable key risk", "avoid", "avoid", "avoid"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Built-in immutable keys usually hash well enough; custom classes need compatible __eq__ and __hash__.
+      behind_the_scenes: ["dict/set use hashing plus equality.", "Mutable built-ins like list are unhashable."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: unordered_map relies on std::hash or your custom hash; pair/vector keys need deliberate handling.
+      behind_the_scenes: ["Bad custom hashes can create many collisions.", "reserve can reduce rehashing."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: HashMap uses hashCode and equals; poor hashCode causes collisions.
+      behind_the_scenes: ["Records generate hashCode.", "Mutating key fields after insertion breaks lookup."]
+examples:
+  - code_compare:
+      title: Custom Key Quality
+      idea: Use stable immutable state as key.
+      python: |
+        # Tuple is immutable and hashes by all fields in order.
+        key = (r, c, mask)
+        memo[key] = value
+      cpp: |
+        struct State { int r, c, mask; };
+
+        // Provide == and a hash functor for unordered_map<State, int>.
+      java: |
+        // record fields are immutable, and equals/hashCode are generated.
+        record State(int r, int c, int mask) {}
+        Map<State, Integer> memo = new HashMap<>();
+transitions:
+  python_to_cpp:
+    title: Python hash comfort to C++ custom hash
+    mindset_shift: [From tuple hashing built in to explicit hash functors for custom keys.]
+    habit_swaps:
+      - python: "memo[(r, c)]"
+        cpp: "map<pair<int,int>, int> or unordered_map with custom hash"
+    false_friends:
+      - term: average O(1)
+        warning: It depends on reasonable hashing and collision behavior.
+  python_to_java:
+    title: Python hash keys to Java HashMap keys
+    mindset_shift: [From __hash__/__eq__ to hashCode/equals.]
+    habit_swaps:
+      - python: tuple key.
+        java: record key.
+    false_friends:
+      - term: mutation
+        warning: Do not mutate fields that participate in hashCode after insertion.
+interview_questions:
+  - question: Why are hash maps average O(1)?
+    answer: Good hash distribution keeps buckets small, so lookup checks only a few candidates on average.
+revision:
+  quick_summary: [Hashing maps keys to buckets, Equality resolves collisions, Custom keys need stable hash/equality.]
+  cheat_table:
+    title: Hash Quality Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["custom key contract", "__eq__/__hash__", "==/hash functor", "equals/hashCode"]
+      - ["stable key", "immutable", "do not mutate", "do not mutate"]
+  flashcards:
+    - question: What breaks lookup after insertion?
+      answer: Mutating a key's hash/equality fields.
+notes:
+  - Most interviews do not require designing perfect hashes, but they do expect correct key identity.
+tlm_hooks:
+  possible_tasks: [explain_hash_collisions, generate_custom_key_quiz]
+  context: Focus on hash quality, collision resolution, and custom key contracts.

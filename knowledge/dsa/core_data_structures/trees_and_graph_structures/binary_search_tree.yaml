@@ -1,0 +1,121 @@
+﻿id: binary_search_tree
+title: Binary Search Tree
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [bst, binary_search_tree, bounds, interview]
+goal: Teach BST reasoning across Python, C++, and Java with clear tracking of node, low/high bounds, predecessor/successor, and sorted inorder property.
+assets:
+  bst_bounds_tracker:
+    type: image
+    path: assets/dsa/binary_search_tree/bounds-tracker.png
+    alt: BST node with allowed low and high bounds passed down recursion.
+lesson:
+  - explain:
+      title: BST Invariant
+      body: >
+        A BST is not just left child < node < right child locally. Every node has a
+        valid range inherited from ancestors. Track node, low, high, and whether
+        node.val stays inside that range.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A BST carries sorted-order constraints through the whole subtree, not only
+        through parent-child relationships. The method is to pass ancestor bounds or
+        use inorder traversal to preserve global ordering. Bounds must be wide enough
+        to handle minimum and maximum node values safely.
+
+  - compare_table:
+      title: BST Operations
+      columns: [Need, Strategy, Key Variable]
+      rows:
+        - ["Validate", "range bounds or inorder", "low/high or prev"]
+        - ["Search", "go left/right by value", "node"]
+        - ["Kth smallest", "inorder count", "count/k"]
+        - ["Successor", "track candidate while moving", "candidate"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use None bounds or float infinities; Python int avoids overflow.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use long long bounds to avoid int min/max edge issues.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use long bounds for validation when node values are int.
+examples:
+  - code_compare:
+      title: Validate BST With Bounds
+      idea: Pass allowed range down recursion.
+      python: |
+        def valid(node, low, high):
+            # Empty subtree is valid inside any inherited range.
+            if node is None:
+                return True
+
+            # Current value must satisfy all ancestor constraints, not just parent.
+            if not (low < node.val < high):
+                return False
+
+            # Left tightens high; right tightens low.
+            return valid(node.left, low, node.val) and valid(node.right, node.val, high)
+      cpp: |
+        bool valid(TreeNode* node, long long low, long long high) {
+            // Empty subtree is valid inside any inherited range.
+            if (!node) return true;
+
+            // Current value must satisfy all ancestor constraints, not just parent.
+            if (!(low < node->val && node->val < high)) return false;
+
+            // Left tightens high; right tightens low.
+            return valid(node->left, low, node->val) &&
+                   valid(node->right, node->val, high);
+        }
+      java: |
+        private boolean valid(TreeNode node, long low, long high) {
+            // Empty subtree is valid inside any inherited range.
+            if (node == null) return true;
+
+            // Current value must satisfy all ancestor constraints, not just parent.
+            if (!(low < node.val && node.val < high)) return false;
+
+            // Left tightens high; right tightens low.
+            return valid(node.left, low, node.val) &&
+                   valid(node.right, node.val, high);
+        }
+transitions:
+  python_to_cpp:
+    title: Python BST to C++ BST
+    mindset_shift: [From unbounded ints to long long sentinels.]
+    habit_swaps:
+      - python: "float('-inf'), float('inf')"
+        cpp: "LLONG_MIN, LLONG_MAX"
+    false_friends: [{term: local check, warning: Checking only direct children is not enough.}]
+  python_to_java:
+    title: Python BST to Java BST
+    mindset_shift: [Use long bounds to avoid Integer.MIN/MAX edge bugs.]
+    habit_swaps:
+      - python: "low < node.val < high"
+        java: "low < node.val && node.val < high"
+    false_friends: []
+interview_questions:
+  - question: Why are ancestor bounds needed?
+    answer: A node can satisfy its parent locally but still violate an older ancestor bound.
+revision:
+  quick_summary: [BST validity is range-based, Inorder traversal is sorted, Use wide bounds.]
+  cheat_table:
+    title: BST Cheat Table
+    columns: [Need, Key Variables]
+    rows:
+      - ["validate", "node, low, high"]
+      - ["kth", "node, count, k"]
+  flashcards:
+    - question: Are duplicate values valid in a BST?
+      answer: Depends on problem definition; clarify strict versus non-strict.
+notes:
+  - In validation dry runs, write the allowed range beside every node.
+tlm_hooks:
+  possible_tasks: [trace_bst_bounds, generate_bst_drills]
+  context: Focus on ancestor bounds and inorder sorted property.

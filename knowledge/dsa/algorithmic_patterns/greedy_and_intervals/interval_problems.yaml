@@ -1,0 +1,147 @@
+﻿id: interval_problems
+title: Interval Problems
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [intervals, sorting, greedy, sweep_line, interview]
+goal: Teach interval problem recognition and implementation across Python, C++, and Java with boundary semantics and sorting differences.
+assets:
+  interval_boundaries:
+    type: image
+    path: assets/dsa/interval_problems/boundaries.png
+    alt: Intervals with start, end, overlap, touching endpoints, and sorted order.
+lesson:
+  - explain:
+      title: Interval Mental Model
+      body: >
+        Interval problems are about boundaries. First clarify whether intervals are
+        closed [s,e], half-open [s,e), or whether touching endpoints count as overlap.
+        Then sort by start or end depending on the decision.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Convert each interval into start and end decisions. Sorting makes only nearby
+        or currently active intervals relevant, but the comparison depends on the
+        endpoint rule. Before coding, decide whether [s,e], [s,e), or touching
+        endpoints should count as overlapping.
+  - compare_table:
+      title: Pattern Map
+      columns: [Problem, Sort By, State]
+      rows:
+        - ["merge intervals", "start", "current merged end"]
+        - ["erase overlaps", "end", "last chosen end"]
+        - ["meeting rooms", "start/end events", "active meetings"]
+        - ["insert interval", "start", "merged new interval"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Lists sort lexicographically by default, but key functions make intent clearer.
+      default_instincts:
+        - Use key functions to make the greedy order visible.
+        - Name active state such as end, rooms, active, or best.
+        - Encode event tie order directly in tuple keys when using sweep line.
+      avoid:
+        - Sorting by a field without knowing why that order is safe.
+        - Forgetting to clarify whether touching endpoints overlap.
+        - Using heap state without defining what heap[0] represents.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector<int> intervals sort lexicographically by default; custom comparator is clearer for end-based strategies.
+      default_instincts:
+        - Use strict sort comparators for interval orderings.
+        - Configure priority_queue direction explicitly for min-heap needs.
+        - Use clear event structs or pairs when tie order matters.
+      avoid:
+        - Assuming priority_queue is a min-heap.
+        - Using non-strict interval comparators.
+        - Ignoring endpoint tie-breaking in sweep-line events.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: int[][] needs Arrays.sort with a Comparator; use comparingInt to avoid overflow.
+      default_instincts:
+        - Use Comparator.comparingInt or compare helpers for interval sorting.
+        - Use PriorityQueue for earliest-ending active intervals.
+        - Represent events with int[] or small classes and explicit tie-breakers.
+      avoid:
+        - Using a[0] - b[0] in comparators.
+        - Forgetting to initialize list buckets or event containers.
+        - Leaving endpoint semantics implicit.
+examples:
+  - code_compare:
+      title: Detect Any Overlap
+      idea: After sorting by start, only compare with previous end.
+      python: |
+        intervals.sort(key=lambda p: p[0])
+        prev_end = intervals[0][1]
+
+        for s, e in intervals[1:]:
+            if s < prev_end:
+                # Current start is before previous end, so these intervals overlap.
+                return True
+            prev_end = e
+      cpp: |
+        sort(intervals.begin(), intervals.end());
+        int prevEnd = intervals[0][1];
+
+        for (int i = 1; i < intervals.size(); i++) {
+            int s = intervals[i][0], e = intervals[i][1];
+            if (s < prevEnd) {
+                // Current start is before previous end, so these intervals overlap.
+                return true;
+            }
+            prevEnd = e;
+        }
+      java: |
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));
+        int prevEnd = intervals[0][1];
+
+        for (int i = 1; i < intervals.length; i++) {
+            int s = intervals[i][0], e = intervals[i][1];
+            if (s < prevEnd) {
+                // Current start is before previous end, so these intervals overlap.
+                return true;
+            }
+            prevEnd = e;
+        }
+transitions:
+  python_to_cpp:
+    title: Python intervals to C++
+    mindset_shift: [From key sorting to vector lexicographic/default comparator choices.]
+    habit_swaps:
+      - python: "intervals.sort(key=lambda p: p[0])"
+        cpp: "sort(intervals.begin(), intervals.end())"
+    false_friends:
+      - term: endpoint touching
+        warning: Decide whether s == prevEnd overlaps before choosing < or <=.
+  python_to_java:
+    title: Python intervals to Java
+    mindset_shift: [From list sort key to Arrays.sort comparator for int[][].]
+    habit_swaps:
+      - python: "p[0]"
+        java: "a[0] inside Comparator.comparingInt"
+    false_friends:
+      - term: comparator subtraction
+        warning: Avoid a[0] - b[0] when values can be large.
+interview_questions:
+  - question: What should you clarify before coding interval overlap?
+    answer: Whether touching endpoints count as overlap.
+revision:
+  quick_summary: [Clarify boundaries, sort by the decision field, track current/previous end.]
+  cheat_table:
+    title: Interval Cheat Table
+    columns: [Task, Sort, State]
+    rows:
+      - ["merge", "start", "merged end"]
+      - ["select max", "end", "last end"]
+      - ["rooms", "events or heap", "active count"]
+  flashcards:
+    - question: What changes if intervals are half-open?
+      answer: Touching endpoints usually do not overlap.
+notes:
+  - Boundary semantics determine whether the comparison is < or <=.
+tlm_hooks:
+  possible_tasks: [trace_interval_overlap, generate_boundary_drills]
+  context: Focus on starts, ends, sorting field, and endpoint semantics.
+

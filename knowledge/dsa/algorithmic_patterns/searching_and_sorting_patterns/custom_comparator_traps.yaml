@@ -1,0 +1,146 @@
+﻿id: custom_comparator_traps
+title: Custom Comparator Traps
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [sorting, comparator, ordering, traps, interview]
+goal: Teach comparator correctness across Python, C++, and Java with contract rules, overflow avoidance, and stable-order awareness.
+assets:
+  comparator_traps:
+    type: image
+    path: assets/dsa/custom_comparator_traps/comparator-traps.png
+    alt: Comparator contract showing equal elements, transitivity, and safe numeric comparison.
+lesson:
+  - explain:
+      title: Comparator Contract
+      body: >
+        A comparator must define a consistent order. Python usually avoids this by
+        sorting key values. C++ comparators return whether a comes before b. Java
+        comparators return negative, zero, or positive but should use compare helpers.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Sorting with custom order is part algorithm and part contract. The comparator
+        must tell the sorter a consistent before/after relationship for every pair.
+        Python usually avoids pairwise comparator bugs through key values, while C++
+        and Java need strict, overflow-safe comparator logic.
+  - compare_table:
+      title: Trap Map
+      columns: [Trap, Language, Fix]
+      rows:
+        - ["non-strict <= comparator", "C++", "use < only"]
+        - ["subtraction overflow", "Java", "Integer.compare / Long.compare"]
+        - ["reverse affects all fields", "Python", "encode per-field direction in key"]
+        - ["unstable equal order", "C++", "stable_sort if needed"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Prefer key tuples. Negate numeric fields for per-field descending when safe.
+      default_instincts:
+        - Use key functions or bisect when they exactly match the sorted invariant.
+        - Keep lower/upper-bound meanings written in terms of first valid index.
+        - Prefer tuple keys for multi-field ordering.
+      avoid:
+        - Using bisect or bounds on unsorted data.
+        - Using reverse=True when only one field should be descending.
+        - Mixing inclusive and exclusive search templates.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Comparator returns bool and must be strict; equal elements must compare false both ways.
+      default_instincts:
+        - Use safe midpoint formulas for manual binary search.
+        - Use strict comparators and the same ordering for sort and lower_bound.
+        - Use long long for answer-search ranges and feasibility totals.
+      avoid:
+        - Returning <= from a comparator.
+        - Using lower_bound with a different ordering than sort.
+        - Using int bounds when the answer range can exceed int.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Comparator returns ordering int; compare helpers avoid overflow and express intent.
+      default_instincts:
+        - Use Comparator.comparing or Integer.compare/Long.compare for ordering.
+        - Write custom lower/upper-bound helpers when insertion point matters.
+        - Use long for answer search and feasibility totals.
+      avoid:
+        - Using subtraction inside comparators.
+        - Treating Arrays.binarySearch as lower_bound with duplicates.
+        - Letting int arithmetic overflow before assigning to long.
+examples:
+  - code_compare:
+      title: Safe Multi-Field Ordering
+      idea: Sort by start ascending, end descending.
+      python: |
+        # Tuple key makes the ordering explicit without pairwise comparator bugs.
+        intervals.sort(key=lambda p: (p[0], -p[1]))
+      cpp: |
+        sort(intervals.begin(), intervals.end(), [](const auto& a, const auto& b) {
+            if (a[0] != b[0]) return a[0] < b[0];
+            // Strict comparison: equal ends return false, preserving comparator contract.
+            return a[1] > b[1];
+        });
+      java: |
+        Arrays.sort(intervals, (a, b) -> {
+            int byStart = Integer.compare(a[0], b[0]);
+            if (byStart != 0) return byStart;
+            // Compare b to a for descending end without subtraction overflow.
+            return Integer.compare(b[1], a[1]);
+        });
+  - code_compare:
+      title: Bad Comparator Shape To Avoid
+      idea: Equal elements must not be ordered before each other.
+      python: |
+        # Python key sorting avoids writing this pairwise logic.
+        nums.sort()
+      cpp: |
+        // Wrong: return a <= b; equal values compare true both ways.
+        sort(nums.begin(), nums.end(), [](int a, int b) {
+            return a < b;
+        });
+      java: |
+        // Wrong: return a - b can overflow for large values.
+        list.sort((a, b) -> Integer.compare(a, b));
+transitions:
+  python_to_cpp:
+    title: Python keys to C++ comparators
+    mindset_shift: [From computed sort keys to pairwise before/after decisions.]
+    habit_swaps:
+      - python: "key=lambda p: (p[0], -p[1])"
+        cpp: "if first differs return first <; else return second >"
+    false_friends:
+      - term: non-strict comparison
+        warning: C++ comparator must not return true for equal elements.
+  python_to_java:
+    title: Python keys to Java comparators
+    mindset_shift: [From key tuples to Comparator chains or lambdas.]
+    habit_swaps:
+      - python: "-p[1]"
+        java: "Integer.compare(b[1], a[1])"
+    false_friends:
+      - term: subtraction
+        warning: Comparator subtraction can overflow.
+interview_questions:
+  - question: What is wrong with a <= b in a C++ comparator?
+    answer: Equal elements compare true both ways, violating strict weak ordering.
+  - question: Why avoid a - b in Java comparators?
+    answer: The subtraction can overflow and produce the wrong sign.
+revision:
+  quick_summary: [Python prefers keys, C++ comparator is strict bool, Java uses compare helpers.]
+  cheat_table:
+    title: Comparator Trap Table
+    columns: [Language, Avoid, Prefer]
+    rows:
+      - ["Python", "reverse for one field", "tuple key with adjusted field"]
+      - ["C++", "<= comparator", "< comparator"]
+      - ["Java", "a - b", "Integer.compare(a,b)"]
+  flashcards:
+    - question: What must equal elements return in a C++ comparator?
+      answer: false in both directions.
+notes:
+  - Sort and binary search must agree on the same ordering.
+tlm_hooks:
+  possible_tasks: [check_comparator_contract, generate_sorting_traps_quiz]
+  context: Focus on strictness, overflow, and per-field direction.
+

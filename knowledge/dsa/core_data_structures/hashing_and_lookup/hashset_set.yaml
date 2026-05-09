@@ -1,0 +1,120 @@
+﻿id: hashset_set
+title: Set / HashSet / unordered_set
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [set, hashset, unordered_set, lookup, interview]
+goal: Teach set usage across Python, C++, and Java with clear tracking of seen values, membership checks, duplicates, and hashability.
+assets:
+  set_membership_tracker:
+    type: image
+    path: assets/dsa/hashset_set/set-membership-tracker.png
+    alt: Current value x checked against seen set, then inserted.
+lesson:
+  - explain:
+      title: Set Strategy
+      body: >
+        A set answers "have I seen this before?" Track x as the current value,
+        seen as all accepted or visited values so far, and duplicate_found or answer
+        as the output affected by membership.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A set answers membership questions about a chosen meaning of seen. The
+        algorithm must define whether seen means processed values, active-window
+        values, visited nodes, or forbidden states. Once that meaning is fixed, the
+        method is check membership at the right time, then add or remove at the point
+        that preserves the invariant.
+
+  - compare_table:
+      title: Set Operations
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Create", "set()", "unordered_set<T>", "HashSet<T>"]
+        - ["Contains", "x in seen", "seen.count(x)", "seen.contains(x)"]
+        - ["Add", "seen.add(x)", "seen.insert(x)", "seen.add(x)"]
+        - ["Remove", "seen.remove/discard", "seen.erase(x)", "seen.remove(x)"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use set for average O(1) membership; elements must be hashable.
+      behind_the_scenes: ["list is unhashable.", "tuple works if its contents are hashable."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: unordered_set gives average O(1); set gives sorted O(log n).
+      behind_the_scenes: ["Custom compound keys need a hash for unordered_set.", "Iteration order is unspecified."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: HashSet uses hashCode and equals; custom keys need both.
+      behind_the_scenes: ["HashSet<Integer> boxes ints.", "LinkedHashSet preserves insertion order if needed."]
+examples:
+  - code_compare:
+      title: Contains Duplicate
+      idea: Use seen to detect repeated values.
+      python: |
+        seen = set()
+
+        for x in nums:
+            # Check before adding: seen only contains earlier values.
+            if x in seen:
+                return True
+
+            seen.add(x)
+      cpp: |
+        unordered_set<int> seen;
+
+        for (int x : nums) {
+            // count(x) checks membership without inserting x.
+            if (seen.count(x)) return true;
+
+            seen.insert(x);
+        }
+      java: |
+        Set<Integer> seen = new HashSet<>();
+
+        for (int x : nums) {
+            // contains checks earlier values; add happens after the check.
+            if (seen.contains(x)) return true;
+
+            seen.add(x);
+        }
+transitions:
+  python_to_cpp:
+    title: Python set to C++ unordered_set
+    mindset_shift: [From flexible hashable objects to typed keys and custom hashes.]
+    habit_swaps:
+      - python: "x in seen"
+        cpp: "seen.count(x)"
+    false_friends:
+      - term: order
+        warning: unordered_set is not sorted or insertion-ordered.
+  python_to_java:
+    title: Python set to Java HashSet
+    mindset_shift: [From __hash__/__eq__ to hashCode/equals.]
+    habit_swaps:
+      - python: "seen.add(x)"
+        java: "seen.add(x)"
+    false_friends:
+      - term: custom key
+        warning: Java custom keys need equals and hashCode.
+interview_questions:
+  - question: What does seen mean in duplicate detection?
+    answer: It contains values already processed before the current x.
+revision:
+  quick_summary: [Set lookup is average O(1), Track seen before insertion, Custom keys need stable hashing.]
+  cheat_table:
+    title: Set Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["contains", "x in seen", "seen.count(x)", "seen.contains(x)"]
+      - ["add", "add", "insert", "add"]
+  flashcards:
+    - question: Can Python list be in a set?
+      answer: No, it is unhashable.
+notes:
+  - "Define what seen means: processed values, active window values, or visited nodes."
+tlm_hooks:
+  possible_tasks: [generate_set_drills, explain_seen_tracker]
+  context: Focus on membership variables and hash/equality caveats.

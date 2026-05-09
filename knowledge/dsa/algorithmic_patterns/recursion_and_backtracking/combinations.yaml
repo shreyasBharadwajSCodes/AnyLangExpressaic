@@ -1,0 +1,149 @@
+id: combinations
+title: Combinations
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [combinations, backtracking, pruning, interview]
+goal: Teach combination generation where order does not matter, with start-index pruning and language-specific path-copy handling.
+assets:
+  combinations_start:
+    type: image
+    path: assets/dsa/combinations/start-index.png
+    alt: Combination search using start index to avoid reordering the same set.
+lesson:
+  - explain:
+      title: Combination Mental Model
+      body: >
+        Combinations choose items without caring about order. The start index ensures
+        each later recursive call only uses later candidates, so [1,2] and [2,1] are
+        not both generated.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Combinations ignore order, so the search only moves forward. start is the
+        first candidate allowed for the next slot. Pruning with the number of needed
+        elements avoids branches that cannot possibly reach size k.
+  - compare_table:
+      title: State
+      columns: [Variable, Meaning]
+      rows:
+        - ["start", "first candidate index allowed"]
+        - ["path", "chosen combination"]
+        - ["k", "target size"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use range pruning to avoid branches that cannot fill k remaining slots.
+      default_instincts:
+        - Define what each call returns or what path state it owns.
+        - Use append/pop symmetry for shared mutable paths.
+        - Copy path only when recording an answer.
+      avoid:
+        - Appending path itself into answers without copying.
+        - Forgetting to undo state before the next branch.
+        - Ignoring recursion depth on very deep inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use vector path by reference and compute remaining count for pruning.
+      default_instincts:
+        - Pass shared path/state by reference and copy only recorded answers.
+        - Pass read-only input containers by const reference.
+        - Use helper functions when recursive lambdas would distract from the algorithm.
+      avoid:
+        - Passing vector path by value on every recursive call unintentionally.
+        - Forgetting to pop_back or clear a used flag after recursion.
+        - Returning references to local recursive state.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use ArrayList path and new ArrayList copy at size k.
+      default_instincts:
+        - Use private helper methods with explicit state parameters or fields.
+        - Use boolean arrays for used/constraint state when size is known.
+        - Record new ArrayList<>(path) for completed answers.
+      avoid:
+        - Calling ans.add(path) for a mutable path.
+        - Forgetting to remove the last path element after recursion.
+        - Trying to mutate String board rows directly.
+examples:
+  - code_compare:
+      title: Choose K From 1..N
+      idea: Use start to avoid duplicate orders.
+      python: |
+        def dfs(start):
+            if len(path) == k:
+                ans.append(path.copy())
+                return
+
+            need = k - len(path)
+            for x in range(start, n - need + 2):
+                path.append(x)
+                dfs(x + 1)
+                # Remove x so the next candidate can occupy this slot.
+                path.pop()
+      cpp: |
+        void dfs(int start) {
+            if (path.size() == k) {
+                ans.push_back(path);
+                return;
+            }
+
+            int need = k - path.size();
+            for (int x = start; x <= n - need + 1; x++) {
+                path.push_back(x);
+                dfs(x + 1);
+                // Remove x so the next candidate can occupy this slot.
+                path.pop_back();
+            }
+        }
+      java: |
+        void dfs(int start) {
+            if (path.size() == k) {
+                ans.add(new ArrayList<>(path));
+                return;
+            }
+
+            int need = k - path.size();
+            for (int x = start; x <= n - need + 1; x++) {
+                path.add(x);
+                dfs(x + 1);
+                // Remove x so the next candidate can occupy this slot.
+                path.remove(path.size() - 1);
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python combinations to C++
+    mindset_shift: [From Python range end exclusive to C++ inclusive loop condition.]
+    habit_swaps:
+      - python: "range(start, n - need + 2)"
+        cpp: "x <= n - need + 1"
+    false_friends: [{term: pruning bound, warning: Off-by-one mistakes can skip valid combinations.}]
+  python_to_java:
+    title: Python combinations to Java
+    mindset_shift: [From range to for-loop bounds, From path.copy to new ArrayList.]
+    habit_swaps:
+      - python: "ans.append(path.copy())"
+        java: "ans.add(new ArrayList<>(path))"
+    false_friends: [{term: order, warning: Combinations should advance start to avoid permutations.}]
+interview_questions:
+  - question: Why pass x + 1 into the next call?
+    answer: It prevents reusing earlier choices and avoids generating the same combination in different orders.
+revision:
+  quick_summary: [Order does not matter, start moves forward, prune when not enough candidates remain.]
+  cheat_table:
+    title: Combinations Cheat Table
+    columns: [State, Meaning]
+    rows:
+      - ["start", "next minimum candidate"]
+      - ["need", "k - path size"]
+      - ["record", "when path size == k"]
+  flashcards:
+    - question: What separates combinations from permutations?
+      answer: Combinations advance start so order variants are not generated.
+notes:
+  - Pruning is optional for correctness but valuable in interviews.
+tlm_hooks:
+  possible_tasks: [trace_combinations, generate_pruning_drills]
+  context: Focus on start index, need pruning, and copy timing.

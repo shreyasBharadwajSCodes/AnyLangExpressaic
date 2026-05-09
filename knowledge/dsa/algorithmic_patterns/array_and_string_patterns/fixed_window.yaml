@@ -1,0 +1,241 @@
+﻿id: fixed_window
+title: Fixed Window
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [fixed_window, sliding_window, arrays, strings, interview]
+goal: Teach fixed-size sliding window problems across Python, C++, and Java with clear update order, sum/count maintenance, and language-specific integer and substring caveats.
+assets:
+  fixed_window_trace:
+    type: image
+    path: assets/dsa/fixed_window/window-trace.png
+    alt: Array window of size k showing incoming element, outgoing element, running sum, and best answer.
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        A fixed window keeps exactly k items active. Instead of recomputing the
+        whole window each time, add the incoming item and remove the outgoing item.
+        Track right as the incoming index, left as right - k + 1 after the window is
+        full, window_sum or state as the active window value, and best as the answer.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Keep exactly k elements in the active state. Each iteration adds the new
+        right-side value, removes the value that fell off the left side, and updates
+        the answer only after the state has exactly k elements. The running state can
+        be a sum, count array, frequency map, or any value that supports add/remove.
+  - compare_table:
+      title: Recognition Signals
+      columns: [Problem Signal, Window State, Answer Timing]
+      rows:
+        - ["subarray of length k", "running sum/count", "after first k elements"]
+        - ["max average length k", "running sum", "every full window"]
+        - ["anagram of fixed pattern length", "frequency difference", "when window length equals pattern"]
+        - ["k consecutive elements", "active count", "after outgoing removal"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Python makes indices compact, and integers do not overflow. Avoid slicing every window unless k is tiny because slicing copies.
+      default_instincts:
+        - Track boundary meanings in names such as left, right, i, pref, or window.
+        - Use dict/list state instead of rebuilding slices or subarrays.
+        - Let Python int handle size, but still choose the right invariant.
+      avoid:
+        - Slicing every window or prefix range inside the loop.
+        - Letting negative indices hide an out-of-window read.
+        - Updating best before the maintained state is valid.
+      behind_the_scenes:
+        - nums[i-k] is the outgoing element once i >= k.
+        - sum(nums[i-k+1:i+1]) allocates/costs O(k) per window.
+        - Negative indices are valid, so guard before reading outgoing positions.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: C++ loops are explicit and fast; use long long when sums can exceed int.
+      default_instincts:
+        - Use long long for sums, prefix values, and answer ranges.
+        - Use vector state for fixed ranges and unordered_map for sparse keys.
+        - Keep index guards explicit before reading outgoing or boundary positions.
+      avoid:
+        - Using int for accumulated values under large constraints.
+        - Reading nums[i-k], diff[r+1], or s[right] before bounds are valid.
+        - Relying on unchecked vector indexing while the invariant is still forming.
+      behind_the_scenes:
+        - nums[i - k] is invalid before i >= k.
+        - accumulate(..., 0) keeps an int accumulator; use 0LL for long long.
+        - Vector indexing does not bounds-check with operator[].
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Java arrays are direct for numeric windows; use long for large sums and avoid repeated substring creation.
+      default_instincts:
+        - Use long for sums and prefix values when constraints can grow.
+        - Use primitive arrays for fixed alphabets or fixed-size numeric state.
+        - Use HashMap with getOrDefault/remove when keys are sparse.
+      avoid:
+        - Using int where running totals can overflow.
+        - Creating substrings repeatedly to represent the current window.
+        - Leaving zero counts in maps when map size means distinct active values.
+      behind_the_scenes:
+        - int overflow wraps silently.
+        - substring creates a new string object; frequency arrays are better for repeated fixed windows.
+        - Array indices throw if the outgoing index is computed too early.
+examples:
+  - code_compare:
+      title: Maximum Sum Of Length K
+      idea: Add current item, remove item that falls out, update best only when the window is full.
+      python: |
+        window = 0
+        best = float("-inf")
+
+        for i, x in enumerate(nums):
+            # Add first; if size becomes k + 1, i - k is the old left edge.
+            window += x
+
+            if i >= k:
+                # Remove the value that no longer belongs to the k-sized window.
+                window -= nums[i - k]
+
+            if i >= k - 1:
+                # Now the active window has exactly k elements.
+                best = max(best, window)
+      cpp: |
+        long long window = 0;
+        long long best = LLONG_MIN;
+
+        for (int i = 0; i < nums.size(); i++) {
+            // Add first; if size becomes k + 1, i - k is the old left edge.
+            window += nums[i];
+
+            if (i >= k) {
+                // Remove the value that no longer belongs to the k-sized window.
+                window -= nums[i - k];
+            }
+
+            if (i >= k - 1) {
+                // Now the active window has exactly k elements.
+                best = max(best, window);
+            }
+        }
+      java: |
+        long window = 0;
+        long best = Long.MIN_VALUE;
+
+        for (int i = 0; i < nums.length; i++) {
+            // Add first; if size becomes k + 1, i - k is the old left edge.
+            window += nums[i];
+
+            if (i >= k) {
+                // Remove the value that no longer belongs to the k-sized window.
+                window -= nums[i - k];
+            }
+
+            if (i >= k - 1) {
+                // Now the active window has exactly k elements.
+                best = Math.max(best, window);
+            }
+        }
+  - code_compare:
+      title: First Window Then Slide
+      idea: Useful when you want the first full window initialized separately.
+      python: |
+        window = sum(nums[:k])
+        best = window
+
+        for right in range(k, len(nums)):
+            # right enters; right - k leaves.
+            window += nums[right]
+            window -= nums[right - k]
+            best = max(best, window)
+      cpp: |
+        long long window = accumulate(nums.begin(), nums.begin() + k, 0LL);
+        long long best = window;
+
+        for (int right = k; right < nums.size(); right++) {
+            // right enters; right - k leaves.
+            window += nums[right];
+            window -= nums[right - k];
+            best = max(best, window);
+        }
+      java: |
+        long window = 0;
+        for (int i = 0; i < k; i++) window += nums[i];
+        long best = window;
+
+        for (int right = k; right < nums.length; right++) {
+            // right enters; right - k leaves.
+            window += nums[right];
+            window -= nums[right - k];
+            best = Math.max(best, window);
+        }
+common_mistakes:
+  - mistake: Updating best before removing the outgoing element.
+    fix: Ensure the active state represents exactly k elements before comparing with best.
+  - mistake: Using repeated slicing or substring checks for every window.
+    fix: Maintain a running sum, count, or frequency difference.
+  - mistake: Using int for large sums in C++ or Java.
+    fix: Use long long in C++ and long in Java.
+transitions:
+  python_to_cpp:
+    title: Python fixed window to C++
+    mindset_shift:
+      - From overflow-free integers to explicit accumulator width.
+      - From safe-looking slices to iterator ranges and bounds responsibility.
+    habit_swaps:
+      - python: "window = sum(nums[:k])"
+        cpp: "long long window = accumulate(nums.begin(), nums.begin() + k, 0LL)"
+      - python: "best = max(best, window)"
+        cpp: "best = max(best, window)"
+    false_friends:
+      - term: accumulate initial value
+        warning: 0 makes an int accumulator; use 0LL for long long.
+      - term: outgoing index
+        warning: Read nums[i-k] only after i >= k.
+  python_to_java:
+    title: Python fixed window to Java
+    mindset_shift:
+      - From compact built-ins to explicit loops for initialization.
+      - From arbitrary-size int to choosing long when sums can grow.
+    habit_swaps:
+      - python: "sum(nums[:k])"
+        java: "for (int i = 0; i < k; i++) window += nums[i]"
+      - python: "float('-inf')"
+        java: "Long.MIN_VALUE"
+    false_friends:
+      - term: substring windows
+        warning: Repeated Java substring creation is usually unnecessary for fixed-window matching.
+      - term: int sum
+        warning: Java int overflow is silent.
+interview_questions:
+  - question: What makes a window fixed?
+    answer: The active window always contains exactly k elements once it is fully formed.
+  - question: When is the outgoing element at index i - k?
+    answer: After adding nums[i], if i >= k, nums[i-k] is one position left of the active k-length window.
+  - question: Why should best update only after i >= k - 1?
+    answer: Before that point the window has fewer than k elements and is not a valid candidate.
+revision:
+  quick_summary:
+    - Add incoming element.
+    - Remove outgoing element when size exceeds k.
+    - Update answer only when the window has exactly k elements.
+  cheat_table:
+    title: Fixed Window Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["outgoing", "nums[i-k]", "nums[i-k]", "nums[i-k]"]
+      - ["large sum", "int is safe", "long long", "long"]
+      - ["first window sum", "sum(nums[:k])", "accumulate(..., 0LL)", "explicit loop"]
+      - ["avoid", "repeated slices", "wrong accumulator type", "int overflow"]
+  flashcards:
+    - question: What is the most common fixed-window bug?
+      answer: Updating the answer when the state has too few or too many elements.
+    - question: Why avoid slicing every k-window?
+      answer: It adds O(k) work per window and may allocate.
+notes:
+  - In explanations, say what the window contains after every add/remove line.
+  - If k can be zero or larger than n, clarify expected behavior before coding.
+tlm_hooks:
+  possible_tasks: [trace_fixed_window_sum, generate_window_timing_drills, compare_overflow_choices]
+  context: Focus on incoming index, outgoing index, exact window size, and numeric accumulator type.
+

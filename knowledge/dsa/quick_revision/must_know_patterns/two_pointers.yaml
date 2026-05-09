@@ -107,28 +107,44 @@ examples:
       idea: Move inward based on current sum.
       python: |
         left, right = 0, len(nums) - 1
+
         while left < right:
+            # left is the smallest remaining candidate; right is the largest.
             total = nums[left] + nums[right]
+
             if total == target:
                 return [left, right]
+
             if total < target:
+                # Need a larger sum; sorted order lets us discard nums[left].
                 left += 1
             else:
+                # Need a smaller sum; sorted order lets us discard nums[right].
                 right -= 1
       cpp: |
         int left = 0, right = (int)nums.size() - 1;
+
         while (left < right) {
+            // Use long long so large pair sums do not overflow int.
             long long total = 1LL * nums[left] + nums[right];
+
             if (total == target) return {left, right};
+
             if (total < target) left++;
+            // Sorted order makes nums[right] too large for this left.
             else right--;
         }
       java: |
         int left = 0, right = nums.length - 1;
+
         while (left < right) {
+            // Cast before addition so the sum is computed as long.
             long total = (long) nums[left] + nums[right];
+
             if (total == target) return new int[]{left, right};
+
             if (total < target) left++;
+            // Sorted order makes nums[right] too large for this left.
             else right--;
         }
       note: >
@@ -139,22 +155,34 @@ examples:
       idea: Keep values not equal to val.
       python: |
         write = 0
+
         for x in nums:
             if x != val:
+                # write is the next slot in the kept prefix.
                 nums[write] = x
                 write += 1
+
+        # Only nums[0:write] is part of the answer.
         return write
       cpp: |
         int write = 0;
+
         for (int x : nums) {
+            // write is the next slot in the kept prefix.
             if (x != val) nums[write++] = x;
         }
+
+        // Only nums[0..write-1] is part of the answer.
         return write;
       java: |
         int write = 0;
+
         for (int x : nums) {
+            // write is the next slot in the kept prefix.
             if (x != val) nums[write++] = x;
         }
+
+        // Only nums[0..write-1] is part of the answer.
         return write;
       note: >
         The write pointer marks the next valid position. The array content after
@@ -164,27 +192,39 @@ examples:
       idea: Compare mirrored characters.
       python: |
         left, right = 0, len(s) - 1
+
         while left < right:
+            # left and right must mirror each other in a palindrome.
             if s[left] != s[right]:
                 return False
+
             left += 1
             right -= 1
+
         return True
       cpp: |
         int left = 0, right = (int)s.size() - 1;
+
         while (left < right) {
+            // left and right must mirror each other in a palindrome.
             if (s[left] != s[right]) return false;
+
             left++;
             right--;
         }
+
         return true;
       java: |
         int left = 0, right = s.length() - 1;
+
         while (left < right) {
+            // charAt reads characters without creating substrings.
             if (s.charAt(left) != s.charAt(right)) return false;
+
             left++;
             right--;
         }
+
         return true;
       note: >
         If the problem ignores punctuation or case, move pointers past invalid

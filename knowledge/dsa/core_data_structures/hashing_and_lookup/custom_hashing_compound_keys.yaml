@@ -1,0 +1,120 @@
+﻿id: custom_hashing_compound_keys
+title: Custom Hashing / Compound Keys
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [custom_hashing, compound_keys, hashmap, visited, interview]
+goal: Teach compound key strategies across Python, C++, and Java with clear tracking of what a key represents and how equality/hash behavior is guaranteed.
+assets:
+  compound_key_tracker:
+    type: image
+    path: assets/dsa/custom_hashing_compound_keys/compound-key-tracker.png
+    alt: State variables r, c, mask combined into a stable key for visited or memo.
+lesson:
+  - explain:
+      title: Compound Key Strategy
+      body: >
+        A compound key combines multiple state variables into one lookup identity.
+        Track the state fields, the key representation, and the map/set using it.
+        The key must be stable: if its logical value changes after insertion, lookup
+        can fail.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Compound keys turn several state variables into one identity for visited,
+        memo, or lookup. The method begins by deciding which fields make two states
+        equivalent. The key representation must be stable after insertion, and its
+        equality rule must agree with its hash or ordering rule.
+
+  - compare_table:
+      title: Key Strategies
+      columns: [Need, Python, C++, Java]
+      rows:
+        - ["Coordinate", "(r, c)", "pair in map / custom hash", "record Cell / encoded int / String"]
+        - ["State triple", "(i, j, mask)", "tuple/custom struct hash", "record State"]
+        - ["Dense coordinate", "r * cols + c", "r * cols + c", "r * cols + c"]
+        - ["Graph clone key", "node object", "Node*", "Node reference"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Tuples are natural compound keys when all fields are hashable.
+      behind_the_scenes: ["Tuple hash depends on element hashes.", "Lists cannot be keys."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: pair works in map/set; unordered_map/unordered_set needs hash support for compound keys.
+      behind_the_scenes: ["map<pair<int,int>, V> works by ordering.", "unordered_map<pair<int,int>, V> needs custom hash."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Records are clean immutable keys; strings or encoded ints are quick alternatives when safe.
+      behind_the_scenes: ["HashMap keys need equals and hashCode.", "Do not mutate key objects after insertion."]
+examples:
+  - code_compare:
+      title: Coordinate Visited Key
+      idea: Store visited grid cells.
+      python: |
+        # Tuple captures the exact state identity: same row and same column.
+        key = (r, c)
+        visited.add(key)
+      cpp: |
+        set<pair<int, int>> visited;
+
+        // pair orders by first then second, so it works directly in set.
+        visited.insert({r, c});
+      java: |
+        // record gives immutable fields plus equals/hashCode.
+        record Cell(int r, int c) {}
+        Set<Cell> visited = new HashSet<>();
+
+        visited.add(new Cell(r, c));
+  - code_compare:
+      title: Dense Encoded Coordinate
+      idea: Convert coordinate to one integer.
+      python: |
+        # Unique while 0 <= c < cols: each row owns a block of cols keys.
+        key = r * cols + c
+      cpp: |
+        // Unique while 0 <= c < cols; use long long if rows*cols can overflow int.
+        int key = r * cols + c;
+      java: |
+        // Unique while 0 <= c < cols; use long if rows*cols can overflow int.
+        int key = r * cols + c;
+transitions:
+  python_to_cpp:
+    title: Python tuple keys to C++ compound keys
+    mindset_shift: [From built-in tuple hashing to explicit ordered or hash strategy.]
+    habit_swaps:
+      - python: "(r, c)"
+        cpp: "pair<int,int>{r, c}"
+    false_friends:
+      - term: unordered pair key
+        warning: unordered containers need a custom hash for pair in many standards/environments.
+  python_to_java:
+    title: Python tuple keys to Java records
+    mindset_shift: [From tuple equality to equals/hashCode.]
+    habit_swaps:
+      - python: "(r, c)"
+        java: "new Cell(r, c)"
+    false_friends:
+      - term: mutable key
+        warning: Mutable Java key objects can break HashMap lookup after mutation.
+interview_questions:
+  - question: What should a compound key represent?
+    answer: Exactly the state fields that determine whether two states are equivalent.
+revision:
+  quick_summary: [Compound keys encode state, Keys must be stable, Equality and hashing must agree.]
+  cheat_table:
+    title: Compound Key Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["coord", "tuple", "pair/map or custom hash", "record/encoded"]
+      - ["dense encode", "r*cols+c", "r*cols+c", "r*cols+c"]
+  flashcards:
+    - question: Why include mask in a visited key?
+      answer: Same node with different mask can be a different state.
+notes:
+  - Write the key formula next to the state definition during dry runs.
+tlm_hooks:
+  possible_tasks: [generate_compound_key_drills, explain_custom_hashing]
+  context: Focus on state identity and stable key representation.

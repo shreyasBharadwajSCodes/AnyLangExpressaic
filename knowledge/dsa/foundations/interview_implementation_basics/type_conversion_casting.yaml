@@ -96,7 +96,7 @@ lesson:
         - Use Integer.parseInt and Long.parseLong.
         - Use String.valueOf or Integer.toString.
         - Use ch - '0' for digit chars.
-        - Cast before multiplication: (long) a * b.
+        - "Cast before multiplication: (long) a * b."
       behind_the_scenes:
         - "'long x = a * b' can overflow before assignment if a and b are int."
         - char is an unsigned 16-bit code unit.

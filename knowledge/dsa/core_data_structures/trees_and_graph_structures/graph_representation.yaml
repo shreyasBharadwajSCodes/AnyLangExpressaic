@@ -1,0 +1,144 @@
+﻿id: graph_representation
+title: Graph Representation
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [graph, adjacency_list, adjacency_matrix, interview]
+goal: Teach graph representation across Python, C++, and Java with explicit visual tracking of adj, node, neighbor, visited, edge direction, and weights.
+assets:
+  adjacency_list_tracker:
+    type: image
+    path: assets/dsa/graph_representation/adjacency-list-tracker.png
+    alt: Graph nodes mapped to adjacency lists with node, neighbor, weight, and visited variables.
+lesson:
+  - explain:
+      title: Adjacency List Strategy
+      body: >
+        An adjacency list maps each node to its outgoing neighbors. Track adj as the
+        graph, node as the current vertex, nei as one neighbor from adj[node], weight
+        when edges are weighted, and visited/dist as traversal state.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Graph representation decides how edges are stored before any traversal or
+        shortest-path method begins. The method starts by clarifying labels, direction,
+        weights, and density. An adjacency list makes neighbor iteration efficient;
+        a matrix makes edge-existence checks direct but costs much more space.
+
+  - compare_table:
+      title: Representation Choices
+      columns: [Representation, Best For, Caveat]
+      rows:
+        - ["Adjacency list", "Sparse graphs, traversal", "Need build carefully"]
+        - ["Adjacency matrix", "Dense graphs, O(1) edge check", "O(n^2) space"]
+        - ["Edge list", "Kruskal, Bellman-Ford", "Traversal slower"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use list of lists for 0..n-1 nodes, defaultdict(list) when labels are sparse or arbitrary.
+      behind_the_scenes: ["[[] for _ in range(n)] creates independent lists.", "[[]] * n aliases rows."]
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Use vector<vector<int>> for unweighted indexed graphs; vector<vector<pair<int,int>>> for weighted graphs.
+      behind_the_scenes: ["Pass adj by const reference to helpers.", "For undirected edges, add both directions."]
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use List<List<Integer>> or List<List<int[]>>; initialize every inner list.
+      behind_the_scenes: ["adj.get(u).add(v) fails if adj[u] list was not created.", "int[] pair often stores {neighbor, weight}."]
+examples:
+  - code_compare:
+      title: Build Unweighted Undirected Graph
+      idea: Add both directions for each edge.
+      python: |
+        # adj[u] is the list of nodes reachable from u.
+        # The comprehension creates one independent neighbor list per node.
+        adj = [[] for _ in range(n)]
+
+        for u, v in edges:
+            # Undirected edge: both endpoints must know about each other.
+            adj[u].append(v)
+            adj[v].append(u)
+      cpp: |
+        // adj[u] is the vector of nodes reachable from u.
+        vector<vector<int>> adj(n);
+
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+
+            // Undirected edge: store both directions.
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+      java: |
+        List<List<Integer>> adj = new ArrayList<>();
+
+        // Create every inner list before calling adj.get(u).add(...).
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+
+        for (int[] e : edges) {
+            int u = e[0], v = e[1];
+
+            // Undirected edge: store both directions.
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+  - code_compare:
+      title: Iterate Neighbors
+      idea: Process every neighbor of node.
+      python: |
+        for nei in adj[node]:
+            # nei is one outgoing neighbor from the current node.
+            if nei not in visited:
+                visited.add(nei)
+      cpp: |
+        for (int nei : adj[node]) {
+            // nei is one outgoing neighbor from the current node.
+            if (!visited[nei]) visited[nei] = 1;
+        }
+      java: |
+        for (int nei : adj.get(node)) {
+            // nei is one outgoing neighbor from the current node.
+            if (!visited[nei]) visited[nei] = true;
+        }
+transitions:
+  python_to_cpp:
+    title: Python adj list to C++ adj list
+    mindset_shift: [From dynamic lists to typed vector adjacency.]
+    habit_swaps:
+      - python: "adj = [[] for _ in range(n)]"
+        cpp: "vector<vector<int>> adj(n)"
+    false_friends:
+      - term: directed edge
+        warning: Add one direction for directed, both directions for undirected.
+  python_to_java:
+    title: Python adj list to Java adj list
+    mindset_shift: [From automatic list literals to explicit inner-list initialization.]
+    habit_swaps:
+      - python: "adj[u].append(v)"
+        java: "adj.get(u).add(v)"
+    false_friends:
+      - term: initialization
+        warning: Java needs each adj inner list created before adding neighbors.
+interview_questions:
+  - question: What does adj[node] contain?
+    answer: The neighbors reachable from node; for weighted graphs it contains neighbor-weight pairs.
+  - question: How do you represent an undirected edge?
+    answer: Add v to adj[u] and u to adj[v].
+revision:
+  quick_summary: [adj stores graph shape, node is current vertex, nei iterates outgoing edges, visited/dist stores traversal state.]
+  cheat_table:
+    title: Graph Representation Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["unweighted adj", "list[list[int]]", "vector<vector<int>>", "List<List<Integer>>"]
+      - ["weighted adj", "list of pairs", "vector<vector<pair<int,int>>>", "List<List<int[]>>"]
+  flashcards:
+    - question: What is the common Java adjacency-list setup bug?
+      answer: Forgetting to initialize each inner list.
+notes:
+  - For every graph problem, first say whether edges are directed, undirected, weighted, and how nodes are labeled.
+tlm_hooks:
+  possible_tasks: [trace_graph_build, generate_adj_list_drills]
+  context: Focus on adj, node, neighbor, visited, weight, and edge direction.

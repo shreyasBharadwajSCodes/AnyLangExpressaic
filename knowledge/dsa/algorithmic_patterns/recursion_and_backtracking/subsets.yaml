@@ -1,0 +1,141 @@
+id: subsets
+title: Subsets
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [subsets, backtracking, powerset, interview]
+goal: Teach subset generation with include/exclude and incremental-start patterns across Python, C++, and Java.
+assets:
+  subsets_tree:
+    type: image
+    path: assets/dsa/subsets/include-exclude.png
+    alt: Include/exclude recursion tree for subset generation.
+lesson:
+  - explain:
+      title: Subset Mental Model
+      body: >
+        Every element has two choices: include it or skip it. The path represents
+        the subset chosen so far, and every complete decision path is one subset.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        A subset is any prefix of choices from the remaining candidates. The start
+        index prevents going backward and generating the same set in another order.
+        Recording before the loop works because the current path is already a valid
+        subset, even before choosing more elements.
+  - compare_table:
+      title: Complexity
+      columns: [Measure, Value]
+      rows:
+        - ["number of subsets", "2^n"]
+        - ["copy cost", "O(n) per recorded subset"]
+        - ["total output size", "O(n * 2^n)"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use append/pop and copy path into answers.
+      default_instincts:
+        - Define what each call returns or what path state it owns.
+        - Use append/pop symmetry for shared mutable paths.
+        - Copy path only when recording an answer.
+      avoid:
+        - Appending path itself into answers without copying.
+        - Forgetting to undo state before the next branch.
+        - Ignoring recursion depth on very deep inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector path by reference avoids per-call copying; answer stores copies.
+      default_instincts:
+        - Pass shared path/state by reference and copy only recorded answers.
+        - Pass read-only input containers by const reference.
+        - Use helper functions when recursive lambdas would distract from the algorithm.
+      avoid:
+        - Passing vector path by value on every recursive call unintentionally.
+        - Forgetting to pop_back or clear a used flag after recursion.
+        - Returning references to local recursive state.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use List<Integer> path and record new ArrayList<>(path).
+      default_instincts:
+        - Use private helper methods with explicit state parameters or fields.
+        - Use boolean arrays for used/constraint state when size is known.
+        - Record new ArrayList<>(path) for completed answers.
+      avoid:
+        - Calling ans.add(path) for a mutable path.
+        - Forgetting to remove the last path element after recursion.
+        - Trying to mutate String board rows directly.
+examples:
+  - code_compare:
+      title: Generate All Subsets
+      idea: Record path at each recursion level, then try later choices.
+      python: |
+        def dfs(start):
+            # Current path is a valid subset before choosing more elements.
+            ans.append(path.copy())
+
+            for i in range(start, len(nums)):
+                path.append(nums[i])
+                dfs(i + 1)
+                # Remove nums[i] before trying the next candidate at this depth.
+                path.pop()
+      cpp: |
+        void dfs(int start) {
+            // Current path is a valid subset before choosing more elements.
+            ans.push_back(path);
+
+            for (int i = start; i < nums.size(); i++) {
+                path.push_back(nums[i]);
+                dfs(i + 1);
+                // Remove nums[i] before trying the next candidate at this depth.
+                path.pop_back();
+            }
+        }
+      java: |
+        void dfs(int start) {
+            // Current path is a valid subset before choosing more elements.
+            ans.add(new ArrayList<>(path));
+
+            for (int i = start; i < nums.length; i++) {
+                path.add(nums[i]);
+                dfs(i + 1);
+                // Remove nums[i] before trying the next candidate at this depth.
+                path.remove(path.size() - 1);
+            }
+        }
+transitions:
+  python_to_cpp:
+    title: Python subsets to C++
+    mindset_shift: [From dynamic list to vector path, From copied answer via copy() to vector copy on push.]
+    habit_swaps:
+      - python: "ans.append(path.copy())"
+        cpp: "ans.push_back(path)"
+    false_friends: [{term: output size, warning: The algorithm is exponential because the output is exponential.}]
+  python_to_java:
+    title: Python subsets to Java
+    mindset_shift: [From path.copy to new ArrayList copy.]
+    habit_swaps:
+      - python: "path.pop()"
+        java: "path.remove(path.size() - 1)"
+    false_friends: [{term: ans.add(path), warning: Stores the same mutable list reference.}]
+interview_questions:
+  - question: Why record path before the loop?
+    answer: Every prefix of choices is already a valid subset.
+revision:
+  quick_summary: [Record current path, choose later candidates, pop before next candidate.]
+  cheat_table:
+    title: Subsets Cheat Table
+    columns: [State, Meaning]
+    rows:
+      - ["start", "first index allowed next"]
+      - ["path", "current subset"]
+      - ["ans", "copies of subsets"]
+  flashcards:
+    - question: How many subsets exist for n elements?
+      answer: 2^n.
+notes:
+  - For duplicate input, sort first and skip duplicate candidates at the same depth.
+tlm_hooks:
+  possible_tasks: [trace_subsets_tree, generate_subset_drills]
+  context: Focus on start index and path copy timing.

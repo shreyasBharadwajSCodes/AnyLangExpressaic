@@ -1,0 +1,180 @@
+﻿id: bucket_counting_sort
+title: Bucket Sort And Counting Sort
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [counting_sort, bucket_sort, frequency, sorting, interview]
+goal: Teach counting and bucket sort patterns when value range or frequency structure makes comparison sort unnecessary.
+assets:
+  counting_sort_trace:
+    type: image
+    path: assets/dsa/bucket_counting_sort/counting-trace.png
+    alt: Values counted into frequency buckets and emitted back in sorted order.
+lesson:
+  - explain:
+      title: Pattern Mental Model
+      body: >
+        Counting sort replaces comparisons with counts when values live in a small
+        known range. Bucket sort groups values by a computed bucket, often frequency
+        or numeric interval, then reads buckets in the needed order.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Avoid comparison sorting when counts carry enough information. Counting sort
+        indexes directly by value when the range is small; bucket-by-frequency first
+        counts occurrences, then groups values by count. The tradeoff is memory for
+        the value range or number of buckets.
+  - compare_table:
+      title: When It Fits
+      columns: [Pattern, Good When, Caveat]
+      rows:
+        - ["counting sort", "small integer range", "range memory cost"]
+        - ["frequency buckets", "top k frequent", "bucket count up to n"]
+        - ["bucket by interval", "distributed numeric values", "bucket design matters"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Lists and Counter make frequency buckets compact; range size still controls memory.
+      default_instincts:
+        - Use Counter when values are sparse or unknown.
+        - Use a list count array only when max-min range is comfortably small.
+        - Build buckets with independent inner lists using a comprehension.
+      avoid:
+        - Allocating count arrays for a huge value range.
+        - Using [[]] * n for buckets because all buckets alias the same list.
+        - Forgetting that bucket output order depends on the scan direction.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector<int> counts are fast; use unordered_map first if values are sparse.
+      default_instincts:
+        - Use vector<int> count for dense small ranges.
+        - Use unordered_map<int,int> when values are sparse or large.
+        - Use vector<vector<int>> buckets for frequency groups.
+      avoid:
+        - Assuming counting sort is O(n) when the value range is huge.
+        - Forgetting to offset negative values before indexing count.
+        - Letting while count[value]-- underflow if count type or loop condition is wrong.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: int[] counts are fast for small ranges; List<Integer>[] buckets need initialization per bucket.
+      default_instincts:
+        - Use int[] count for dense small ranges.
+        - Use HashMap<Integer,Integer> for sparse values.
+        - Initialize every List<Integer> bucket before calling add.
+      avoid:
+        - Creating List<Integer>[] buckets and adding before initialization.
+        - Allocating count arrays based on max value without checking range size.
+        - Forgetting to offset negative values before count-array indexing.
+examples:
+  - code_compare:
+      title: Counting Sort Small Non-Negative Range
+      idea: Count each value, then emit it count times.
+      python: |
+        count = [0] * (max_val + 1)
+        for x in nums:
+            count[x] += 1
+
+        out = []
+        for value, freq in enumerate(count):
+            # freq says how many copies of value belong in sorted output.
+            out.extend([value] * freq)
+      cpp: |
+        vector<int> count(maxVal + 1, 0);
+        for (int x : nums) count[x]++;
+
+        vector<int> out;
+        for (int value = 0; value <= maxVal; value++) {
+            // count[value] says how many copies to emit.
+            while (count[value]--) out.push_back(value);
+        }
+      java: |
+        int[] count = new int[maxVal + 1];
+        for (int x : nums) count[x]++;
+
+        List<Integer> out = new ArrayList<>();
+        for (int value = 0; value <= maxVal; value++) {
+            // count[value] says how many copies to emit.
+            while (count[value]-- > 0) out.add(value);
+        }
+  - code_compare:
+      title: Frequency Buckets For Top K
+      idea: Bucket numbers by frequency, then read high frequencies first.
+      python: |
+        freq = Counter(nums)
+        buckets = [[] for _ in range(len(nums) + 1)]
+        for x, c in freq.items():
+            buckets[c].append(x)
+
+        ans = []
+        for c in range(len(buckets) - 1, 0, -1):
+            # Higher c means more frequent; stop once k items are collected.
+            ans.extend(buckets[c])
+            if len(ans) >= k:
+                break
+      cpp: |
+        unordered_map<int, int> freq;
+        for (int x : nums) freq[x]++;
+        vector<vector<int>> buckets(nums.size() + 1);
+        for (auto& [x, c] : freq) buckets[c].push_back(x);
+
+        vector<int> ans;
+        for (int c = (int)buckets.size() - 1; c > 0 && ans.size() < k; c--) {
+            // Higher c means more frequent; append until k answers are collected.
+            for (int x : buckets[c]) ans.push_back(x);
+        }
+      java: |
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int x : nums) freq.put(x, freq.getOrDefault(x, 0) + 1);
+        List<Integer>[] buckets = new ArrayList[nums.length + 1];
+        for (int i = 0; i < buckets.length; i++) buckets[i] = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> e : freq.entrySet()) buckets[e.getValue()].add(e.getKey());
+
+        List<Integer> ans = new ArrayList<>();
+        for (int c = buckets.length - 1; c > 0 && ans.size() < k; c--) {
+            // Higher c means more frequent; append until k answers are collected.
+            ans.addAll(buckets[c]);
+        }
+transitions:
+  python_to_cpp:
+    title: Python buckets to C++
+    mindset_shift: [From dynamic lists to typed vectors, From Counter to unordered_map counts.]
+    habit_swaps:
+      - python: "buckets = [[] for _ in range(n+1)]"
+        cpp: "vector<vector<int>> buckets(n + 1)"
+    false_friends:
+      - term: range size
+        warning: Counting sort is poor when max-min range is huge.
+  python_to_java:
+    title: Python buckets to Java
+    mindset_shift: [From list comprehension to explicit bucket initialization.]
+    habit_swaps:
+      - python: "buckets[c].append(x)"
+        java: "buckets[c].add(x)"
+    false_friends:
+      - term: array of lists
+        warning: Every Java bucket must be initialized before add.
+interview_questions:
+  - question: When is counting sort better than comparison sort?
+    answer: When the integer value range is small enough for count array memory.
+  - question: Why do top-k frequency buckets have size n + 1?
+    answer: A value can appear from 1 to n times, so frequency n needs an index.
+revision:
+  quick_summary: [Count values when range is small, Bucket by frequency for top-k, Initialize every Java bucket.]
+  cheat_table:
+    title: Bucket Counting Cheat Table
+    columns: [Need, Structure]
+    rows:
+      - ["small range", "count[value]"]
+      - ["top k frequent", "buckets[frequency]"]
+      - ["sparse values", "hash map first"]
+  flashcards:
+    - question: What controls counting-sort memory?
+      answer: The value range, not just n.
+notes:
+  - Counting sort is not automatically better; compare n log n with value-range cost.
+tlm_hooks:
+  possible_tasks: [trace_counting_sort, generate_top_k_bucket_drills]
+  context: Focus on counts, bucket initialization, and range-memory tradeoffs.
+

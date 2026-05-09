@@ -1,0 +1,166 @@
+id: recursion
+title: Recursion
+category: dsa
+level: beginner_to_intermediate
+languages: [python, cpp, java]
+tags: [recursion, call_stack, dfs, interview]
+goal: Teach recursion as state plus return value across Python, C++, and Java, including stack depth, pass-by-value/reference behavior, and base cases.
+assets:
+  recursion_stack:
+    type: image
+    path: assets/dsa/recursion/call-stack.png
+    alt: Recursive calls stacked with parameters, base case, and returned values.
+lesson:
+  - explain:
+      title: Recursion Mental Model
+      body: >
+        A recursive function owns one frame of state. Each call receives parameters,
+        handles a base case, asks smaller calls for answers, and combines returned
+        values. The important question is what each call promises to return.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Define one call's contract: what parameters describe the subproblem and what
+        value the call returns. The base case answers the smallest subproblem. Every
+        recursive call must make progress toward that base case, and the caller must
+        combine child results into the promised return value.
+  - compare_table:
+      title: Core Questions
+      columns: [Question, Meaning]
+      rows:
+        - ["base case?", "when recursion stops"]
+        - ["state?", "parameters defining this subproblem"]
+        - ["return?", "what caller receives"]
+        - ["progress?", "why calls get smaller"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Python recursion is clear but has a recursion depth limit; lists passed into helpers are shared references.
+      default_instincts:
+        - Define what each call returns or what path state it owns.
+        - Use append/pop symmetry for shared mutable paths.
+        - Copy path only when recording an answer.
+      avoid:
+        - Appending path itself into answers without copying.
+        - Forgetting to undo state before the next branch.
+        - Ignoring recursion depth on very deep inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Pass large containers by reference or const reference; recursive lambdas need extra syntax or normal helper functions.
+      default_instincts:
+        - Pass shared path/state by reference and copy only recorded answers.
+        - Pass read-only input containers by const reference.
+        - Use helper functions when recursive lambdas would distract from the algorithm.
+      avoid:
+        - Passing vector path by value on every recursive call unintentionally.
+        - Forgetting to pop_back or clear a used flag after recursion.
+        - Returning references to local recursive state.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use private helper methods; object and array references are shared, primitives are copied by value.
+      default_instincts:
+        - Use private helper methods with explicit state parameters or fields.
+        - Use boolean arrays for used/constraint state when size is known.
+        - Record new ArrayList<>(path) for completed answers.
+      avoid:
+        - Calling ans.add(path) for a mutable path.
+        - Forgetting to remove the last path element after recursion.
+        - Trying to mutate String board rows directly.
+examples:
+  - code_compare:
+      title: Recursive Sum
+      idea: Return sum of suffix starting at i.
+      python: |
+        def dfs(i):
+            if i == len(nums):
+                return 0
+
+            # dfs(i) promises: sum of nums[i:].
+            return nums[i] + dfs(i + 1)
+      cpp: |
+        long long dfs(int i, const vector<int>& nums) {
+            if (i == nums.size()) return 0;
+
+            // dfs(i) promises: sum of nums[i..end).
+            return nums[i] + dfs(i + 1, nums);
+        }
+      java: |
+        long dfs(int i, int[] nums) {
+            if (i == nums.length) return 0;
+
+            // dfs(i) promises: sum of nums[i..end).
+            return nums[i] + dfs(i + 1, nums);
+        }
+  - code_compare:
+      title: Tree Height Return Value
+      idea: Each call returns height of its subtree.
+      python: |
+        def height(node):
+            if node is None:
+                return 0
+
+            left = height(node.left)
+            right = height(node.right)
+            # Caller needs this subtree's height, not both child heights separately.
+            return 1 + max(left, right)
+      cpp: |
+        int height(TreeNode* node) {
+            if (!node) return 0;
+
+            int left = height(node->left);
+            int right = height(node->right);
+            // Caller needs this subtree's height, not both child heights separately.
+            return 1 + max(left, right);
+        }
+      java: |
+        int height(TreeNode node) {
+            if (node == null) return 0;
+
+            int left = height(node.left);
+            int right = height(node.right);
+            // Caller needs this subtree's height, not both child heights separately.
+            return 1 + Math.max(left, right);
+        }
+transitions:
+  python_to_cpp:
+    title: Python recursion to C++
+    mindset_shift: [From implicit references to explicit parameter passing, From flexible nested helpers to typed helper signatures.]
+    habit_swaps:
+      - python: "def dfs(i):"
+        cpp: "return type dfs(int i, const vector<int>& nums)"
+    false_friends:
+      - term: copying containers
+        warning: Passing vector by value copies it at every call.
+  python_to_java:
+    title: Python recursion to Java
+    mindset_shift: [From nested helper functions to private methods, From dynamic types to explicit signatures.]
+    habit_swaps:
+      - python: "node is None"
+        java: "node == null"
+    false_friends:
+      - term: shared arrays
+        warning: Java array/object references are shared even though variables are passed by value.
+interview_questions:
+  - question: What should you define before writing recursion?
+    answer: The exact meaning of the function return value for one call.
+  - question: What causes stack overflow?
+    answer: Recursion depth grows too large before reaching base cases.
+revision:
+  quick_summary: [Base case stops, state defines subproblem, return value serves caller, progress makes calls smaller.]
+  cheat_table:
+    title: Recursion Cheat Table
+    columns: [Need, Reminder]
+    rows:
+      - ["base", "smallest solved case"]
+      - ["state", "parameters"]
+      - ["combine", "use child returns"]
+  flashcards:
+    - question: Why pass vector by const reference in C++?
+      answer: To avoid copying it at every recursive call.
+notes:
+  - In dry runs, draw call frames with parameters and returned value.
+tlm_hooks:
+  possible_tasks: [trace_recursion_stack, generate_base_case_drills]
+  context: Focus on call state, return meaning, and container/reference behavior.

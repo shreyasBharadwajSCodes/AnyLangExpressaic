@@ -1,0 +1,126 @@
+﻿id: monotonic_stack
+title: Monotonic Stack
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [monotonic_stack, next_greater, histogram, interview]
+goal: Teach monotonic stack patterns with clear tracking of indices, values, stack invariant, and answer updates across Python, C++, and Java.
+assets:
+  monotonic_stack_tracker:
+    type: image
+    path: assets/dsa/monotonic_stack/tracker.png
+    alt: Stack of indices maintaining monotonic values while current index resolves previous indices.
+lesson:
+  - explain:
+      title: Monotonic Invariant
+      body: >
+        A monotonic stack stores candidates in sorted value order, often as indices.
+        Track i as current index, x as current value, st as unresolved indices, and
+        ans[j] as the answer filled when current x resolves index j.
+  - explain:
+      title: How The Structure Works
+      body: >
+        A monotonic stack keeps candidates in a value order so the current item can
+        resolve earlier unresolved positions. Each index is pushed once and popped
+        when a stronger current value makes it no longer useful. The stack content is
+        not arbitrary history; it is the remaining candidates that still need an
+        answer.
+
+  - compare_table:
+      title: Common Forms
+      columns: [Problem, Stack Invariant, Resolves When]
+      rows:
+        - ["Next greater", "decreasing values", "current value is greater"]
+        - ["Next smaller", "increasing values", "current value is smaller"]
+        - ["Daily temperatures", "decreasing temperatures", "warmer day appears"]
+        - ["Histogram", "increasing heights", "shorter bar appears"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Use list as stack and store indices so distance and stale position are available.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector<int> is often simpler than stack<int> because you can inspect back and pop_back.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use ArrayDeque<Integer> and store indices, not values.
+examples:
+  - code_compare:
+      title: Next Greater Element
+      idea: Current x resolves smaller previous values.
+      python: |
+        ans = [-1] * len(nums)
+        st = []
+
+        for i, x in enumerate(nums):
+            # st holds indices whose next greater value is still unknown.
+            while st and nums[st[-1]] < x:
+                j = st.pop()
+                # Current x is the first greater value for index j.
+                ans[j] = x
+
+            st.append(i)
+      cpp: |
+        vector<int> ans(nums.size(), -1), st;
+
+        for (int i = 0; i < nums.size(); i++) {
+            // st holds indices whose next greater value is still unknown.
+            while (!st.empty() && nums[st.back()] < nums[i]) {
+                int j = st.back(); st.pop_back();
+                // nums[i] is the first greater value for index j.
+                ans[j] = nums[i];
+            }
+
+            st.push_back(i);
+        }
+      java: |
+        int[] ans = new int[nums.length];
+        Arrays.fill(ans, -1);
+        Deque<Integer> st = new ArrayDeque<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            // st holds indices whose next greater value is still unknown.
+            while (!st.isEmpty() && nums[st.peek()] < nums[i]) {
+                int j = st.pop();
+                // nums[i] is the first greater value for index j.
+                ans[j] = nums[i];
+            }
+
+            st.push(i);
+        }
+transitions:
+  python_to_cpp:
+    title: Python monotonic stack to C++
+    mindset_shift: [From list stack to vector-as-stack.]
+    habit_swaps:
+      - python: "st[-1]"
+        cpp: "st.back()"
+    false_friends: []
+  python_to_java:
+    title: Python monotonic stack to Java
+    mindset_shift: [From list indices to Deque<Integer> indices.]
+    habit_swaps:
+      - python: "st.append(i)"
+        java: "st.push(i)"
+    false_friends: [{term: storing values, warning: Store indices when distance or answer position matters.}]
+interview_questions:
+  - question: Why is monotonic stack O(n)?
+    answer: Each index is pushed once and popped at most once.
+revision:
+  quick_summary: [Store unresolved indices, Maintain value order, Current item resolves popped indices.]
+  cheat_table:
+    title: Monotonic Stack Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["top index", "st[-1]", "st.back()", "st.peek()"]
+      - ["pop index", "st.pop()", "pop_back", "pop"]
+  flashcards:
+    - question: What does st store in next greater?
+      answer: Indices waiting for a greater value.
+notes:
+  - Draw st as indices with their nums values underneath.
+tlm_hooks:
+  possible_tasks: [trace_monotonic_stack, generate_next_greater_drills]
+  context: Focus on unresolved indices and answer-fill moments.

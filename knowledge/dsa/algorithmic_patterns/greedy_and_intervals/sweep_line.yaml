@@ -1,0 +1,156 @@
+id: sweep_line
+title: Sweep Line
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [sweep_line, events, intervals, sorting, interview]
+goal: Teach sweep-line event processing across Python, C++, and Java with tie-breaking, active counts, and ordered-event differences.
+assets:
+  sweep_line_events:
+    type: image
+    path: assets/dsa/sweep_line/events.png
+    alt: Timeline events sorted by coordinate with active count changing at starts and ends.
+lesson:
+  - explain:
+      title: Sweep Mental Model
+      body: >
+        Sweep line converts ranges into events. Sort events by position, process
+        deltas in order, and maintain active state such as count, max overlap, or
+        current coverage.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Turn intervals or ranges into point events, then scan them in sorted order.
+        Each event changes active state by a delta. Tie-breaking at the same coordinate
+        is not cosmetic: it defines whether starts or ends take effect first, which
+        controls endpoint overlap behavior.
+  - compare_table:
+      title: Event Design
+      columns: [Question, Why It Matters]
+      rows:
+        - ["start before end?", "decides whether touching intervals overlap"]
+        - ["delta sign?", "+1 starts, -1 ends for active count"]
+        - ["same coordinate grouping?", "prevents tie-order bugs"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Tuples sort lexicographically, so event tie order can be encoded in the tuple.
+      default_instincts:
+        - Use key functions to make the greedy order visible.
+        - Name active state such as end, rooms, active, or best.
+        - Encode event tie order directly in tuple keys when using sweep line.
+      avoid:
+        - Sorting by a field without knowing why that order is safe.
+        - Forgetting to clarify whether touching endpoints overlap.
+        - Using heap state without defining what heap[0] represents.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: pair/vector events sort lexicographically; custom comparator may be clearer for ties.
+      default_instincts:
+        - Use strict sort comparators for interval orderings.
+        - Configure priority_queue direction explicitly for min-heap needs.
+        - Use clear event structs or pairs when tie order matters.
+      avoid:
+        - Assuming priority_queue is a min-heap.
+        - Using non-strict interval comparators.
+        - Ignoring endpoint tie-breaking in sweep-line events.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use int[][] or event objects with Comparator.comparingInt and tie-breakers.
+      default_instincts:
+        - Use Comparator.comparingInt or compare helpers for interval sorting.
+        - Use PriorityQueue for earliest-ending active intervals.
+        - Represent events with int[] or small classes and explicit tie-breakers.
+      avoid:
+        - Using a[0] - b[0] in comparators.
+        - Forgetting to initialize list buckets or event containers.
+        - Leaving endpoint semantics implicit.
+examples:
+  - code_compare:
+      title: Maximum Overlapping Closed Intervals
+      idea: Process starts before ends at the same coordinate.
+      python: |
+        events = []
+        for s, e in intervals:
+            events.append((s, 1))
+            events.append((e, -1))
+
+        # -delta makes start(+1) come before end(-1) at the same coordinate.
+        events.sort(key=lambda x: (x[0], -x[1]))
+        active = best = 0
+        for _, delta in events:
+            active += delta
+            best = max(best, active)
+      cpp: |
+        vector<pair<int,int>> events;
+        for (auto& in : intervals) {
+            events.push_back({in[0], 1});
+            events.push_back({in[1], -1});
+        }
+
+        sort(events.begin(), events.end(), [](auto& a, auto& b) {
+            if (a.first != b.first) return a.first < b.first;
+            // Start(+1) before end(-1) makes touching closed intervals overlap.
+            return a.second > b.second;
+        });
+        int active = 0, best = 0;
+        for (auto& [pos, delta] : events) {
+            active += delta;
+            best = max(best, active);
+        }
+      java: |
+        List<int[]> events = new ArrayList<>();
+        for (int[] in : intervals) {
+            events.add(new int[]{in[0], 1});
+            events.add(new int[]{in[1], -1});
+        }
+
+        events.sort((a, b) -> {
+            if (a[0] != b[0]) return Integer.compare(a[0], b[0]);
+            // Start(+1) before end(-1) makes touching closed intervals overlap.
+            return Integer.compare(b[1], a[1]);
+        });
+        int active = 0, best = 0;
+        for (int[] event : events) {
+            active += event[1];
+            best = Math.max(best, active);
+        }
+transitions:
+  python_to_cpp:
+    title: Python sweep events to C++
+    mindset_shift: [From tuple key sort to pair/custom comparator, Same active delta model.]
+    habit_swaps:
+      - python: "events.sort(key=lambda x: (x[0], -x[1]))"
+        cpp: "sort with coordinate then delta tie comparator"
+    false_friends: [{term: tie order, warning: Wrong tie order changes whether touching intervals overlap.}]
+  python_to_java:
+    title: Python sweep events to Java
+    mindset_shift: [From tuple events to int[] events and explicit comparator.]
+    habit_swaps:
+      - python: "(pos, delta)"
+        java: "new int[]{pos, delta}"
+    false_friends: [{term: comparator subtraction, warning: Use Integer.compare for coordinates and deltas.}]
+interview_questions:
+  - question: What does active mean in a sweep line?
+    answer: The number of intervals/events currently open after processing the current event.
+  - question: Why is tie order important?
+    answer: Events at the same coordinate can change whether touching intervals count as overlapping.
+revision:
+  quick_summary: [Convert ranges to events, sort with correct tie-break, scan deltas into active state.]
+  cheat_table:
+    title: Sweep Line Cheat Table
+    columns: [Need, Choice]
+    rows:
+      - ["closed overlap", "start before end"]
+      - ["half-open overlap", "end before start"]
+      - ["max overlap", "track max active"]
+  flashcards:
+    - question: What are typical deltas?
+      answer: +1 for start and -1 for end.
+notes:
+  - Always state endpoint semantics before choosing event tie order.
+tlm_hooks:
+  possible_tasks: [trace_sweep_line, generate_tie_break_drills]
+  context: Focus on event encoding, active count, and tie-breaking semantics.

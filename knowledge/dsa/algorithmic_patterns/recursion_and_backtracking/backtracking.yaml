@@ -1,0 +1,159 @@
+﻿id: backtracking
+title: Backtracking
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [backtracking, dfs, recursion, search, interview]
+goal: Teach choose-explore-unchoose backtracking with path mutation, copying results, and language-specific reference caveats.
+assets:
+  backtracking_tree:
+    type: image
+    path: assets/dsa/backtracking/search-tree.png
+    alt: Decision tree with path choices, recursive exploration, and undo steps.
+lesson:
+  - explain:
+      title: Backtracking Mental Model
+      body: >
+        Backtracking explores a decision tree while reusing one mutable path. At each
+        choice, add a candidate, recurse, then undo that candidate before trying the
+        next one.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Reuse one mutable path while walking a decision tree. A branch chooses a
+        candidate, explores deeper, then restores the state exactly as it was before
+        the choice. Saved answers must be copies because the path object continues
+        changing after the recursive call returns.
+  - compare_table:
+      title: Backtracking Steps
+      columns: [Step, Meaning]
+      rows:
+        - ["choose", "mutate path/state"]
+        - ["explore", "recursive call"]
+        - ["unchoose", "restore state for next branch"]
+        - ["record", "copy current path when answer is complete"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: Append/pop is natural; use path.copy() when storing an answer because path is reused.
+      default_instincts:
+        - Define what each call returns or what path state it owns.
+        - Use append/pop symmetry for shared mutable paths.
+        - Copy path only when recording an answer.
+      avoid:
+        - Appending path itself into answers without copying.
+        - Forgetting to undo state before the next branch.
+        - Ignoring recursion depth on very deep inputs.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: Pass path by reference, push_back/pop_back around recursive calls, and copy path into answers.
+      default_instincts:
+        - Pass shared path/state by reference and copy only recorded answers.
+        - Pass read-only input containers by const reference.
+        - Use helper functions when recursive lambdas would distract from the algorithm.
+      avoid:
+        - Passing vector path by value on every recursive call unintentionally.
+        - Forgetting to pop_back or clear a used flag after recursion.
+        - Returning references to local recursive state.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: Use ArrayList path; store new ArrayList<>(path) so later mutations do not change saved answers.
+      default_instincts:
+        - Use private helper methods with explicit state parameters or fields.
+        - Use boolean arrays for used/constraint state when size is known.
+        - Record new ArrayList<>(path) for completed answers.
+      avoid:
+        - Calling ans.add(path) for a mutable path.
+        - Forgetting to remove the last path element after recursion.
+        - Trying to mutate String board rows directly.
+examples:
+  - code_compare:
+      title: Generic Choose Explore Unchoose
+      idea: Reuse one path while exploring all branches.
+      python: |
+        def dfs(i):
+            if i == len(nums):
+                # Copy because path will be mutated after this return.
+                ans.append(path.copy())
+                return
+
+            path.append(nums[i])
+            dfs(i + 1)
+            # Undo so the exclude branch starts with the previous path.
+            path.pop()
+
+            dfs(i + 1)
+      cpp: |
+        void dfs(int i) {
+            if (i == nums.size()) {
+                // Copy because path will be mutated after this return.
+                ans.push_back(path);
+                return;
+            }
+
+            path.push_back(nums[i]);
+            dfs(i + 1);
+            // Undo so the exclude branch starts with the previous path.
+            path.pop_back();
+
+            dfs(i + 1);
+        }
+      java: |
+        void dfs(int i) {
+            if (i == nums.length) {
+                // Copy because path will be mutated after this return.
+                ans.add(new ArrayList<>(path));
+                return;
+            }
+
+            path.add(nums[i]);
+            dfs(i + 1);
+            // Undo so the exclude branch starts with the previous path.
+            path.remove(path.size() - 1);
+
+            dfs(i + 1);
+        }
+transitions:
+  python_to_cpp:
+    title: Python backtracking to C++
+    mindset_shift: [From list append/pop to vector push_back/pop_back, From closures to helper with references.]
+    habit_swaps:
+      - python: "ans.append(path.copy())"
+        cpp: "ans.push_back(path)"
+    false_friends:
+      - term: path copy
+        warning: Passing path by value copies every call; pass by reference and copy only when recording.
+  python_to_java:
+    title: Python backtracking to Java
+    mindset_shift: [From list copy to new ArrayList copy, From nested helper to method.]
+    habit_swaps:
+      - python: "path.pop()"
+        java: "path.remove(path.size() - 1)"
+    false_friends:
+      - term: saved answer
+        warning: ans.add(path) stores the same mutable list object.
+interview_questions:
+  - question: Why must path be copied when recording?
+    answer: The same path object is reused and mutated by later branches.
+  - question: What does unchoose restore?
+    answer: The exact state that existed before the current choice.
+revision:
+  quick_summary: [Choose, recurse, unchoose, copy when recording.]
+  cheat_table:
+    title: Backtracking Cheat Table
+    columns: [Need, Python, C++, Java]
+    rows:
+      - ["choose", "append", "push_back", "add"]
+      - ["unchoose", "pop", "pop_back", "remove last"]
+      - ["record", "path.copy", "push_back(path)", "new ArrayList"]
+  flashcards:
+    - question: What bug happens if you skip unchoose?
+      answer: Later branches inherit choices that should not be active.
+notes:
+  - "Comments should mark only the invariant-changing lines: choose, record, unchoose."
+tlm_hooks:
+  possible_tasks: [trace_backtracking_path, generate_choose_unchoose_drills]
+  context: Focus on mutable path, copied answers, and restored state.
+

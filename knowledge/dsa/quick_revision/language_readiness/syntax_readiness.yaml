@@ -377,8 +377,8 @@ revision:
       answer: const vector<T>&.
 
 notes:
-  - Interview syntax should be boring in the best way: predictable, readable, and hard to misinterpret.
-  - When switching languages, name the risk first: copy risk in C++, aliasing risk in Python, equality/null/boxing risk in Java.
+  - "Interview syntax should be boring in the best way: predictable, readable, and hard to misinterpret."
+  - "When switching languages, name the risk first: copy risk in C++, aliasing risk in Python, equality/null/boxing risk in Java."
   - Prefer language-natural code over literal translation.
 
 tlm_hooks:

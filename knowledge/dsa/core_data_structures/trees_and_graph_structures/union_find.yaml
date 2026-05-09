@@ -1,0 +1,143 @@
+﻿id: union_find
+title: Union Find / Disjoint Set
+category: dsa
+level: intermediate
+languages: [python, cpp, java]
+tags: [union_find, disjoint_set, connectivity, interview]
+goal: Teach union find across Python, C++, and Java with clear tracking of parent, root, rank/size, path compression, and component count.
+assets:
+  union_find_tracker:
+    type: image
+    path: assets/dsa/union_find/parent-root-tracker.png
+    alt: Parent array showing node, root, path compression, and union by size.
+lesson:
+  - explain:
+      title: DSU Strategy
+      body: >
+        Union Find tracks connected components. parent[x] points upward toward the
+        representative root. find(x) returns the root and compresses the path. union(a,b)
+        connects two roots and may reduce component_count.
+  - explain:
+      title: How The Structure Works
+      body: >
+        Union Find stores a forest of components where every node points toward a
+        representative root. find follows parent links to the root and compresses the
+        path. union connects two roots, usually attaching the smaller tree under the
+        larger one so future find calls stay cheap.
+
+  - compare_table:
+      title: Core Operations
+      columns: [Operation, Meaning, Key State]
+      rows:
+        - ["find(x)", "return root of x", "parent compression"]
+        - ["union(a,b)", "merge sets", "parent/root/size"]
+        - ["connected(a,b)", "same root?", "find(a) == find(b)"]
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: parent and size are lists; nested find is concise.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: vector<int> parent and size; recursive or iterative find works.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: int[] parent and size; class DSU keeps arrays and methods together.
+examples:
+  - code_compare:
+      title: Find With Path Compression
+      idea: Make every visited node point directly to root.
+      python: |
+        def find(x):
+            # parent[x] == x means x is already the representative root.
+            if parent[x] != x:
+                # Recursively find the root, then shorten x's path to it.
+                parent[x] = find(parent[x])
+            return parent[x]
+      cpp: |
+        int find(int x) {
+            // parent[x] == x means x is already the representative root.
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        }
+      java: |
+        int find(int x) {
+            // parent[x] == x means x is already the representative root.
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        }
+  - code_compare:
+      title: Union By Size
+      idea: Attach smaller root under larger root.
+      python: |
+        # Roots, not raw nodes, are the components we connect.
+        ra, rb = find(a), find(b)
+
+        if ra != rb:
+            # Keep ra as the larger component root.
+            if size[ra] < size[rb]:
+                ra, rb = rb, ra
+
+            # rb now points into ra's component.
+            parent[rb] = ra
+            size[ra] += size[rb]
+      cpp: |
+        int ra = find(a), rb = find(b);
+
+        if (ra != rb) {
+            // Keep ra as the larger component root.
+            if (sz[ra] < sz[rb]) swap(ra, rb);
+
+            // rb now points into ra's component.
+            parent[rb] = ra;
+            sz[ra] += sz[rb];
+        }
+      java: |
+        int ra = find(a), rb = find(b);
+
+        if (ra != rb) {
+            // Keep ra as the larger component root.
+            if (size[ra] < size[rb]) { int t = ra; ra = rb; rb = t; }
+
+            // rb now points into ra's component.
+            parent[rb] = ra;
+            size[ra] += size[rb];
+        }
+transitions:
+  python_to_cpp:
+    title: Python DSU to C++ DSU
+    mindset_shift: [Same arrays, explicit class/member vectors often cleaner.]
+    habit_swaps:
+      - python: "parent = list(range(n))"
+        cpp: "iota(parent.begin(), parent.end(), 0)"
+    false_friends: []
+  python_to_java:
+    title: Python DSU to Java DSU
+    mindset_shift: [Use int arrays and a small DSU class.]
+    habit_swaps:
+      - python: "size = [1] * n"
+        java: "Arrays.fill(size, 1)"
+    false_friends: []
+interview_questions:
+  - question: When should component_count decrease?
+    answer: Only when union connects two different roots.
+  - question: What does path compression change?
+    answer: It updates parent pointers on the find path to point directly to the root.
+revision:
+  quick_summary: [parent stores forest, find returns root, union connects roots, size/rank keeps shallow.]
+  cheat_table:
+    title: DSU Cheat Table
+    columns: [Variable, Meaning]
+    rows:
+      - ["parent[x]", "x's parent or itself if root"]
+      - ["root", "component representative"]
+      - ["size/rank", "merge balancing helper"]
+  flashcards:
+    - question: What is connected(a,b)?
+      answer: find(a) == find(b).
+notes:
+  - In dry runs, write parent array after every union.
+tlm_hooks:
+  possible_tasks: [trace_union_find, generate_dsu_drills]
+  context: Focus on parent/root/size/component_count state changes.
