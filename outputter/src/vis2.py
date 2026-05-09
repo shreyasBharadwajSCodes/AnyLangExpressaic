@@ -7,7 +7,11 @@ from tkinter import filedialog, messagebox, ttk
 import yaml
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = ''
+if getattr(sys, 'frozen', False):
+    PROJECT_ROOT = Path(sys.executable).resolve().parents[3]
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONCEPT = PROJECT_ROOT / "templates" / "vis2_welcome_template.yaml"
 CONFIG_FILE = PROJECT_ROOT / "vis2_config.yaml"
 LESSON_BUILDER_VIS2 = PROJECT_ROOT / "outputter" / "src" / "lesson_builder_vis2.py"
