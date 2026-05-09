@@ -1,0 +1,220 @@
+id: kruskal_prim
+title: Kruskal And Prim
+category: dsa
+level: advanced
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - kruskal
+  - prim
+  - mst
+  - union_find
+  - heap
+  - interview
+goal: Teach kruskal and prim across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  kruskal_prim_trace:
+    type: image
+    path: assets/dsa/kruskal_prim/kruskal-prim-trace.png
+    alt: Kruskal And Prim trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        Kruskal thinks globally by sorting all edges. Prim thinks locally by growing one connected region. Both rely on taking the cheapest safe crossing edge.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Use Kruskal when edge lists and union find are natural. Use Prim when adjacency lists are natural and the graph is connected from a start node.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "Kruskal"
+          - "edge list"
+          - "sort and union"
+        -
+          - "Prim"
+          - "adjacency list"
+          - "heap frontier"
+        -
+          - "safe edge"
+          - "crosses a cut"
+          - "does not create cycle"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Kruskal And Prim Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        import heapq
+        
+        seen = {0}
+        heap = list(adj[0])
+        heapq.heapify(heap)
+        total = 0
+        
+        while heap and len(seen) < n:
+            w, node = heapq.heappop(heap)
+            if node in seen:
+                continue
+            # This is the cheapest edge crossing into the unchosen region.
+            seen.add(node)
+            total += w
+            for nw, nei in adj[node]:
+                if nei not in seen:
+                    heapq.heappush(heap, (nw, nei))
+      cpp: |
+        vector<int> seen(n, 0);
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+        seen[0] = 1;
+        for (auto [w, nei] : adj[0]) pq.push({w, nei});
+        long long total = 0;
+        
+        while (!pq.empty()) {
+            auto [w, node] = pq.top();
+            pq.pop();
+            if (seen[node]) continue;
+            // This is the cheapest edge crossing into the unchosen region.
+            seen[node] = 1;
+            total += w;
+            for (auto [nw, nei] : adj[node]) {
+                if (!seen[nei]) pq.push({nw, nei});
+            }
+        }
+      java: |
+        boolean[] seen = new boolean[n];
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+        seen[0] = true;
+        for (int[] edge : adj.get(0)) pq.offer(edge);
+        long total = 0;
+        
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int w = cur[0], node = cur[1];
+            if (seen[node]) continue;
+            // This is the cheapest edge crossing into the unchosen region.
+            seen[node] = true;
+            total += w;
+            for (int[] edge : adj.get(node)) {
+                if (!seen[edge[1]]) pq.offer(edge);
+            }
+        }
+      note: >
+        Read the code while tracking sorted edges or heap frontier, visited set, union find, and total cost. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Kruskal And Prim To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Kruskal And Prim To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Kruskal And Prim?
+    answer: choosing the right MST implementation style.
+  - question: What state should you name before coding?
+    answer: Name sorted edges or heap frontier, visited set, union find, and total cost.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Kruskal And Prim is the interview tool for choosing the right MST implementation style."
+    - "Working idea: Use Kruskal when edge lists and union find are natural. Use Prim when adjacency lists are natural and the graph is connected from a start node."
+  cheat_table:
+    title: Kruskal And Prim Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "choosing the right MST implementation style"
+        - "sorted edges or heap frontier, visited set, union find, and total cost"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_kruskal_prim
+    - generate_kruskal_prim_drills
+  context: Focus on sorted edges or heap frontier, visited set, union find, and total cost.

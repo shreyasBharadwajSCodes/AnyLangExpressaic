@@ -1,0 +1,221 @@
+id: matrix_bfs_dfs
+title: Matrix BFS And DFS
+category: dsa
+level: intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - matrix
+  - grid
+  - bfs
+  - dfs
+  - interview
+goal: Teach matrix bfs and dfs across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  matrix_bfs_dfs_trace:
+    type: image
+    path: assets/dsa/matrix_bfs_dfs/matrix-bfs-dfs-trace.png
+    alt: Matrix BFS And DFS trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        A matrix problem is a graph problem where each cell is a node and direction offsets generate edges. Most mistakes are bound checks or marking visited too late.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        For every candidate neighbor, check bounds before reading the grid, then check visited, then check whether the cell is valid terrain. Mark the cell before enqueueing or recursing into it.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "row and column"
+          - "node identity"
+          - "must stay paired"
+        -
+          - "directions"
+          - "edge generator"
+          - "controls neighbors"
+        -
+          - "bounds"
+          - "safe access"
+          - "checked before grid read"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Matrix BFS And DFS Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        from collections import deque
+        
+        dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        q = deque([(sr, sc)])
+        seen = {(sr, sc)}
+        
+        while q:
+            r, c = q.popleft()
+            for dr, dc in dirs:
+                nr, nc = r + dr, c + dc
+                if nr < 0 or nr == rows or nc < 0 or nc == cols:
+                    continue
+                if (nr, nc) in seen or grid[nr][nc] == '0':
+                    continue
+                # Mark before enqueue so this cell is owned by the traversal now.
+                seen.add((nr, nc))
+                q.append((nr, nc))
+      cpp: |
+        vector<pair<int,int>> dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+        queue<pair<int,int>> q;
+        vector<vector<int>> seen(rows, vector<int>(cols, 0));
+        q.push({sr, sc});
+        seen[sr][sc] = 1;
+        
+        while (!q.empty()) {
+            auto [r, c] = q.front();
+            q.pop();
+            for (auto [dr, dc] : dirs) {
+                int nr = r + dr, nc = c + dc;
+                if (nr < 0 || nr == rows || nc < 0 || nc == cols) continue;
+                if (seen[nr][nc] || grid[nr][nc] == '0') continue;
+                // Mark before enqueue so this cell is owned by the traversal now.
+                seen[nr][nc] = 1;
+                q.push({nr, nc});
+            }
+        }
+      java: |
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+        Deque<int[]> q = new ArrayDeque<>();
+        boolean[][] seen = new boolean[rows][cols];
+        q.offer(new int[]{sr, sc});
+        seen[sr][sc] = true;
+        
+        while (!q.isEmpty()) {
+            int[] cell = q.poll();
+            int r = cell[0], c = cell[1];
+            for (int[] d : dirs) {
+                int nr = r + d[0], nc = c + d[1];
+                if (nr < 0 || nr == rows || nc < 0 || nc == cols) continue;
+                if (seen[nr][nc] || grid[nr][nc] == '0') continue;
+                // Mark before enqueue so this cell is owned by the traversal now.
+                seen[nr][nc] = true;
+                q.offer(new int[]{nr, nc});
+            }
+        }
+      note: >
+        Read the code while tracking row, column, directions, bounds, seen, and grid value. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Matrix BFS And DFS To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Matrix BFS And DFS To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Matrix BFS And DFS?
+    answer: treating grid cells as graph nodes.
+  - question: What state should you name before coding?
+    answer: Name row, column, directions, bounds, seen, and grid value.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Matrix BFS And DFS is the interview tool for treating grid cells as graph nodes."
+    - "Working idea: For every candidate neighbor, check bounds before reading the grid, then check visited, then check whether the cell is valid terrain. Mark the cell before enqueueing or recursing into it."
+  cheat_table:
+    title: Matrix BFS And DFS Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "treating grid cells as graph nodes"
+        - "row, column, directions, bounds, seen, and grid value"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_matrix_bfs_dfs
+    - generate_matrix_bfs_dfs_drills
+  context: Focus on row, column, directions, bounds, seen, and grid value.

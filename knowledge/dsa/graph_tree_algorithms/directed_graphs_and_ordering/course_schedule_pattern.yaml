@@ -1,0 +1,231 @@
+id: course_schedule_pattern
+title: Course Schedule Pattern
+category: dsa
+level: intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - course_schedule
+  - topological_sort
+  - cycle_detection
+  - interview
+goal: Teach course schedule pattern across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  course_schedule_pattern_trace:
+    type: image
+    path: assets/dsa/course_schedule_pattern/course-schedule-pattern-trace.png
+    alt: Course Schedule Pattern trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        Course schedule is topological sort with dependency pairs. The direction should usually be prerequisite to course because finishing the prerequisite unlocks the course.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Build edges from prerequisite to course and count each course indegree. Process zero-indegree courses. If every course is processed, finishing is possible; otherwise a cycle exists.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "edge direction"
+          - "prerequisite to course"
+          - "models unlocking"
+        -
+          - "indegree"
+          - "remaining prerequisites"
+          - "zero means available"
+        -
+          - "processed count"
+          - "finished courses"
+          - "detects cycle"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Course Schedule Pattern Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        from collections import deque
+        
+        adj = [[] for _ in range(num_courses)]
+        indeg = [0] * num_courses
+        for course, pre in prerequisites:
+            adj[pre].append(course)
+            indeg[course] += 1
+        
+        q = deque([i for i in range(num_courses) if indeg[i] == 0])
+        done = 0
+        while q:
+            pre = q.popleft()
+            done += 1
+            for course in adj[pre]:
+                indeg[course] -= 1
+                if indeg[course] == 0:
+                    # This course is now unlocked because all prerequisites are done.
+                    q.append(course)
+      cpp: |
+        vector<vector<int>> adj(numCourses);
+        vector<int> indeg(numCourses, 0);
+        for (auto& p : prerequisites) {
+            int course = p[0], pre = p[1];
+            adj[pre].push_back(course);
+            indeg[course]++;
+        }
+        
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) if (indeg[i] == 0) q.push(i);
+        int done = 0;
+        while (!q.empty()) {
+            int pre = q.front();
+            q.pop();
+            done++;
+            for (int course : adj[pre]) {
+                indeg[course]--;
+                if (indeg[course] == 0) {
+                    // This course is now unlocked because all prerequisites are done.
+                    q.push(course);
+                }
+            }
+        }
+      java: |
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
+        int[] indeg = new int[numCourses];
+        for (int[] p : prerequisites) {
+            int course = p[0], pre = p[1];
+            adj.get(pre).add(course);
+            indeg[course]++;
+        }
+        
+        Deque<Integer> q = new ArrayDeque<>();
+        for (int i = 0; i < numCourses; i++) if (indeg[i] == 0) q.offer(i);
+        int done = 0;
+        while (!q.isEmpty()) {
+            int pre = q.poll();
+            done++;
+            for (int course : adj.get(pre)) {
+                indeg[course]--;
+                if (indeg[course] == 0) {
+                    // This course is now unlocked because all prerequisites are done.
+                    q.offer(course);
+                }
+            }
+        }
+      note: >
+        Read the code while tracking course, prerequisite, indegree, graph direction, and processed count. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Course Schedule Pattern To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Course Schedule Pattern To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Course Schedule Pattern?
+    answer: solving prerequisite dependency questions.
+  - question: What state should you name before coding?
+    answer: Name course, prerequisite, indegree, graph direction, and processed count.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Course Schedule Pattern is the interview tool for solving prerequisite dependency questions."
+    - "Working idea: Build edges from prerequisite to course and count each course indegree. Process zero-indegree courses. If every course is processed, finishing is possible; otherwise a cycle exists."
+  cheat_table:
+    title: Course Schedule Pattern Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "solving prerequisite dependency questions"
+        - "course, prerequisite, indegree, graph direction, and processed count"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_course_schedule_pattern
+    - generate_course_schedule_pattern_drills
+  context: Focus on course, prerequisite, indegree, graph direction, and processed count.

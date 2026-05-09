@@ -1,0 +1,215 @@
+id: tree_bfs_level_order
+title: Tree BFS Level Order
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - tree
+  - bfs
+  - level_order
+  - queue
+  - interview
+goal: Teach tree bfs level order across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  tree_bfs_level_order_trace:
+    type: image
+    path: assets/dsa/tree_bfs_level_order/tree-bfs-level-order-trace.png
+    alt: Tree BFS Level Order trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        Tree BFS uses a queue so nodes come out in breadth order. The level-size snapshot is the variable that prevents one depth from mixing with the next.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Push the root, then while the queue has nodes, save the queue size. Pop exactly that many nodes into the current level and push their children for the next level.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "queue"
+          - "future nodes"
+          - "front is next oldest"
+        -
+          - "level size"
+          - "current depth count"
+          - "freezes the level"
+        -
+          - "children"
+          - "next depth"
+          - "pushed after current node"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Tree BFS Level Order Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        from collections import deque
+        
+        q = deque([root]) if root else deque()
+        levels = []
+        while q:
+            size = len(q)
+            level = []
+            for _ in range(size):
+                node = q.popleft()
+                level.append(node.val)
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+            # Everything appended here came from the same depth.
+            levels.append(level)
+      cpp: |
+        vector<vector<int>> levels;
+        queue<TreeNode*> q;
+        if (root != nullptr) q.push(root);
+        while (!q.empty()) {
+            int size = q.size();
+            vector<int> level;
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                level.push_back(node->val);
+                if (node->left != nullptr) q.push(node->left);
+                if (node->right != nullptr) q.push(node->right);
+            }
+            // Everything appended here came from the same depth.
+            levels.push_back(level);
+        }
+      java: |
+        List<List<Integer>> levels = new ArrayList<>();
+        Deque<TreeNode> q = new ArrayDeque<>();
+        if (root != null) q.offer(root);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            List<Integer> level = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = q.poll();
+                level.add(node.val);
+                if (node.left != null) q.offer(node.left);
+                if (node.right != null) q.offer(node.right);
+            }
+            // Everything appended here came from the same depth.
+            levels.add(level);
+        }
+      note: >
+        Read the code while tracking queue, level size, node, child pushes, and level output. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Tree BFS Level Order To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Tree BFS Level Order To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Tree BFS Level Order?
+    answer: processing tree nodes one depth at a time.
+  - question: What state should you name before coding?
+    answer: Name queue, level size, node, child pushes, and level output.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Tree BFS Level Order is the interview tool for processing tree nodes one depth at a time."
+    - "Working idea: Push the root, then while the queue has nodes, save the queue size. Pop exactly that many nodes into the current level and push their children for the next level."
+  cheat_table:
+    title: Tree BFS Level Order Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "processing tree nodes one depth at a time"
+        - "queue, level size, node, child pushes, and level output"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_tree_bfs_level_order
+    - generate_tree_bfs_level_order_drills
+  context: Focus on queue, level size, node, child pushes, and level output.

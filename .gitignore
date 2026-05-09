@@ -7,3 +7,4 @@ vis2_config.yaml
 __pycache__/
 dist/
 vis2.spec
+outputter/test/

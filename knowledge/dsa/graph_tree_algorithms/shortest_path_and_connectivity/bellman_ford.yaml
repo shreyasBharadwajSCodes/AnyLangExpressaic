@@ -1,0 +1,214 @@
+id: bellman_ford
+title: Bellman Ford
+category: dsa
+level: advanced
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - bellman_ford
+  - shortest_path
+  - negative_edges
+  - interview
+goal: Teach bellman ford across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  bellman_ford_trace:
+    type: image
+    path: assets/dsa/bellman_ford/bellman-ford-trace.png
+    alt: Bellman Ford trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        Bellman Ford relaxes every edge repeatedly. After nodes minus one passes, every shortest simple path has had enough edges to settle.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Initialize distances, repeat all-edge relaxation nodes minus one times, and stop early if nothing changes. One extra improving pass means a reachable negative cycle exists.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "edge list"
+          - "all directed edges"
+          - "scan each pass"
+        -
+          - "pass count"
+          - "path length budget"
+          - "nodes minus one"
+        -
+          - "extra pass"
+          - "cycle check"
+          - "detects negative cycle"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Bellman Ford Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        dist = [float("inf")] * n
+        dist[src] = 0
+        
+        for _ in range(n - 1):
+            changed = False
+            for u, v, w in edges:
+                if dist[u] == float("inf"):
+                    continue
+                if dist[u] + w < dist[v]:
+                    # This pass found a shorter path that uses one more edge.
+                    dist[v] = dist[u] + w
+                    changed = True
+            if not changed:
+                break
+      cpp: |
+        vector<long long> dist(n, INF);
+        dist[src] = 0;
+        
+        for (int pass = 0; pass < n - 1; pass++) {
+            bool changed = false;
+            for (auto& e : edges) {
+                int u = e[0], v = e[1], w = e[2];
+                if (dist[u] == INF) continue;
+                if (dist[u] + w < dist[v]) {
+                    // This pass found a shorter path that uses one more edge.
+                    dist[v] = dist[u] + w;
+                    changed = true;
+                }
+            }
+            if (!changed) break;
+        }
+      java: |
+        long[] dist = new long[n];
+        Arrays.fill(dist, INF);
+        dist[src] = 0;
+        
+        for (int pass = 0; pass < n - 1; pass++) {
+            boolean changed = false;
+            for (int[] e : edges) {
+                int u = e[0], v = e[1], w = e[2];
+                if (dist[u] == INF) continue;
+                if (dist[u] + w < dist[v]) {
+                    // This pass found a shorter path that uses one more edge.
+                    dist[v] = dist[u] + w;
+                    changed = true;
+                }
+            }
+            if (!changed) break;
+        }
+      note: >
+        Read the code while tracking edge list, distance array, pass count, and changed flag. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Bellman Ford To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Bellman Ford To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Bellman Ford?
+    answer: shortest path with negative edges or negative-cycle detection.
+  - question: What state should you name before coding?
+    answer: Name edge list, distance array, pass count, and changed flag.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Bellman Ford is the interview tool for shortest path with negative edges or negative-cycle detection."
+    - "Working idea: Initialize distances, repeat all-edge relaxation nodes minus one times, and stop early if nothing changes. One extra improving pass means a reachable negative cycle exists."
+  cheat_table:
+    title: Bellman Ford Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "shortest path with negative edges or negative-cycle detection"
+        - "edge list, distance array, pass count, and changed flag"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_bellman_ford
+    - generate_bellman_ford_drills
+  context: Focus on edge list, distance array, pass count, and changed flag.

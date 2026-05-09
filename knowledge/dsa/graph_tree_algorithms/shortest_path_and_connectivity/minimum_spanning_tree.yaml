@@ -1,0 +1,201 @@
+id: minimum_spanning_tree
+title: Minimum Spanning Tree
+category: dsa
+level: advanced
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - mst
+  - minimum_spanning_tree
+  - graph
+  - interview
+goal: Teach minimum spanning tree across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  minimum_spanning_tree_trace:
+    type: image
+    path: assets/dsa/minimum_spanning_tree/minimum-spanning-tree-trace.png
+    alt: Minimum Spanning Tree trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        A minimum spanning tree connects all vertices without cycles while minimizing total edge cost. It is not shortest path from a source; it is minimum total network cost.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Kruskal sorts edges and adds safe edges that join different components. Prim grows one connected region by repeatedly taking the cheapest edge leaving that region.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "Kruskal"
+          - "sorted edge list"
+          - "uses union find"
+        -
+          - "Prim"
+          - "heap frontier"
+          - "grows region"
+        -
+          - "cycle rule"
+          - "skip internal edge"
+          - "keeps tree valid"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Minimum Spanning Tree Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        edges.sort(key=lambda e: e[2])
+        total = 0
+        used = 0
+        for u, v, w in edges:
+            if find(u) == find(v):
+                continue
+            # This edge connects two components, so it is safe to add.
+            union(u, v)
+            total += w
+            used += 1
+      cpp: |
+        sort(edges.begin(), edges.end(), [](auto& a, auto& b) {
+            return a[2] < b[2];
+        });
+        long long total = 0;
+        int used = 0;
+        for (auto& e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            if (find(u) == find(v)) continue;
+            // This edge connects two components, so it is safe to add.
+            unite(u, v);
+            total += w;
+            used++;
+        }
+      java: |
+        edges.sort(Comparator.comparingInt(e -> e[2]));
+        long total = 0;
+        int used = 0;
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            if (find(u) == find(v)) continue;
+            // This edge connects two components, so it is safe to add.
+            union(u, v);
+            total += w;
+            used++;
+        }
+      note: >
+        Read the code while tracking chosen edges, component structure, connected set, and total cost. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Minimum Spanning Tree To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Minimum Spanning Tree To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Minimum Spanning Tree?
+    answer: connecting all nodes with minimum total undirected edge cost.
+  - question: What state should you name before coding?
+    answer: Name chosen edges, component structure, connected set, and total cost.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Minimum Spanning Tree is the interview tool for connecting all nodes with minimum total undirected edge cost."
+    - "Working idea: Kruskal sorts edges and adds safe edges that join different components. Prim grows one connected region by repeatedly taking the cheapest edge leaving that region."
+  cheat_table:
+    title: Minimum Spanning Tree Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "connecting all nodes with minimum total undirected edge cost"
+        - "chosen edges, component structure, connected set, and total cost"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_minimum_spanning_tree
+    - generate_minimum_spanning_tree_drills
+  context: Focus on chosen edges, component structure, connected set, and total cost.

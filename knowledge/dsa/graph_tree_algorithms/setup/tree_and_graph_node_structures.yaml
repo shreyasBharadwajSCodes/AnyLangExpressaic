@@ -1,0 +1,297 @@
+id: tree_and_graph_node_structures
+title: Tree And Graph Node Structures
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - tree_node
+  - graph_node
+  - class_design
+  - adjacency_list
+  - interview
+goal: Teach how to define and use tree nodes, graph nodes, adjacency lists, and edge records across Python, C++, and Java before solving graph and tree algorithms.
+assets:
+  node_structure_map:
+    type: image
+    path: assets/dsa/tree_and_graph_node_structures/node-structure-map.png
+    alt: TreeNode and GraphNode objects connected by references with adjacency lists and weighted edge records.
+lesson:
+  - explain:
+      title: Why This Comes First
+      body: >
+        Tree and graph algorithms are much easier once the data shape is clear.
+        A tree node stores a value and child references. A graph can be represented
+        either as node objects with neighbor references or as an adjacency list where
+        each index maps to neighbor ids. Interview code usually fails when the user
+        mixes these shapes without naming what node, neighbor, left, right, and edge
+        actually contain.
+  - explain:
+      title: How To Think While Coding
+      body: >
+        First identify whether the input gives you object nodes, numbered nodes, or
+        edges. If the problem gives a root, use child references. If it gives node
+        ids and edges, build an adjacency list. If edges have weights, store both
+        neighbor and weight together. In every language, know whether a variable is
+        an object reference, a pointer, an index, or a copied value.
+  - compare_table:
+      title: Structure Choice Map
+      columns:
+        - Input Shape
+        - Structure To Build
+        - State To Track
+      rows:
+        -
+          - "binary tree root"
+          - "TreeNode with left and right"
+          - "node, left, right, returned value"
+        -
+          - "numbered graph nodes"
+          - "adjacency list"
+          - "node id, neighbor id, visited array"
+        -
+          - "clone graph node"
+          - "GraphNode with neighbors"
+          - "original node, cloned node, map"
+        -
+          - "weighted edges"
+          - "neighbor and weight pair"
+          - "distance, edge weight, next node"
+  - language_lens:
+      language: python
+      title: Python Structure Thinking
+      body: >
+        Python variables hold object references. A TreeNode variable points to an
+        object; assigning another variable to it does not copy the whole tree.
+      default_instincts:
+        - Use a class with val, left, and right for binary trees.
+        - Use lists for indexed adjacency and dictionaries for arbitrary labels.
+        - Use tuples for immutable edge records such as neighbor and weight.
+      behind_the_scenes:
+        - Object fields are created dynamically unless the class uses slots.
+        - Multiple variables can refer to the same node object.
+        - List multiplication can accidentally share inner lists.
+      avoid:
+        - Building adjacency with shared inner lists.
+        - Using node values as identity when duplicate values are possible.
+        - Mutating a list used as a key in a dictionary or set.
+  - language_lens:
+      language: cpp
+      title: C++ Structure Thinking
+      body: >
+        C++ interview tree nodes are usually pointers. A TreeNode pointer may be
+        null, so check it before reading value, left, or right. Adjacency lists are
+        usually vectors passed by reference.
+      default_instincts:
+        - Use TreeNode pointer for tree algorithms.
+        - Use vector of vectors for indexed adjacency.
+        - Use pair or a small struct for weighted edges.
+      behind_the_scenes:
+        - A pointer stores an address, not the whole object.
+        - Passing vector by value copies the vector.
+        - priority_queue needs explicit configuration for min-heap behavior.
+      avoid:
+        - Dereferencing a null pointer.
+        - Returning a pointer or reference to a local stack object.
+        - Copying adjacency lists into every helper call.
+  - language_lens:
+      language: java
+      title: Java Structure Thinking
+      body: >
+        Java object variables are references. A TreeNode variable can be null, and
+        arrays or lists of neighbors must be initialized before adding edges.
+      default_instincts:
+        - Use a simple class for TreeNode and GraphNode.
+        - Use List of lists for adjacency.
+        - Use int arrays or small classes for weighted edges.
+      behind_the_scenes:
+        - Object references are copied by value, but the object is shared.
+        - Primitive arrays are fixed size and zero-initialized.
+        - Collection entries with Integer box primitive ids.
+      avoid:
+        - Forgetting to create each inner adjacency list.
+        - Using equals when object identity is intended, or identity when value equality is intended.
+        - Leaving node fields uninitialized when constructors should set them.
+examples:
+  - code_compare:
+      title: Binary Tree Node Structure
+      idea: Define the value and child references before writing traversal logic.
+      python: |
+        class TreeNode:
+            def __init__(self, val=0, left=None, right=None):
+                self.val = val
+                # left and right are references to child nodes or None.
+                self.left = left
+                self.right = right
+
+        root = TreeNode(1)
+        root.left = TreeNode(2)
+        root.right = TreeNode(3)
+      cpp: |
+        struct TreeNode {
+            int val;
+            TreeNode* left;
+            TreeNode* right;
+
+            TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+        };
+
+        TreeNode* root = new TreeNode(1);
+        root->left = new TreeNode(2);
+        root->right = new TreeNode(3);
+      java: |
+        class TreeNode {
+            int val;
+            TreeNode left;
+            TreeNode right;
+
+            TreeNode(int val) {
+                this.val = val;
+            }
+        }
+
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);
+      note: >
+        Read left and right as links to other nodes, not as copied subtrees. The
+        traversal variable node simply points to the current object.
+  - code_compare:
+      title: Graph Node For Clone Graph
+      idea: Object graphs need a map from original node to cloned node.
+      python: |
+        class Node:
+            def __init__(self, val=0, neighbors=None):
+                self.val = val
+                # Each neighbor is another Node object.
+                self.neighbors = neighbors if neighbors is not None else []
+
+        old_to_new = {}
+      cpp: |
+        class Node {
+        public:
+            int val;
+            vector<Node*> neighbors;
+
+            Node(int v) : val(v) {}
+        };
+
+        unordered_map<Node*, Node*> oldToNew;
+      java: |
+        class Node {
+            public int val;
+            public List<Node> neighbors;
+
+            public Node(int val) {
+                this.val = val;
+                this.neighbors = new ArrayList<>();
+            }
+        }
+
+        Map<Node, Node> oldToNew = new HashMap<>();
+      note: >
+        For clone graph, visited is usually a map from original object to cloned
+        object because values may repeat and object identity matters.
+  - code_compare:
+      title: Adjacency List And Weighted Edge Shape
+      idea: Numbered graph nodes usually use adjacency lists instead of node objects.
+      python: |
+        adj = [[] for _ in range(n)]
+        for u, v, w in edges:
+            # Each entry stores the neighbor id and edge weight.
+            adj[u].append((v, w))
+      cpp: |
+        vector<vector<pair<int,int>>> adj(n);
+        for (auto& e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            // Each pair stores the neighbor id and edge weight.
+            adj[u].push_back({v, w});
+        }
+      java: |
+        List<List<int[]>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            // Each small array stores the neighbor id and edge weight.
+            adj.get(u).add(new int[]{v, w});
+        }
+      note: >
+        When reading weighted adjacency code, always ask what each stored position
+        means before using it in Dijkstra, Prim, or Bellman-Ford style logic.
+transitions:
+  python_to_cpp:
+    title: Python Nodes To C++ Pointers
+    mindset_shift:
+      - Python object variables become C++ pointers in many interview tree definitions.
+      - C++ pointer access requires null checks before reading fields.
+    habit_swaps:
+      - python: Use node.left after checking node is not None.
+        cpp: Use node arrow left after checking node is not null.
+    false_friends:
+      - term: local object address
+        warning: Do not return a pointer to a local stack object from a helper.
+  python_to_java:
+    title: Python Nodes To Java References
+    mindset_shift:
+      - Both languages use object references, but Java fields and constructors are explicit.
+      - Java adjacency lists need every inner list created before add.
+    habit_swaps:
+      - python: Use a list literal for neighbors.
+        java: Create a new ArrayList for neighbors.
+    false_friends:
+      - term: object identity
+        warning: Graph clone maps should key by original node object, not by value when duplicate values can exist.
+interview_questions:
+  - question: What should you ask before writing graph or tree code?
+    answer: Ask whether nodes are objects or ids, whether edges are directed or weighted, and whether duplicate values can exist.
+  - question: What does a TreeNode variable store?
+    answer: It stores a reference or pointer to one node object, whose fields link to child nodes.
+  - question: Why does Java adjacency setup often fail?
+    answer: The outer list exists, but each inner neighbor list must also be created before adding edges.
+revision:
+  quick_summary:
+    - "Tree and graph node structures are the setup layer for graph and tree algorithms: define what a node variable actually stores before writing traversal logic."
+    - "Working idea: use TreeNode objects for rooted trees, adjacency lists for numbered graphs, GraphNode objects for clone-style problems, and explicit neighbor-weight records for weighted algorithms."
+  cheat_table:
+    title: Structure Setup Revision
+    columns:
+      - Need
+      - Python
+      - C++
+      - Java
+      - Caveat
+    rows:
+      -
+        - "tree node"
+        - "class with val left right"
+        - "struct with value and child pointers"
+        - "class with value and child references"
+        - "check null before child access"
+      -
+        - "indexed graph"
+        - "list of neighbor lists"
+        - "vector of neighbor vectors"
+        - "list of neighbor lists"
+        - "initialize inner lists"
+      -
+        - "weighted edge"
+        - "neighbor weight tuple"
+        - "pair or small struct"
+        - "small int array or class"
+        - "know which field is weight"
+  flashcards:
+    - question: Why not use node values as graph clone keys?
+      answer: Values can repeat; the original node object identity is the safer key.
+    - question: What is the C++ tree-node danger line?
+      answer: Reading a field through a null pointer.
+notes:
+  - This lesson should be read before BFS, DFS, LCA, Dijkstra, clone graph, or tree serialization.
+  - When explaining code, say whether a variable is an object reference, pointer, index, or edge record.
+tlm_hooks:
+  possible_tasks:
+    - trace_node_structure_setup
+    - generate_tree_graph_structure_drills
+  context: Focus on node references, pointers, adjacency lists, edge records, and identity versus value.

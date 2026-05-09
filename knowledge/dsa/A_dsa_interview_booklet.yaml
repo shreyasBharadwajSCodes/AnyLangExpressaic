@@ -1,4 +1,4 @@
-﻿id: dsa_interview_booklet
+id: dsa_interview_booklet
 title: DSA Interview Prep Across Languages
 type: booklet
 category: dsa
@@ -250,77 +250,82 @@ chapters:
     title: Graph And Tree Algorithms
     description: Traversal, connectivity, ordering, and shortest-path patterns.
     sections:
+      - title: Graph And Tree Setup
+        lessons:
+          - title: Tree And Graph Node Structures
+            file: knowledge/dsa/graph_tree_algorithms/setup/tree_and_graph_node_structures.yaml
+
       - title: Tree Algorithms
         lessons:
           - title: Tree Traversals
             file: knowledge/dsa/graph_tree_algorithms/tree_algorithms/tree_traversals.yaml
-            status: planned
+
           - title: Tree DFS Patterns
             file: knowledge/dsa/graph_tree_algorithms/tree_algorithms/tree_dfs_patterns.yaml
-            status: planned
+
           - title: Tree BFS / Level Order
             file: knowledge/dsa/graph_tree_algorithms/tree_algorithms/tree_bfs_level_order.yaml
-            status: planned
+
           - title: Lowest Common Ancestor
             file: knowledge/dsa/graph_tree_algorithms/tree_algorithms/lowest_common_ancestor.yaml
-            status: planned
+
           - title: Tree Diameter And Height
             file: knowledge/dsa/graph_tree_algorithms/tree_algorithms/tree_diameter_height.yaml
-            status: planned
+
           - title: Serialize And Deserialize Tree
             file: knowledge/dsa/graph_tree_algorithms/tree_algorithms/serialize_deserialize_tree.yaml
-            status: planned
+
 
       - title: Graph Traversal
         lessons:
           - title: BFS
             file: knowledge/dsa/graph_tree_algorithms/graph_traversal/bfs.yaml
-            status: planned
+
           - title: DFS
             file: knowledge/dsa/graph_tree_algorithms/graph_traversal/dfs.yaml
-            status: planned
+
           - title: Matrix BFS / DFS
             file: knowledge/dsa/graph_tree_algorithms/graph_traversal/matrix_bfs_dfs.yaml
-            status: planned
+
           - title: Connected Components
             file: knowledge/dsa/graph_tree_algorithms/graph_traversal/connected_components.yaml
-            status: planned
+
           - title: Cycle Detection
             file: knowledge/dsa/graph_tree_algorithms/graph_traversal/cycle_detection.yaml
-            status: planned
+
 
       - title: Directed Graphs And Ordering
         lessons:
           - title: Topological Sort
             file: knowledge/dsa/graph_tree_algorithms/directed_graphs_and_ordering/topological_sort.yaml
-            status: planned
+
           - title: Course Schedule Pattern
             file: knowledge/dsa/graph_tree_algorithms/directed_graphs_and_ordering/course_schedule_pattern.yaml
-            status: planned
+
           - title: Kahn Algorithm
             file: knowledge/dsa/graph_tree_algorithms/directed_graphs_and_ordering/kahn_algorithm.yaml
-            status: planned
+
           - title: DFS Topological Sort
             file: knowledge/dsa/graph_tree_algorithms/directed_graphs_and_ordering/dfs_topological_sort.yaml
-            status: planned
+
 
       - title: Shortest Path And Connectivity
         lessons:
           - title: Dijkstra Algorithm
             file: knowledge/dsa/graph_tree_algorithms/shortest_path_and_connectivity/dijkstra_algorithm.yaml
-            status: planned
+
           - title: Bellman Ford
             file: knowledge/dsa/graph_tree_algorithms/shortest_path_and_connectivity/bellman_ford.yaml
-            status: planned
+
           - title: Floyd Warshall
             file: knowledge/dsa/graph_tree_algorithms/shortest_path_and_connectivity/floyd_warshall.yaml
-            status: planned
+
           - title: Minimum Spanning Tree
             file: knowledge/dsa/graph_tree_algorithms/shortest_path_and_connectivity/minimum_spanning_tree.yaml
-            status: planned
+
           - title: Kruskal And Prim
             file: knowledge/dsa/graph_tree_algorithms/shortest_path_and_connectivity/kruskal_prim.yaml
-            status: planned
+
 
   - id: dynamic_programming
     title: Dynamic Programming
@@ -598,4 +603,3 @@ chapters:
           - title: When To Optimize
             file: knowledge/dsa/final_revision/interview_execution/when_to_optimize.yaml
             status: planned
-

@@ -1,0 +1,191 @@
+id: tree_dfs_patterns
+title: Tree DFS Patterns
+category: dsa
+level: intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - tree
+  - dfs
+  - recursion
+  - interview
+goal: Teach tree dfs patterns across Python, C++, and Java with coordinated explanation, state tracking, and interview-ready implementation details.
+assets:
+  tree_dfs_patterns_trace:
+    type: image
+    path: assets/dsa/tree_dfs_patterns/tree-dfs-patterns-trace.png
+    alt: Tree DFS Patterns trace showing the key state changes step by step.
+lesson:
+  - explain:
+      title: Core Mental Model
+      body: >
+        Tree DFS is a return contract. Each call owns one subtree, asks children for answers, combines them, and returns one summary upward.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Define the helper return value before code. Handle the empty subtree, recurse left and right, combine their returned values, update any outside answer, and return exactly what the parent needs.
+  - compare_table:
+      title: State And Decision Map
+      columns:
+        - Piece
+        - Meaning
+        - Why It Matters
+      rows:
+        -
+          - "return value"
+          - "subtree summary"
+          - "parent consumes one value"
+        -
+          - "global answer"
+          - "best seen anywhere"
+          - "may use both children"
+        -
+          - "base case"
+          - "empty subtree"
+          - "keeps combine logic safe"
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Python keeps traversal code compact, so the main interview burden is naming the state clearly and avoiding hidden performance traps.
+      default_instincts:
+        - Use deque for BFS and list or recursion for DFS.
+        - Use set for arbitrary node labels and lists for indexed nodes.
+        - Mark visited before adding work to a queue or stack.
+      behind_the_scenes:
+        - Python recursion depth can fail on long chains.
+        - Tuple heap entries compare lexicographically.
+        - Sets and dictionaries use hashing, so keys must be stable.
+      avoid:
+        - Using list pop from the front for BFS.
+        - Marking visited after pop when duplicate enqueues are possible.
+        - Hiding whether a variable is a node, neighbor, distance, or parent.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        C++ gives fast containers but requires explicit choices for references, heap direction, numeric width, and null checks.
+      default_instincts:
+        - Pass large adjacency, matrix, and path structures by reference.
+        - Use vector state for indexed graphs and long long for large costs.
+        - Configure priority_queue explicitly when a min-heap is needed.
+      behind_the_scenes:
+        - queue pop returns void, so read front before popping.
+        - priority_queue is a max-heap by default.
+        - Passing vectors by value copies them.
+      avoid:
+        - Copying graph structures into helpers.
+        - Dereferencing null tree pointers.
+        - Using int for accumulated path costs when constraints can overflow.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Java graph and tree code works best with explicit helper methods, initialized collections, primitive state arrays, and clear Comparator usage.
+      default_instincts:
+        - Initialize every adjacency inner list before adding edges.
+        - Use boolean arrays or int arrays for visited, state, indegree, and distance.
+        - Use ArrayDeque for BFS and DFS frontiers, PriorityQueue for heaps.
+      behind_the_scenes:
+        - Collections box primitive node ids.
+        - Java recursion can overflow on very deep inputs.
+        - Arrays of primitives are usually simpler than boxed collections for fixed node counts.
+      avoid:
+        - Using Stack when ArrayDeque is clearer.
+        - Forgetting Comparator helpers for sorting or heaps.
+        - Leaving an adjacency list null before calling add.
+examples:
+  - code_compare:
+      title: Tree DFS Patterns Implementation Shape
+      idea: Keep the state names visible so the dry run matches the explanation.
+      python: |
+        def solve(node):
+            if node is None:
+                return 0
+        
+            left = solve(node.left)
+            right = solve(node.right)
+            # The parent receives one clean subtree summary from this node.
+            return 1 + max(left, right)
+      cpp: |
+        int solve(TreeNode* node) {
+            if (node == nullptr) return 0;
+        
+            int left = solve(node->left);
+            int right = solve(node->right);
+            // The parent receives one clean subtree summary from this node.
+            return 1 + max(left, right);
+        }
+      java: |
+        private int solve(TreeNode node) {
+            if (node == null) return 0;
+        
+            int left = solve(node.left);
+            int right = solve(node.right);
+            // The parent receives one clean subtree summary from this node.
+            return 1 + Math.max(left, right);
+        }
+      note: >
+        Read the code while tracking node, left answer, right answer, returned summary, and best answer. Each non-trivial comment marks the line where the algorithm changes reachability, order, distance, component, or returned subtree state.
+transitions:
+  python_to_cpp:
+    title: Python Tree DFS Patterns To C++
+    mindset_shift:
+      - Move from dynamic containers to explicit typed containers and references.
+      - Make recursion depth, heap direction, and numeric width choices visible.
+    habit_swaps:
+      - python: Choose deque, set, list, heap, or recursion after naming the state.
+        cpp: Choose vector, queue, stack, set, priority queue, or references after naming the state.
+    false_friends:
+      - term: accidental copy
+        warning: Passing large adjacency, matrix, path, or distance state by value can turn a correct solution into a slow one.
+  python_to_java:
+    title: Python Tree DFS Patterns To Java
+    mindset_shift:
+      - Move from compact literals to initialized collections and helper methods.
+      - Prefer primitive arrays for visited, state, indegree, distance, and parent when nodes are indexed.
+    habit_swaps:
+      - python: Use set or list state directly.
+        java: Use boolean arrays, int arrays, ArrayDeque, PriorityQueue, and initialized adjacency lists.
+    false_friends:
+      - term: initialization
+        warning: Java adjacency lists, queues, and helper arrays must be created before use.
+interview_questions:
+  - question: What problem signal points to Tree DFS Patterns?
+    answer: combining subtree answers at a parent.
+  - question: What state should you name before coding?
+    answer: Name node, left answer, right answer, returned summary, and best answer.
+  - question: What should the dry run prove?
+    answer: It should prove exactly when the traversal, returned value, distance, ordering, or component state changes and why that timing is correct.
+revision:
+  quick_summary:
+    - "Tree DFS Patterns is the interview tool for combining subtree answers at a parent."
+    - "Working idea: Define the helper return value before code. Handle the empty subtree, recurse left and right, combine their returned values, update any outside answer, and return exactly what the parent needs."
+  cheat_table:
+    title: Tree DFS Patterns Revision Table
+    columns:
+      - Signal
+      - State To Track
+      - Interview Caveat
+    rows:
+      -
+        - "combining subtree answers at a parent"
+        - "node, left answer, right answer, returned summary, and best answer"
+        - "Explain when state changes and why that timing is safe."
+      -
+        - "language switch"
+        - "container and helper choices"
+        - "Python, C++, and Java differ most in recursion depth, heap direction, numeric width, and collection initialization."
+  flashcards:
+    - question: What should you say before writing code?
+      answer: State the graph or tree shape, the traversal order, and the exact state variable that proves progress.
+notes:
+  - "Keep explanations next to code state: current node, neighbor, parent, distance, indegree, heap entry, or subtree return value."
+  - For interview clarity, explain why the chosen traversal or ordering is safe before discussing syntax.
+tlm_hooks:
+  possible_tasks:
+    - trace_tree_dfs_patterns
+    - generate_tree_dfs_patterns_drills
+  context: Focus on node, left answer, right answer, returned summary, and best answer.
