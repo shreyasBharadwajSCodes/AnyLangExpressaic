@@ -58,7 +58,7 @@ lesson:
         - Python int does not overflow, so huge values test algorithm not integer width.
         - Slicing out of range is often allowed and may hide boundary bugs.
       avoid:
-        - Using "if not x" when 0 or empty is a valid value with different meaning.
+        - "Using 'if not x' when 0 or empty is a valid value with different meaning."
         - Assuming an IndexError will catch all pointer mistakes.
         - Forgetting recursion depth on chain-shaped inputs.
   - language_lens:
@@ -185,7 +185,7 @@ transitions:
         python: still test huge values for algorithm assumptions.
     false_friends:
       - term: truthiness
-        warning: "if not value" groups None, 0, empty string, and empty list.
+        warning: "'if not value' groups None, 0, empty string, and empty list."
       - term: slice
         warning: Python slices can mask out-of-range boundaries.
   python_to_java:
@@ -195,11 +195,11 @@ transitions:
       - From arbitrary int to int/long boundaries.
       - From flexible empty returns to exact expected types.
     habit_swaps:
-      - python: if not nums.
-        java: if (nums.length == 0).
+      - python: "if not nums."
+        java: "if (nums.length == 0)."
       - python: node is None.
-        java: node == null.
-      - python: return [].
+        java: "node == null."
+      - python: "return []."
         java: return new int[0] or new ArrayList<>() as expected.
     false_friends:
       - term: null
@@ -213,9 +213,9 @@ transitions:
       - From thrown index errors to negative-index traps.
       - From fixed return types to flexible but judge-sensitive values.
     habit_swaps:
-      - java: nums.length == 0.
+      - java: "nums.length == 0."
         python: not nums.
-      - java: s.length() == 0.
+      - java: "s.length() == 0."
         python: not s.
       - java: null.
         python: None.

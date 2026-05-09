@@ -1,2 +1,7 @@
 build/
 vis2_config.yaml
+*PyCache*
+*.pyc
+*.pyo
+*.pyd
+__pycache__/

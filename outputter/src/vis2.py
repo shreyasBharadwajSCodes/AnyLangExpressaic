@@ -24,8 +24,19 @@ GREEN = "#148f65"
 AMBER = "#b45309"
 RED = "#b42318"
 PURPLE = "#6d28d9"
-CODE_BG = "#111827"
-CODE_FG = "#e5e7eb"
+CODE_BG = "#fff7ed"
+CODE_FG = "#1f2937"
+CODE_ACCENT = "#9a3412"
+BOOKLET_LINK_COLORS = [
+    ACCENT,
+    GREEN,
+    AMBER,
+    PURPLE,
+    "#0f766e",
+    "#be123c",
+    "#7c3aed",
+    "#0369a1",
+]
 
 
 def load_yaml(path):
@@ -101,6 +112,77 @@ def block_name(block):
     return key, block.get(key)
 
 
+def is_booklet(data):
+    return isinstance(data, dict) and (data.get("type") == "booklet" or isinstance(data.get("chapters"), list))
+
+
+def topic_color(value):
+    text = str(value or "")
+    return BOOKLET_LINK_COLORS[sum(ord(ch) for ch in text) % len(BOOKLET_LINK_COLORS)]
+
+
+def maximize_window(root):
+    root.update_idletasks()
+    try:
+        root.state("zoomed")
+        return
+    except tk.TclError:
+        pass
+    try:
+        root.attributes("-zoomed", True)
+    except tk.TclError:
+        width = root.winfo_screenwidth()
+        height = root.winfo_screenheight()
+        root.geometry(f"{width}x{height}+0+0")
+
+
+def bind_wrap(label, container, margin=36, minimum=180):
+    def update(event=None):
+        try:
+            width = (event.width if event else container.winfo_width()) - margin
+            label.configure(wraplength=max(minimum, width))
+        except tk.TclError:
+            pass
+
+    container.bind("<Configure>", update, add="+")
+    label.after_idle(update)
+    return label
+
+
+class Tooltip:
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tip = None
+        widget.bind("<Enter>", self.show)
+        widget.bind("<Leave>", self.hide)
+
+    def show(self, _event=None):
+        if self.tip or not self.text:
+            return
+        x = self.widget.winfo_rootx() + 18
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 6
+        self.tip = tk.Toplevel(self.widget)
+        self.tip.wm_overrideredirect(True)
+        self.tip.wm_geometry(f"+{x}+{y}")
+        tk.Label(
+            self.tip,
+            text=self.text,
+            bg=CODE_FG,
+            fg="white",
+            padx=8,
+            pady=5,
+            wraplength=300,
+            justify="left",
+            font=("Segoe UI", 9),
+        ).pack()
+
+    def hide(self, _event=None):
+        if self.tip:
+            self.tip.destroy()
+            self.tip = None
+
+
 class ScrollFrame(ttk.Frame):
     def __init__(self, parent, bg=APP_BG):
         super().__init__(parent)
@@ -150,20 +232,32 @@ class Vis2App:
         self.root.geometry("1420x860")
         self.root.minsize(1050, 680)
         self.root.configure(bg=APP_BG)
+        maximize_window(self.root)
 
         self.current_file = None
         self.base_folder = None
         self.concept = {}
         self.image_refs = []
         self.yaml_files = []
+        self.file_tree_items = {}
         self.available_languages = []
         self.language_vars = {}
+        self.tabs = []
+        self.active_tab = None
+        self.nav_history = []
+        self.find_window = None
+        self.find_query = ""
+        self.find_scope = "content"
+        self.find_matches = []
+        self.find_index = -1
+        self.find_highlight = None
 
         self.mode_var = tk.StringVar(value="lesson")
         self.source_var = tk.StringVar()
         self.target_var = tk.StringVar()
 
         self._setup_style()
+        self._build_menu()
         self._build_layout()
         self.bind_shortcuts()
 
@@ -180,6 +274,40 @@ class Vis2App:
         style.map("Primary.TButton", background=[("active", ACCENT_DARK)])
         style.configure("TCombobox", padding=5)
         style.configure("Mode.TRadiobutton", background=SURFACE_ALT, foreground=INK, font=("Segoe UI", 10, "bold"))
+
+    def _build_menu(self):
+        menu = tk.Menu(self.root)
+        self.root.config(menu=menu)
+
+        file_menu = tk.Menu(menu, tearoff=False)
+        file_menu.add_command(label="Open Folder...", accelerator="Ctrl+O", command=self.open_folder)
+        file_menu.add_command(label="Reload Current", accelerator="Ctrl+R", command=self.reload_current_file)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.root.destroy)
+        menu.add_cascade(label="File", menu=file_menu)
+
+        view_menu = tk.Menu(menu, tearoff=False)
+        view_menu.add_command(label="Lesson", accelerator="Ctrl+1", command=lambda: self.set_mode("lesson"))
+        view_menu.add_command(label="Revision", accelerator="Ctrl+2", command=lambda: self.set_mode("revision"))
+        view_menu.add_command(label="Transition", accelerator="Ctrl+3", command=lambda: self.set_mode("transition"))
+        view_menu.add_command(label="Raw Structure", accelerator="Ctrl+4", command=lambda: self.set_mode("raw"))
+        view_menu.add_separator()
+        view_menu.add_command(label="Find", accelerator="Ctrl+F", command=self.open_find)
+        menu.add_cascade(label="View", menu=view_menu)
+
+        navigate_menu = tk.Menu(menu, tearoff=False)
+        navigate_menu.add_command(label="Back", accelerator="Alt+Left", command=self.go_back)
+        navigate_menu.add_command(label="Close Tab", accelerator="Ctrl+W", command=self.close_active_tab)
+        navigate_menu.add_separator()
+        navigate_menu.add_command(label="Previous View", accelerator="Ctrl+Up", command=lambda: self.select_relative_mode(-1))
+        navigate_menu.add_command(label="Next View", accelerator="Ctrl+Down", command=lambda: self.select_relative_mode(1))
+        navigate_menu.add_command(label="Previous Tab", accelerator="Ctrl+Left", command=lambda: self.switch_relative_tab(-1))
+        navigate_menu.add_command(label="Next Tab", accelerator="Ctrl+Right", command=lambda: self.switch_relative_tab(1))
+        menu.add_cascade(label="Navigate", menu=navigate_menu)
+
+        tools_menu = tk.Menu(menu, tearoff=False)
+        tools_menu.add_command(label="Open Builder Vis2", accelerator="Ctrl+B", command=self.open_builder_vis2)
+        menu.add_cascade(label="Tools", menu=tools_menu)
 
     def _build_layout(self):
         header = tk.Frame(self.root, bg=INK)
@@ -208,6 +336,22 @@ class Vis2App:
         )
         self.subtitle_label.pack(anchor="w", pady=(2, 0))
 
+        self.back_button = tk.Button(
+            header,
+            text="←",
+            command=self.go_back,
+            bg="#0f172a",
+            fg="white",
+            activebackground="#1e293b",
+            activeforeground="white",
+            relief=tk.FLAT,
+            font=("Segoe UI", 16, "bold"),
+            width=3,
+            cursor="hand2",
+        )
+        self.back_button.pack(side=tk.RIGHT, padx=18, pady=14)
+        Tooltip(self.back_button, "Back")
+
         body = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
         body.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
 
@@ -220,6 +364,20 @@ class Vis2App:
         self.sidebar.pack(fill=tk.BOTH, expand=True)
 
         self._build_sidebar()
+        self.tab_bar = tk.Frame(self.main, bg=APP_BG)
+        self.tab_bar.pack(fill=tk.X, pady=(0, 8))
+        self.find_window = tk.Frame(self.main, bg=APP_BG, highlightbackground=LINE, highlightthickness=1)
+        tk.Label(self.find_window, text="Find", bg=APP_BG, fg=INK, font=("Segoe UI", 10, "bold")).pack(side=tk.LEFT, padx=(10, 6), pady=8)
+        self.find_entry = tk.Entry(self.find_window, font=("Segoe UI", 10), relief=tk.SOLID, borderwidth=1)
+        self.find_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8), pady=8)
+        ttk.Button(self.find_window, text="Next", command=self.run_find).pack(side=tk.LEFT, padx=(0, 6), pady=6)
+        self.find_status = tk.Label(self.find_window, text="", bg=APP_BG, fg=MUTED, font=("Segoe UI", 9), anchor="w")
+        self.find_status.pack(side=tk.LEFT, padx=(0, 8), pady=8)
+        ttk.Button(self.find_window, text="Close", command=self.close_find).pack(side=tk.RIGHT, padx=8, pady=6)
+        self.find_entry.bind("<Return>", lambda _event: self.run_find())
+        self.find_entry.bind("<Control-f>", lambda _event: self.run_find())
+        self.find_entry.bind("<Control-F>", lambda _event: self.run_find())
+        self.find_entry.bind("<Escape>", lambda _event: self.close_find())
         self.content = ScrollFrame(self.main)
         self.content.pack(fill=tk.BOTH, expand=True)
 
@@ -232,48 +390,10 @@ class Vis2App:
             font=("Segoe UI", 13, "bold"),
         ).pack(anchor="w", padx=14, pady=(16, 8))
 
-        ttk.Button(
-            self.sidebar,
-            text="Open Folder",
-            command=self.open_folder,
-            style="Primary.TButton",
-        ).pack(fill=tk.X, padx=14, pady=(0, 8))
-
-        ttk.Button(
-            self.sidebar,
-            text="Builder Vis2",
-            command=self.open_builder_vis2,
-        ).pack(fill=tk.X, padx=14, pady=(0, 12))
-
-        file_area = tk.Frame(self.sidebar, bg=SURFACE_ALT)
-        file_area.pack(fill=tk.X, padx=14, pady=(0, 18))
-
-        self.file_list = tk.Listbox(
-            file_area,
-            height=9,
-            bg="white",
-            fg=INK,
-            selectbackground=ACCENT,
-            selectforeground="white",
-            activestyle="none",
-            relief=tk.FLAT,
-            font=("Segoe UI", 10),
-            exportselection=False,
-        )
-        file_scroll = ttk.Scrollbar(file_area, orient="vertical", command=self.file_list.yview)
-        self.file_list.configure(yscrollcommand=file_scroll.set)
-        self.file_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        file_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        self.file_list.bind("<<ListboxSelect>>", self.on_file_select)
-        self.file_list.bind("<Up>", lambda _event: self.select_relative_file(-1))
-        self.file_list.bind("<Down>", lambda _event: self.select_relative_file(1))
-        self.file_list.bind("<Prior>", lambda _event: self.select_relative_file(-8))
-        self.file_list.bind("<Next>", lambda _event: self.select_relative_file(8))
-        self.file_list.bind("<Home>", lambda _event: self.select_file_at(0))
-        self.file_list.bind("<End>", lambda _event: self.select_file_at(len(self.yaml_files) - 1))
-
+        view_panel = tk.Frame(self.sidebar, bg=SURFACE_ALT)
+        view_panel.pack(side=tk.BOTTOM, fill=tk.X, padx=0, pady=(0, 12))
         tk.Label(
-            self.sidebar,
+            view_panel,
             text="View",
             bg=SURFACE_ALT,
             fg=INK,
@@ -287,7 +407,7 @@ class Vis2App:
             ("Raw Structure", "raw"),
         ]:
             ttk.Radiobutton(
-                self.sidebar,
+                view_panel,
                 text=label,
                 value=value,
                 variable=self.mode_var,
@@ -295,8 +415,22 @@ class Vis2App:
                 style="Mode.TRadiobutton",
             ).pack(anchor="w", padx=14, pady=4)
 
-        self.blank_sections_space = tk.Frame(self.sidebar, bg=SURFACE_ALT)
-        self.blank_sections_space.pack(fill=tk.BOTH, expand=True)
+        file_area = tk.Frame(self.sidebar, bg=SURFACE_ALT)
+        file_area.pack(fill=tk.BOTH, expand=True, padx=14, pady=(0, 14))
+
+        self.file_tree = ttk.Treeview(
+            file_area,
+            show="tree",
+            height=10,
+            selectmode="browse",
+        )
+        file_scroll = ttk.Scrollbar(file_area, orient="vertical", command=self.file_tree.yview)
+        self.file_tree.configure(yscrollcommand=file_scroll.set)
+        self.file_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        file_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        self.file_tree.bind("<Button-1>", lambda _event: self.file_tree.focus_set())
+        self.file_tree.bind("<Double-Button-1>", self.open_selected_tree_item)
+        self.file_tree.bind("<Return>", self.open_selected_tree_item)
 
     def bind_shortcuts(self):
         self.root.bind("<Control-o>", lambda _event: self.open_folder())
@@ -305,16 +439,27 @@ class Vis2App:
         self.root.bind("<Control-B>", lambda _event: self.open_builder_vis2())
         self.root.bind("<Control-r>", lambda _event: self.reload_current_file())
         self.root.bind("<Control-R>", lambda _event: self.reload_current_file())
+        self.root.bind("<Control-w>", lambda _event: self.close_active_tab())
+        self.root.bind("<Control-W>", lambda _event: self.close_active_tab())
+        self.root.bind("<Alt-Left>", lambda _event: self.go_back())
+        self.root.bind("<Control-BackSpace>", lambda _event: self.go_back())
+        self.root.bind("<Control-bracketleft>", lambda _event: self.go_back())
+        self.root.bind("<BackSpace>", self.handle_backspace_shortcut)
+        self.root.bind("<Control-f>", lambda _event: self.open_find())
+        self.root.bind("<Control-F>", lambda _event: self.open_find())
+        self.root.bind("<Button-4>", lambda _event: self.go_back())
 
         self.root.bind("<Control-Key-1>", lambda _event: self.set_mode("lesson"))
         self.root.bind("<Control-Key-2>", lambda _event: self.set_mode("revision"))
         self.root.bind("<Control-Key-3>", lambda _event: self.set_mode("transition"))
         self.root.bind("<Control-Key-4>", lambda _event: self.set_mode("raw"))
 
-        self.root.bind("<Up>", lambda _event: self.select_relative_file(-1))
-        self.root.bind("<Down>", lambda _event: self.select_relative_file(1))
-        self.root.bind("<Control-Left>", lambda _event: self.select_relative_mode(-1))
-        self.root.bind("<Control-Right>", lambda _event: self.select_relative_mode(1))
+        self.root.bind("<Up>", lambda event: self.handle_arrow_key(event, -1))
+        self.root.bind("<Down>", lambda event: self.handle_arrow_key(event, 1))
+        self.root.bind("<Control-Up>", lambda _event: self.select_relative_mode(-1))
+        self.root.bind("<Control-Down>", lambda _event: self.select_relative_mode(1))
+        self.root.bind("<Control-Left>", lambda _event: self.switch_relative_tab(-1))
+        self.root.bind("<Control-Right>", lambda _event: self.switch_relative_tab(1))
         self.root.bind("<Control-Return>", lambda _event: self.show_transition())
         self.root.bind("<Control-t>", lambda _event: self.show_transition())
         self.root.bind("<Control-T>", lambda _event: self.show_transition())
@@ -351,10 +496,18 @@ class Vis2App:
                 last_yaml_file = str(self.current_file.relative_to(self.base_folder))
             except ValueError:
                 last_yaml_file = ""
+        open_tabs = []
+        for tab in self.tabs:
+            try:
+                open_tabs.append(str(tab["path"].relative_to(self.base_folder)))
+            except ValueError:
+                continue
 
         config = {
             "last_yaml_folder": str(self.base_folder),
             "last_yaml_file": last_yaml_file,
+            "open_tabs": open_tabs,
+            "active_tab": last_yaml_file,
         }
 
         try:
@@ -373,7 +526,13 @@ class Vis2App:
         if not folder_path.exists() or not folder_path.is_dir():
             return False
 
-        self.load_folder(folder_path, preferred_file=config.get("last_yaml_file"), save_config=False)
+        self.load_folder(
+            folder_path,
+            preferred_file=config.get("last_yaml_file"),
+            save_config=False,
+            open_tabs=config.get("open_tabs", []),
+            active_tab=config.get("active_tab") or config.get("last_yaml_file"),
+        )
         return True
 
     def open_folder(self):
@@ -383,14 +542,15 @@ class Vis2App:
 
         self.load_folder(Path(folder))
 
-    def load_folder(self, folder, preferred_file=None, save_config=True):
+    def load_folder(self, folder, preferred_file=None, save_config=True, open_tabs=None, active_tab=None):
         self.base_folder = Path(folder)
-        self.populate_file_list(preferred_file=preferred_file)
+        self.populate_file_list(preferred_file=preferred_file, open_tabs=open_tabs, active_tab=active_tab)
         if save_config:
             self.save_app_config()
 
-    def populate_file_list(self, preferred_file=None):
-        self.file_list.delete(0, tk.END)
+    def populate_file_list(self, preferred_file=None, open_tabs=None, active_tab=None):
+        self.file_tree.delete(*self.file_tree.get_children())
+        self.file_tree_items = {}
 
         if not self.base_folder:
             return
@@ -404,12 +564,24 @@ class Vis2App:
             key=lambda path: str(path.relative_to(self.base_folder)).lower(),
         )
 
+        folder_nodes = {}
         for path in self.yaml_files:
-            label = str(path.relative_to(self.base_folder))
-            self.file_list.insert(tk.END, label)
+            relative = path.relative_to(self.base_folder)
+            parent = ""
+            for part in relative.parts[:-1]:
+                key = (parent, part)
+                if key not in folder_nodes:
+                    folder_nodes[key] = self.file_tree.insert(parent, tk.END, text=f"📁 {part}", open=True)
+                parent = folder_nodes[key]
+            item_id = self.file_tree.insert(parent, tk.END, text=f"📄 {relative.name}", values=(str(path),))
+            self.file_tree_items[path] = item_id
 
         if not self.yaml_files:
             messagebox.showinfo("No YAML files", "This folder does not contain any .yaml or .yml files.")
+            return
+
+        if open_tabs:
+            self.restore_tabs(open_tabs, active_tab or preferred_file)
             return
 
         selected_index = 0
@@ -421,57 +593,415 @@ class Vis2App:
 
         self.select_file_at(selected_index)
 
+    def restore_tabs(self, open_tabs, active_tab=None):
+        self.tabs = []
+        self.active_tab = None
+        valid_paths = []
+        for relative in open_tabs:
+            path = self.base_folder / relative
+            if path.exists() and path in self.yaml_files:
+                valid_paths.append(path)
+
+        if not valid_paths:
+            if active_tab:
+                path = self.base_folder / active_tab
+                if path.exists() and path in self.yaml_files:
+                    valid_paths.append(path)
+            if not valid_paths:
+                self.select_file_at(0)
+                return
+
+        active_path = self.base_folder / active_tab if active_tab else valid_paths[0]
+        for path in valid_paths:
+            try:
+                concept = load_yaml(path)
+            except Exception:
+                continue
+            title = concept.get("title") or clean_title(concept.get("id", path.stem))
+            self.tabs.append({"path": path, "title": title, "scroll": 0.0})
+
+        if not self.tabs:
+            self.select_file_at(0)
+            return
+
+        self.active_tab = 0
+        for index, tab in enumerate(self.tabs):
+            if tab["path"] == active_path:
+                self.active_tab = index
+                break
+
+        self.load_file(self.tabs[self.active_tab]["path"], record_history=False)
+
     def on_file_select(self, _event=None):
         if not self.base_folder:
             return
 
-        selection = self.file_list.curselection()
+        selection = self.file_tree.selection()
         if not selection:
             return
 
-        relative_path = self.file_list.get(selection[0])
-        self.load_file(self.base_folder / relative_path)
+        path = self.path_from_tree_item(selection[0])
+        if path:
+            self.load_file(path, new_tab=True)
+
+    def open_selected_tree_item(self, _event=None):
+        selection = self.file_tree.selection()
+        if not selection:
+            return "break"
+        item = selection[0]
+        path = self.path_from_tree_item(item)
+        if path:
+            self.load_file(path, new_tab=True)
+        else:
+            self.file_tree.item(item, open=not self.file_tree.item(item, "open"))
+        return "break"
+
+    def path_from_tree_item(self, item):
+        values = self.file_tree.item(item, "values")
+        if not values:
+            return None
+        path = Path(values[0])
+        return path if path.exists() else None
 
     def select_file_at(self, index):
         if not self.yaml_files:
             return "break"
 
         index = max(0, min(index, len(self.yaml_files) - 1))
-        self.file_list.selection_clear(0, tk.END)
-        self.file_list.selection_set(index)
-        self.file_list.activate(index)
-        self.file_list.see(index)
-        self.load_file(self.yaml_files[index])
+        path = self.yaml_files[index]
+        item_id = self.file_tree_items.get(path)
+        if item_id:
+            self.file_tree.selection_set(item_id)
+            self.file_tree.focus(item_id)
+            self.file_tree.see(item_id)
+        self.load_file(path, new_tab=True)
         return "break"
 
     def select_relative_file(self, offset):
         if not self.yaml_files:
             return "break"
 
-        selection = self.file_list.curselection()
-        current = selection[0] if selection else 0
+        selection = self.file_tree.selection()
+        selected_path = self.path_from_tree_item(selection[0]) if selection else None
+        try:
+            current = self.yaml_files.index(selected_path) if selected_path else 0
+        except ValueError:
+            current = 0
         self.select_file_at(current + offset)
         return "break"
 
-    def load_file(self, path):
+    def handle_arrow_key(self, event, direction):
+        focused = self.root.focus_get()
+        if self.is_descendant(focused, self.file_tree):
+            return None
+        if isinstance(focused, (tk.Entry, tk.Text, ttk.Entry)):
+            return None
+        self.content.canvas.yview_scroll(direction, "units")
+        return "break"
+
+    def is_descendant(self, widget, parent):
+        while widget is not None:
+            if widget == parent:
+                return True
+            try:
+                widget = widget.master
+            except Exception:
+                return False
+        return False
+
+    def load_file(self, path, new_tab=False, record_history=True):
+        path = Path(path)
         try:
-            self.concept = load_yaml(path)
-            self.current_file = Path(path)
+            concept = load_yaml(path)
         except Exception as error:
             messagebox.showerror("Could not load YAML", str(error))
             return
+
+        if record_history and self.current_file and self.current_file != path:
+            self.nav_history.append(self.current_file)
+
+        self.concept = concept
+        self.current_file = path
+        if new_tab or (self.active_tab is not None and self.tabs and self.tabs[self.active_tab]["path"] != path):
+            self.save_active_scroll()
+        self.open_or_update_tab(path, concept, new_tab=new_tab)
 
         title = self.concept.get("title") or clean_title(self.concept.get("id", "Untitled Concept"))
         self.title_label.config(text=title)
         self.subtitle_label.config(text=str(self.current_file))
         self._populate_languages()
         self.render()
+        self.render_tabs()
+        self.restore_active_scroll()
         self.save_app_config()
 
     def reload_current_file(self):
         if self.current_file:
-            self.load_file(self.current_file)
+            self.load_file(self.current_file, record_history=False)
         return "break"
+
+    def open_or_update_tab(self, path, concept, new_tab=False):
+        title = concept.get("title") or clean_title(concept.get("id", path.stem))
+        existing = None
+        for index, tab in enumerate(self.tabs):
+            if tab["path"] == path:
+                existing = index
+                break
+
+        if existing is not None:
+            old_scroll = self.tabs[existing].get("scroll", 0.0)
+            self.tabs[existing] = {"path": path, "title": title, "scroll": old_scroll}
+            self.active_tab = existing
+        elif new_tab or self.active_tab is None:
+            self.tabs.append({"path": path, "title": title, "scroll": 0.0})
+            self.active_tab = len(self.tabs) - 1
+        else:
+            self.tabs[self.active_tab] = {"path": path, "title": title, "scroll": 0.0}
+
+    def save_active_scroll(self):
+        if self.active_tab is None or self.active_tab >= len(self.tabs):
+            return
+        try:
+            self.tabs[self.active_tab]["scroll"] = self.content.canvas.yview()[0]
+        except Exception:
+            pass
+
+    def restore_active_scroll(self):
+        if self.active_tab is None or self.active_tab >= len(self.tabs):
+            return
+        scroll = self.tabs[self.active_tab].get("scroll", 0.0)
+        self.root.after(30, lambda value=scroll: self.content.canvas.yview_moveto(value))
+
+    def render_tabs(self):
+        for child in self.tab_bar.winfo_children():
+            child.destroy()
+
+        if not self.tabs:
+            return
+
+        for index, tab in enumerate(self.tabs):
+            active = index == self.active_tab
+            tab_frame = tk.Frame(self.tab_bar, bg=ACCENT if active else SURFACE, highlightbackground=LINE, highlightthickness=1)
+            tab_frame.pack(side=tk.LEFT, padx=(0, 6), pady=2)
+            label = tk.Label(
+                tab_frame,
+                text=tab["title"],
+                bg=ACCENT if active else SURFACE,
+                fg="white" if active else INK,
+                font=("Segoe UI", 9, "bold" if active else "normal"),
+                padx=10,
+                pady=5,
+                cursor="hand2",
+            )
+            label.pack(side=tk.LEFT)
+            label.bind("<Button-1>", lambda _event, i=index: self.switch_tab(i))
+            label.bind("<Button-3>", lambda event, i=index: self.show_tab_menu(i, event))
+            close = tk.Label(
+                tab_frame,
+                text="x",
+                bg=ACCENT if active else SURFACE,
+                fg="white" if active else MUTED,
+                font=("Segoe UI", 9, "bold"),
+                padx=6,
+                pady=5,
+                cursor="hand2",
+            )
+            close.pack(side=tk.LEFT)
+            close.bind("<Button-1>", lambda _event, i=index: self.close_tab(i))
+            close.bind("<Button-3>", lambda event, i=index: self.show_tab_menu(i, event))
+
+    def show_tab_menu(self, index, event):
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label="Close tab", command=lambda: self.close_tab(index))
+        menu.tk_popup(event.x_root, event.y_root)
+        return "break"
+
+    def switch_tab(self, index):
+        if index < 0 or index >= len(self.tabs):
+            return "break"
+        self.save_active_scroll()
+        if self.current_file:
+            self.nav_history.append(self.current_file)
+        self.active_tab = index
+        self.load_file(self.tabs[index]["path"], record_history=False)
+        return "break"
+
+    def switch_relative_tab(self, offset):
+        if not self.tabs:
+            return "break"
+        current = self.active_tab if self.active_tab is not None else 0
+        return self.switch_tab((current + offset) % len(self.tabs))
+
+    def close_active_tab(self):
+        return self.close_tab(self.active_tab)
+
+    def close_tab(self, index):
+        if index is None or index < 0 or index >= len(self.tabs):
+            return "break"
+        self.save_active_scroll()
+        del self.tabs[index]
+        if not self.tabs:
+            self.active_tab = None
+            self.current_file = None
+            self.concept = {}
+            self.content.clear()
+            self.render_tabs()
+            self.title_label.config(text="Vis2")
+            self.subtitle_label.config(text="Component lesson visualizer")
+            return "break"
+        self.active_tab = min(index, len(self.tabs) - 1)
+        self.load_file(self.tabs[self.active_tab]["path"], record_history=False)
+        return "break"
+
+    def go_back(self):
+        self.save_active_scroll()
+        while self.nav_history:
+            path = self.nav_history.pop()
+            if path and path.exists() and path != self.current_file:
+                self.load_file(path, record_history=False)
+                return "break"
+        return "break"
+
+    def handle_backspace_shortcut(self, event):
+        if isinstance(event.widget, (tk.Entry, tk.Text, ttk.Entry)):
+            return None
+        return self.go_back()
+
+    def open_find(self):
+        if self.find_window.winfo_ismapped():
+            self.find_entry.focus_set()
+            if self.find_entry.get().strip():
+                self.run_find()
+            else:
+                self.find_entry.select_range(0, tk.END)
+            return "break"
+
+        focused = self.root.focus_get()
+        self.find_scope = "folders" if self.is_descendant(focused, self.file_tree) else "content"
+        self.find_window.pack(fill=tk.X, padx=18, pady=(0, 8), before=self.content)
+        self.find_entry.focus_set()
+        self.find_entry.select_range(0, tk.END)
+        return "break"
+
+    def position_find_window(self):
+        return
+
+    def close_find(self):
+        self.clear_find_highlight()
+        self.find_window.pack_forget()
+        self.find_matches = []
+        self.find_index = -1
+        return "break"
+
+    def run_find(self):
+        query = self.find_entry.get().strip()
+        if not query:
+            self.clear_find_highlight()
+            self.find_status.config(text="")
+            return "break"
+
+        focused = self.root.focus_get()
+        scope = "folders" if self.is_descendant(focused, self.file_tree) else self.find_scope
+        if query != self.find_query or scope != self.find_scope or not self.find_matches:
+            self.find_query = query
+            self.find_scope = scope
+            self.find_matches = self.folder_find_matches(query) if scope == "folders" else self.content_find_matches(query)
+            self.find_index = -1
+
+        if not self.find_matches:
+            self.clear_find_highlight()
+            self.find_status.config(text=f"No {self.find_scope} matches")
+            return "break"
+
+        self.find_index = (self.find_index + 1) % len(self.find_matches)
+        self.show_find_match(self.find_matches[self.find_index])
+        self.find_status.config(text=f"{self.find_scope.title()} match {self.find_index + 1} of {len(self.find_matches)}")
+        return "break"
+
+    def folder_find_matches(self, query):
+        needle = query.lower()
+        matches = []
+
+        def visit(item):
+            if needle in self.file_tree.item(item, "text").lower():
+                matches.append(("folder", item))
+            for child in self.file_tree.get_children(item):
+                visit(child)
+
+        for item in self.file_tree.get_children(""):
+            visit(item)
+        return matches
+
+    def content_find_matches(self, query):
+        needle = query.lower()
+        matches = []
+
+        def visit(widget):
+            if isinstance(widget, tk.Label):
+                text = widget.cget("text")
+                if text and needle in str(text).lower():
+                    matches.append(("label", widget))
+            elif isinstance(widget, tk.Text):
+                text = widget.get("1.0", tk.END)
+                haystack = text.lower()
+                start = haystack.find(needle)
+                while start != -1:
+                    matches.append(("text", widget, start, len(query)))
+                    start = haystack.find(needle, start + max(1, len(needle)))
+            for child in widget.winfo_children():
+                visit(child)
+
+        visit(self.content.inner)
+        return matches
+
+    def clear_find_highlight(self):
+        if not self.find_highlight:
+            return
+        kind, widget, original_bg = self.find_highlight
+        try:
+            if kind == "label":
+                widget.configure(bg=original_bg)
+            elif kind == "text":
+                widget.tag_remove("find_match", "1.0", tk.END)
+        except tk.TclError:
+            pass
+        self.find_highlight = None
+
+    def show_find_match(self, match):
+        self.clear_find_highlight()
+        kind, target, *details = match
+        if kind == "folder":
+            self.file_tree.selection_set(target)
+            self.file_tree.focus(target)
+            self.file_tree.see(target)
+            self.file_tree.focus_set()
+            return
+        if kind == "label":
+            original_bg = target.cget("bg")
+            target.configure(bg="#fef3c7")
+            self.find_highlight = ("label", target, original_bg)
+            self.scroll_widget_into_view(target)
+            return
+        if details:
+            start = f"1.0+{details[0]}c"
+            end = f"{start}+{details[1]}c"
+            target.tag_configure("find_match", background="#fef3c7", foreground=INK)
+            target.tag_remove("find_match", "1.0", tk.END)
+            target.tag_add("find_match", start, end)
+            target.see(start)
+            self.find_highlight = ("text", target, None)
+            self.scroll_widget_into_view(target)
+
+    def scroll_widget_into_view(self, widget):
+        self.root.update_idletasks()
+        y = 0
+        current = widget
+        while current is not None and current != self.content.inner:
+            y += current.winfo_y()
+            current = current.master
+        bbox = self.content.canvas.bbox("all")
+        if bbox and bbox[3] > 0:
+            self.content.canvas.yview_moveto(max(0.0, min(1.0, y / bbox[3])))
 
     def _populate_languages(self):
         languages = self.concept.get("languages", [])
@@ -519,11 +1049,18 @@ class Vis2App:
         return "break"
 
     def render(self):
+        self.clear_find_highlight()
+        self.find_matches = []
+        self.find_index = -1
         self.image_refs = []
         self.content.clear()
 
         if not self.concept:
             self._empty_state("Open a component-style YAML concept to begin.")
+            return
+
+        if is_booklet(self.concept):
+            self._render_booklet()
             return
 
         mode = self.mode_var.get()
@@ -543,15 +1080,16 @@ class Vis2App:
         tk.Label(panel, text=eyebrow.upper(), bg=APP_BG, fg=ACCENT, font=("Segoe UI", 9, "bold")).pack(anchor="w")
         tk.Label(panel, text=title, bg=APP_BG, fg=INK, font=("Segoe UI", 24, "bold"), anchor="w").pack(anchor="w")
         if body:
-            tk.Label(
+            label = tk.Label(
                 panel,
                 text=body,
                 bg=APP_BG,
                 fg=MUTED,
                 font=("Segoe UI", 11),
-                wraplength=980,
                 justify="left",
-            ).pack(anchor="w", pady=(6, 0))
+            )
+            label.pack(anchor="w", fill=tk.X, pady=(6, 0))
+            bind_wrap(label, panel)
 
     def _card(self, title=None, accent=ACCENT):
         outer = tk.Frame(self.content.inner, bg=APP_BG)
@@ -564,14 +1102,17 @@ class Vis2App:
         card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         if title:
-            tk.Label(
+            label = tk.Label(
                 card,
                 text=title,
                 bg=SURFACE,
                 fg=accent,
                 font=("Segoe UI", 14, "bold"),
                 anchor="w",
-            ).pack(anchor="w", fill=tk.X, pady=(0, 8))
+                justify="left",
+            )
+            label.pack(anchor="w", fill=tk.X, pady=(0, 8))
+            bind_wrap(label, card)
         return card
 
     def _text(self, parent, text, size=10, color=INK, bold=False, mono=False):
@@ -579,16 +1120,81 @@ class Vis2App:
             return
         font_family = "Consolas" if mono else "Segoe UI"
         font = (font_family, size, "bold") if bold else (font_family, size)
-        tk.Label(
+        label = tk.Label(
             parent,
             text=str(text).strip(),
             bg=parent.cget("bg"),
             fg=color,
             font=font,
-            wraplength=980,
             justify="left",
             anchor="w",
-        ).pack(anchor="w", fill=tk.X, pady=2)
+        )
+        label.pack(anchor="w", fill=tk.X, pady=2)
+        bind_wrap(label, parent)
+
+    def _code_box(self, parent, language, code):
+        shell = tk.Frame(parent, bg=CODE_BG, padx=8, pady=6)
+        shell.pack(fill=tk.X, pady=(6, 0))
+        header = tk.Frame(shell, bg=CODE_BG)
+        header.pack(fill=tk.X)
+        tk.Label(
+            header,
+            text=language.upper(),
+            bg=CODE_BG,
+            fg=CODE_ACCENT,
+            font=("Segoe UI", 9, "bold"),
+            anchor="w",
+        ).pack(side=tk.LEFT)
+        full_button = tk.Button(
+            header,
+            text="Expand",
+            command=lambda: self.show_code_full(language, code),
+            bg="#fed7aa",
+            fg=CODE_ACCENT,
+            activebackground="#fdba74",
+            activeforeground="#7c2d12",
+            relief=tk.FLAT,
+            font=("Segoe UI", 9, "bold"),
+            padx=10,
+            pady=4,
+            cursor="hand2",
+        )
+        full_button.pack(side=tk.RIGHT)
+
+        box = tk.Text(shell, height=min(16, max(5, len(str(code).splitlines()) + 1)), bg=CODE_BG, fg=CODE_FG, insertbackground=CODE_FG, font=("Consolas", 10), wrap=tk.WORD, relief=tk.FLAT)
+        box.pack(fill=tk.X, expand=True, pady=(6, 0))
+        box.insert("1.0", str(code).rstrip())
+        box.config(state=tk.DISABLED)
+        box.bind("<Button-3>", lambda event: self.show_code_menu(event, language, code))
+        return box
+
+    def show_code_menu(self, event, language, code):
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label=f"View {clean_title(language)} code in full", command=lambda: self.show_code_full(language, code))
+        menu.tk_popup(event.x_root, event.y_root)
+        return "break"
+
+    def show_code_full(self, language, code):
+        window = tk.Toplevel(self.root)
+        window.title(f"{clean_title(language)} Code")
+        window.geometry("980x720")
+        window.configure(bg=APP_BG)
+        header = tk.Frame(window, bg=INK)
+        header.pack(fill=tk.X)
+        tk.Label(header, text=f"{clean_title(language)} Code", bg=INK, fg="white", font=("Segoe UI", 16, "bold")).pack(side=tk.LEFT, padx=14, pady=10)
+        ttk.Button(header, text="Close", command=window.destroy).pack(side=tk.RIGHT, padx=14, pady=10)
+        body = tk.Frame(window, bg=APP_BG, padx=12, pady=12)
+        body.pack(fill=tk.BOTH, expand=True)
+        box = tk.Text(body, bg=CODE_BG, fg=CODE_FG, insertbackground=CODE_FG, font=("Consolas", 11), wrap=tk.WORD)
+        y_scroll = ttk.Scrollbar(body, orient="vertical", command=box.yview)
+        box.configure(yscrollcommand=y_scroll.set)
+        box.grid(row=0, column=0, sticky="nsew")
+        y_scroll.grid(row=0, column=1, sticky="ns")
+        body.grid_rowconfigure(0, weight=1)
+        body.grid_columnconfigure(0, weight=1)
+        box.insert("1.0", str(code).rstrip())
+        box.config(state=tk.DISABLED)
+        window.bind("<Escape>", lambda _event: window.destroy())
 
     def _bullet_list(self, parent, items):
         for item in as_list(items):
@@ -702,6 +1308,117 @@ class Vis2App:
             for block in self.concept.get("examples", []):
                 self._render_component(block)
 
+    def _render_booklet(self):
+        self._page_title(
+            "Booklet",
+            self.concept.get("title", "Untitled Booklet"),
+            self.concept.get("goal") or self.concept.get("description"),
+        )
+
+        chapters = self.concept.get("chapters", [])
+        if not chapters:
+            self._empty_state("This booklet does not have chapters yet.")
+            return
+
+        for chapter_index, chapter in enumerate(chapters, start=1):
+            card = self._card(f"{chapter_index}. {chapter.get('title', clean_title(chapter.get('id', 'chapter')))}", ACCENT)
+            self._text(card, chapter.get("description"), color=MUTED)
+
+            for section in chapter.get("sections", []):
+                self._mini_heading(card, section.get("title", "Section"))
+                if section.get("description"):
+                    self._text(card, section.get("description"), color=MUTED)
+
+                lessons = section.get("lessons", [])
+                if not lessons:
+                    self._text(card, "No lessons added yet.", color=MUTED)
+                    continue
+
+                for lesson in lessons:
+                    self._booklet_lesson_row(card, lesson)
+
+    def _booklet_lesson_row(self, parent, lesson):
+        row = tk.Frame(parent, bg=SURFACE)
+        row.pack(fill=tk.X, pady=3)
+
+        title = lesson.get("title") or clean_title(lesson.get("id", "Lesson"))
+        file_value = lesson.get("file") or lesson.get("path")
+        status = lesson.get("status", "")
+
+        label_text = title
+        if status:
+            label_text = f"{label_text}  [{status}]"
+        color = topic_color(file_value or title)
+
+        tk.Frame(row, bg=color, width=4).pack(side=tk.LEFT, fill=tk.Y, padx=(0, 8))
+
+        label = tk.Label(
+            row,
+            text=label_text,
+            bg=SURFACE,
+            fg=color,
+            font=("Segoe UI", 10, "bold"),
+            anchor="w",
+            justify="left",
+            cursor="hand2" if file_value else "",
+        )
+        label.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        if lesson.get("description"):
+            Tooltip(label, lesson.get("description"))
+
+        if file_value:
+            target = self._resolve_lesson_path(file_value)
+            label.bind("<Button-1>", lambda _event, path=target: self.open_booklet_lesson(path))
+            ttk.Button(row, text="Open", command=lambda path=target: self.open_booklet_lesson(path)).pack(side=tk.RIGHT, padx=(8, 0))
+        else:
+            tk.Label(row, text="No file", bg=SURFACE, fg=MUTED, font=("Segoe UI", 9)).pack(side=tk.RIGHT)
+
+    def _resolve_lesson_path(self, file_value):
+        path = Path(str(file_value))
+        if path.is_absolute():
+            return path
+
+        candidates = []
+        if self.current_file:
+            candidates.append(self.current_file.parent / path)
+        if self.base_folder:
+            candidates.append(self.base_folder / path)
+        candidates.append(PROJECT_ROOT / path)
+
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+        return PROJECT_ROOT / path
+
+    def open_booklet_lesson(self, path):
+        path = Path(path)
+        if not path.exists():
+            messagebox.showerror("Lesson Not Found", f"Could not find:\n{path}")
+            return "break"
+        self.load_file(path, new_tab=True)
+        self._select_file_in_sidebar(path)
+        return "break"
+
+    def _select_file_in_sidebar(self, path):
+        if not self.base_folder:
+            return
+        try:
+            target = Path(path).resolve()
+        except Exception:
+            return
+        for index, item in enumerate(self.yaml_files):
+            try:
+                if item.resolve() == target:
+                    item_id = self.file_tree_items.get(item)
+                    if item_id:
+                        self.file_tree.selection_set(item_id)
+                        self.file_tree.focus(item_id)
+                        self.file_tree.see(item_id)
+                    return
+            except Exception:
+                continue
+
     def _render_revision(self):
         revision = self.concept.get("revision", {})
         self._page_title("Revision Mode", self.concept.get("title", "Untitled Concept"), "Fast review material.")
@@ -802,8 +1519,17 @@ class Vis2App:
         self._language_filter()
         card = self._card("Filtered YAML Preview", ACCENT)
         text = yaml.safe_dump(self._filtered_raw_concept(), sort_keys=False, allow_unicode=True)
-        box = tk.Text(card, height=34, bg=CODE_BG, fg=CODE_FG, insertbackground="white", font=("Consolas", 10))
-        box.pack(fill=tk.BOTH, expand=True)
+        raw_frame = tk.Frame(card, bg=SURFACE)
+        raw_frame.pack(fill=tk.BOTH, expand=True)
+        box = tk.Text(raw_frame, height=34, bg=CODE_BG, fg=CODE_FG, insertbackground="white", font=("Consolas", 10), wrap=tk.NONE)
+        y_scroll = ttk.Scrollbar(raw_frame, orient="vertical", command=box.yview)
+        x_scroll = ttk.Scrollbar(raw_frame, orient="horizontal", command=box.xview)
+        box.configure(yscrollcommand=y_scroll.set, xscrollcommand=x_scroll.set)
+        box.grid(row=0, column=0, sticky="nsew")
+        y_scroll.grid(row=0, column=1, sticky="ns")
+        x_scroll.grid(row=1, column=0, sticky="ew")
+        raw_frame.grid_rowconfigure(0, weight=1)
+        raw_frame.grid_columnconfigure(0, weight=1)
         box.insert("1.0", text)
         box.config(state=tk.DISABLED)
 
@@ -924,35 +1650,12 @@ class Vis2App:
         card = self._card(data.get("title", "Code Comparison"), AMBER)
         self._text(card, data.get("idea"), color=MUTED)
 
-        grid = tk.Frame(card, bg=SURFACE)
-        grid.pack(fill=tk.X, pady=(8, 6))
-
         languages = [language for language in self.selected_languages() if language_value(data, language)]
         if not languages:
             self._text(card, "No selected languages are available for this example.", color=MUTED)
             return
-        for column, language in enumerate(languages):
-            grid.grid_columnconfigure(column, weight=1, uniform="code")
-            cell = tk.Frame(grid, bg=CODE_BG, padx=10, pady=8)
-            cell.grid(row=0, column=column, sticky="nsew", padx=4)
-            tk.Label(
-                cell,
-                text=language.upper(),
-                bg=CODE_BG,
-                fg="#93c5fd",
-                font=("Segoe UI", 9, "bold"),
-                anchor="w",
-            ).pack(anchor="w")
-            tk.Label(
-                cell,
-                text=str(language_value(data, language)).rstrip(),
-                bg=CODE_BG,
-                fg=CODE_FG,
-                font=("Consolas", 10),
-                justify="left",
-                anchor="nw",
-                wraplength=300,
-            ).pack(anchor="nw", fill=tk.BOTH, expand=True, pady=(6, 0))
+        for language in languages:
+            self._code_box(card, language, language_value(data, language))
 
         self._text(card, data.get("note"), color=MUTED)
 
@@ -960,16 +1663,100 @@ class Vis2App:
         card = self._card(data.get("title", "Table"), accent)
         columns, rows = self._visible_table_data(data.get("columns", []), data.get("rows", []))
 
-        table = tk.Frame(card, bg=LINE)
-        table.pack(fill=tk.X, pady=(4, 0))
+        self._render_wrapped_table(card, columns, rows, accent)
 
-        for column, name in enumerate(columns):
-            table.grid_columnconfigure(column, weight=1, uniform="table")
-            self._table_cell(table, name, 0, column, header=True)
+    def _render_stacked_table(self, parent, columns, rows, accent=ACCENT):
+        if not columns:
+            self._text(parent, "This table has no columns.", color=MUTED)
+            return
+
+        header = tk.Frame(parent, bg="#fff7ed", padx=10, pady=8, highlightbackground=LINE, highlightthickness=1)
+        header.pack(fill=tk.X, pady=(4, 8))
+        label = tk.Label(
+            header,
+            text=" | ".join(str(column) for column in columns),
+            bg="#fff7ed",
+            fg=accent,
+            font=("Segoe UI", 10, "bold"),
+            justify="left",
+            anchor="w",
+        )
+        label.pack(anchor="w", fill=tk.X)
+        bind_wrap(label, header)
 
         for row_index, row in enumerate(rows, start=1):
-            for column, value in enumerate(row):
-                self._table_cell(table, value, row_index, column)
+            row_card = tk.Frame(parent, bg="#fbfdff", padx=12, pady=10, highlightbackground=LINE, highlightthickness=1)
+            row_card.pack(fill=tk.X, pady=6)
+            tk.Label(
+                row_card,
+                text=f"Row {row_index}",
+                bg="#fbfdff",
+                fg=MUTED,
+                font=("Segoe UI", 9, "bold"),
+                anchor="w",
+            ).pack(anchor="w", fill=tk.X, pady=(0, 4))
+            for column_index, column in enumerate(columns):
+                value = row[column_index] if column_index < len(row) else ""
+                item = tk.Frame(row_card, bg="#fbfdff")
+                item.pack(fill=tk.X, pady=2)
+                tk.Label(
+                    item,
+                    text=str(column),
+                    bg="#fbfdff",
+                    fg=accent,
+                    font=("Segoe UI", 9, "bold"),
+                    anchor="nw",
+                    justify="left",
+                    width=22,
+                ).pack(side=tk.LEFT, anchor="nw")
+                value_label = tk.Label(
+                    item,
+                    text=str(value),
+                    bg="#fbfdff",
+                    fg=INK,
+                    font=("Segoe UI", 10),
+                    justify="left",
+                    anchor="nw",
+                )
+                value_label.pack(side=tk.LEFT, fill=tk.X, expand=True, anchor="nw")
+                bind_wrap(value_label, item, margin=210, minimum=160)
+
+    def _render_wrapped_table(self, parent, columns, rows, accent=ACCENT):
+        if not columns:
+            self._text(parent, "This table has no columns.", color=MUTED)
+            return
+
+        max_cols = 4
+        first_column = columns[:1]
+        other_columns = columns[1:]
+        bands = [columns] if len(columns) <= max_cols else []
+        if len(columns) > max_cols:
+            band_size = max_cols - 1
+            for start in range(0, len(other_columns), band_size):
+                bands.append(first_column + other_columns[start:start + band_size])
+
+        for band_index, band_columns in enumerate(bands):
+            if len(bands) > 1:
+                tk.Label(
+                    parent,
+                    text=f"Table view {band_index + 1}",
+                    bg=SURFACE,
+                    fg=MUTED,
+                    font=("Segoe UI", 9, "bold"),
+                    anchor="w",
+                ).pack(anchor="w", fill=tk.X, pady=(8 if band_index else 4, 2))
+
+            table = tk.Frame(parent, bg=LINE)
+            table.pack(fill=tk.X, pady=(2, 8))
+            for col_index, column in enumerate(band_columns):
+                table.grid_columnconfigure(col_index, weight=1, uniform=f"table_{band_index}")
+                self._table_cell(table, column, 0, col_index, header=True)
+
+            source_indexes = [columns.index(column) for column in band_columns]
+            for row_index, row in enumerate(rows, start=1):
+                for col_index, source_index in enumerate(source_indexes):
+                    value = row[source_index] if source_index < len(row) else ""
+                    self._table_cell(table, value, row_index, col_index)
 
     def _visible_table_data(self, columns, rows):
         if not self.available_languages:
@@ -999,7 +1786,7 @@ class Vis2App:
         bg = INK if header else SURFACE
         fg = "white" if header else INK
         font = ("Segoe UI", 10, "bold") if header else ("Segoe UI", 10)
-        tk.Label(
+        label = tk.Label(
             parent,
             text=str(text),
             bg=bg,
@@ -1007,10 +1794,11 @@ class Vis2App:
             font=font,
             padx=10,
             pady=8,
-            wraplength=230,
             justify="left",
             anchor="nw",
-        ).grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
+        )
+        label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
+        label.bind("<Configure>", lambda event, item=label: item.configure(wraplength=max(120, event.width - 20)), add="+")
 
     def _render_image(self, data):
         asset_name = data.get("asset")
