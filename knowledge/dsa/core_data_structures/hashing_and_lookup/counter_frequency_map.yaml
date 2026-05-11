@@ -12,6 +12,30 @@ assets:
     alt: Current value x updating freq[x], distinct count, and max frequency.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a collection of values, solve membership, grouping, counting, or complement lookup
+        using stable keys.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Frequency Strategy
       body: >
         A frequency map tracks how many times each value appears. Watch x, freq[x],
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Frequency Tools
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Count all", "Counter", "unordered_map<T,int>", "HashMap<T,Integer>"]
         - ["Increment", "freq[x]+=1", "freq[x]++", "put/getOrDefault"]
@@ -141,7 +165,7 @@ revision:
     - "Interview working idea: Frequency maps track counts. Window counts need increment and decrement symmetry."
   cheat_table:
     title: Frequency Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["increment", "get + 1", "freq[x]++", "getOrDefault + put"]
       - ["remove zero", "del", "erase", "remove"]

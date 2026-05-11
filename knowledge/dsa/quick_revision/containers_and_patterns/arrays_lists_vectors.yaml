@@ -22,222 +22,238 @@ assets:
     alt: Python list references, C++ vector contiguous values, and Java primitive
       arrays versus ArrayList references.
 lesson:
-- explain:
-    title: Core Idea
-    body: >
-      Arrays, lists, and vectors solve the same interview need: store ordered
-      values and access them by index. The danger is assuming they have the same memory
-      behavior. Python list stores references, C++ vector stores values contiguously,
-      Java int[] stores primitive values, and Java ArrayList<Integer> stores boxed
-      object references.
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Arrays / Lists / Vectors as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
 
-- explain:
-    title: Method Strategy
-    body: >
-      Sequential containers store values in index order, so most algorithms depend on
-      stable meanings for i, write, left, right, or size. The method choice is usually
-      about access pattern: index reads are cheap, appends are cheap on average, but
-      front insertion and middle deletion shift many elements. In interviews, first
-      decide whether you need fixed size, dynamic growth, copying, or in-place mutation.
+  - explain:
+      title: Method Strategy
+      body: >
+        Sequential containers store values in index order, so most algorithms depend on
+        stable meanings for i, write, left, right, or size. The method choice is usually
+        about access pattern: index reads are cheap, appends are cheap on average, but
+        front insertion and middle deletion shift many elements. In interviews, first
+        decide whether you need fixed size, dynamic growth, copying, or in-place mutation.
 
-- compare_table:
-    title: First Mapping
-    columns:
-    - Need
-    - Python
-    - C++
-    - Java
-    rows:
-    - - Growable sequence
-      - list
-      - vector<T>
-      - ArrayList<T>
-    - - Fixed primitive array
-      - list by convention
-      - array<T,N> or vector<T>
-      - int[], char[], long[]
-    - - Append
-      - append(x)
-      - push_back(x)
-      - add(x)
-    - - Index read
-      - nums[i]
-      - nums[i]
-      - nums[i] or list.get(i)
-    - - Length
-      - len(nums)
-      - nums.size()
-      - nums.length or list.size()
-    - - Copy
-      - nums.copy() or nums[:]
-      - vector<int> b = a
-      - a.clone() or new ArrayList<>(list)
-- language_lens:
-    language: python
-    title: Python List Thinking
-    body: >
-      Python list is a dynamic array of references. It feels like a flexible
-      container for everything, but assignment aliases the same list unless you explicitly
-      copy.
+  - compare_table:
+      title: First Mapping
+      columns:
+        - Operation Needed
+        - Python
+        - C++
+        - Java
+      rows:
+        - - Growable sequence
+          - list
+          - vector<T>
+          - ArrayList<T>
+        - - Fixed primitive array
+          - list by convention
+          - array<T,N> or vector<T>
+          - int[], char[], long[]
+        - - Append
+          - append(x)
+          - push_back(x)
+          - add(x)
+        - - Index read
+          - nums[i]
+          - nums[i]
+          - nums[i] or list.get(i)
+        - - Length
+          - len(nums)
+          - nums.size()
+          - nums.length or list.size()
+        - - Copy
+          - nums.copy() or nums[:]
+          - vector<int> b = a
+          - a.clone() or new ArrayList<>(list)
+  - language_lens:
+      language: python
+      title: Python List Thinking
+      body: >
+        Python list is a dynamic array of references. It feels like a flexible
+        container for everything, but assignment aliases the same list unless you explicitly
+        copy.
 
-    default_instincts:
-    - Use list for most ordered interview data.
-    - Use append and pop for stack behavior at the end.
-    - Use enumerate when index and value are both needed.
-    - Use slicing carefully when a copy is intended.
-    avoid:
-    - Using list for repeated membership checks when set is intended.
-    - Mutating a list while iterating unless index movement is deliberate.
-    - Treating a nested shallow copy as independent rows.
-- language_lens:
-    language: cpp
-    title: C++ Vector Thinking
-    body: >
-      vector is the interview default for ordered dynamic data in C++. It stores
-      values contiguously, which gives fast indexing and cache-friendly iteration.
-      The key caveat is that growth can reallocate storage.
+      default_instincts:
+        - Use list for most ordered interview data.
+        - Use append and pop for stack behavior at the end.
+        - Use enumerate when index and value are both needed.
+        - Use slicing carefully when a copy is intended.
+      avoid:
+        - Using list for repeated membership checks when set is intended.
+        - Mutating a list while iterating unless index movement is deliberate.
+        - Treating a nested shallow copy as independent rows.
+  - language_lens:
+      language: cpp
+      title: C++ Vector Thinking
+      body: >
+        vector is the interview default for ordered dynamic data in C++. It stores
+        values contiguously, which gives fast indexing and cache-friendly iteration.
+        The key caveat is that growth can reallocate storage.
 
-    default_instincts:
-    - Use vector<T> for most arrays.
-    - Pre-size with vector<int> nums(n) when n is known.
-    - Use reserve when many pushes are expected and final size is unknown.
-    - Pass large vectors by const reference when read-only.
-    avoid:
-    - Using list because Python calls its dynamic array list.
-    - Returning references to local vectors.
-    - Holding element references across push_back when growth can happen.
-- language_lens:
-    language: java
-    title: Java Array And ArrayList Thinking
-    body: >
-      Java splits the idea into primitive arrays and collection lists. int[]
-      is compact and fast for fixed-size numeric data. ArrayList<Integer> is growable
-      but boxes primitives and stores object references.
+      default_instincts:
+        - Use vector<T> for most arrays.
+        - Pre-size with vector<int> nums(n) when n is known.
+        - Use reserve when many pushes are expected and final size is unknown.
+        - Pass large vectors by const reference when read-only.
+      avoid:
+        - Using list because Python calls its dynamic array list.
+        - Returning references to local vectors.
+        - Holding element references across push_back when growth can happen.
+  - language_lens:
+      language: java
+      title: Java Array And ArrayList Thinking
+      body: >
+        Java splits the idea into primitive arrays and collection lists. int[]
+        is compact and fast for fixed-size numeric data. ArrayList<Integer> is growable
+        but boxes primitives and stores object references.
 
-    default_instincts:
-    - Use int[] for fixed-size numeric interview arrays.
-    - Use ArrayList<Integer> when size grows dynamically.
-    - Use Arrays.copyOf or clone for primitive array copies.
-    - Use list.get(i) and list.set(i, value) for ArrayList access.
-    avoid:
-    - Writing List<int>; Java generics require boxed Integer.
-    - Printing int[] directly instead of Arrays.toString.
-    - Assuming array length uses length() method.
-- compare_table:
-    title: Interview Costs
-    columns:
-    - Operation
-    - Python list
-    - C++ vector
-    - Java int[] / ArrayList
-    rows:
-    - - Index access
-      - O(1)
-      - O(1)
-      - O(1)
-    - - Append at end
-      - Amortized O(1)
-      - Amortized O(1)
-      - ArrayList amortized O(1)
-    - - Insert front
-      - O(n)
-      - O(n)
-      - O(n)
-    - - Membership scan
-      - O(n)
-      - O(n)
-      - O(n)
-    - - Copy whole container
-      - O(n) shallow
-      - O(n) value copy
-      - O(n) shallow for objects
+      default_instincts:
+        - Use int[] for fixed-size numeric interview arrays.
+        - Use ArrayList<Integer> when size grows dynamically.
+        - Use Arrays.copyOf or clone for primitive array copies.
+        - Use list.get(i) and list.set(i, value) for ArrayList access.
+      avoid:
+        - Writing List<int>; Java generics require boxed Integer.
+        - Printing int[] directly instead of Arrays.toString.
+        - Assuming array length uses length() method.
+  - compare_table:
+      title: Interview Costs
+      columns:
+        - Operation
+        - Python list
+        - C++ vector
+        - Java int[] / ArrayList
+      rows:
+        - - Index access
+          - O(1)
+          - O(1)
+          - O(1)
+        - - Append at end
+          - Amortized O(1)
+          - Amortized O(1)
+          - ArrayList amortized O(1)
+        - - Insert front
+          - O(n)
+          - O(n)
+          - O(n)
+        - - Membership scan
+          - O(n)
+          - O(n)
+          - O(n)
+        - - Copy whole container
+          - O(n) shallow
+          - O(n) value copy
+          - O(n) shallow for objects
 examples:
-- code_compare:
-    title: Build And Sum
-    idea: Store n numbers and compute their sum safely.
-    python: |
-      nums = [1, 2, 3]
+  - code_compare:
+      title: Build And Sum
+      idea: Store n numbers and compute their sum safely.
+      python: |
+        nums = [1, 2, 3]
 
-      # Python int grows as needed, so sum(nums) is safe from overflow.
-      total = sum(nums)
-    cpp: |
-      vector<int> nums = {1, 2, 3};
+        # Python int grows as needed, so sum(nums) is safe from overflow.
+        total = sum(nums)
+      cpp: |
+        vector<int> nums = {1, 2, 3};
 
-      // 0LL forces accumulate to keep the running total as long long.
-      long long total = accumulate(nums.begin(), nums.end(), 0LL);
-    java: |
-      int[] nums = {1, 2, 3};
+        // 0LL forces accumulate to keep the running total as long long.
+        long long total = accumulate(nums.begin(), nums.end(), 0LL);
+      java: |
+        int[] nums = {1, 2, 3};
 
-      // Use long when the sum can exceed int range.
-      long total = 0;
-      for (int x : nums) total += x;
-    note: >
-      Python avoids integer overflow. C++ needs 0LL so accumulate uses long long.
-      Java should use long for large totals.
+        // Use long when the sum can exceed int range.
+        long total = 0;
+        for (int x : nums) total += x;
+      note: >
+        Python avoids integer overflow. C++ needs 0LL so accumulate uses long long.
+        Java should use long for large totals.
 
-- code_compare:
-    title: Grow Dynamically
-    idea: Append only values that pass a condition.
-    python: |
-      ans = []
+  - code_compare:
+      title: Grow Dynamically
+      idea: Append only values that pass a condition.
+      python: |
+        ans = []
 
-      for x in nums:
-          # ans grows only for values that satisfy the condition.
-          if x > 0:
-              ans.append(x)
-    cpp: |
-      vector<int> ans;
+        for x in nums:
+            # ans grows only for values that satisfy the condition.
+            if x > 0:
+                ans.append(x)
+      cpp: |
+        vector<int> ans;
 
-      for (int x : nums) {
-          // push_back may grow vector storage when capacity is full.
-          if (x > 0) ans.push_back(x);
-      }
-    java: |
-      List<Integer> ans = new ArrayList<>();
+        for (int x : nums) {
+            // push_back may grow vector storage when capacity is full.
+            if (x > 0) ans.push_back(x);
+        }
+      java: |
+        List<Integer> ans = new ArrayList<>();
 
-      for (int x : nums) {
-          // ArrayList grows dynamically; Integer boxing happens here.
-          if (x > 0) ans.add(x);
-      }
-    note: >
-      Java uses ArrayList because the result size is not known. If size is known,
-      int[] is usually faster and smaller.
+        for (int x : nums) {
+            // ArrayList grows dynamically; Integer boxing happens here.
+            if (x > 0) ans.add(x);
+        }
+      note: >
+        Java uses ArrayList because the result size is not known. If size is known,
+        int[] is usually faster and smaller.
 
-- code_compare:
-    title: Matrix Initialization Trap
-    idea: Create independent rows.
-    python: |
-      # The comprehension runs once per row, so rows do not alias each other.
-      grid = [[0] * cols for _ in range(rows)]
-    cpp: |
-      // Each inner vector is a separate row with cols zeros.
-      vector<vector<int>> grid(rows, vector<int>(cols, 0));
-    java: |
-      // Java creates row arrays for this rectangular int grid.
-      int[][] grid = new int[rows][cols];
-    note: >
-      Avoid Python [[0] * cols] * rows because every row aliases the same list.
-      Java creates separate row arrays for int[][].
+  - code_compare:
+      title: Matrix Initialization Trap
+      idea: Create independent rows.
+      python: |
+        # The comprehension runs once per row, so rows do not alias each other.
+        grid = [[0] * cols for _ in range(rows)]
+      cpp: |
+        // Each inner vector is a separate row with cols zeros.
+        vector<vector<int>> grid(rows, vector<int>(cols, 0));
+      java: |
+        // Java creates row arrays for this rectangular int grid.
+        int[][] grid = new int[rows][cols];
+      note: >
+        Avoid Python [[0] * cols] * rows because every row aliases the same list.
+        Java creates separate row arrays for int[][].
 
-- code_compare:
-    title: Copy Before Mutating
-    idea: Preserve original order while sorting a copy.
-    python: |
-      sorted_nums = sorted(nums)
+  - code_compare:
+      title: Copy Before Mutating
+      idea: Preserve original order while sorting a copy.
+      python: |
+        sorted_nums = sorted(nums)
 
-    cpp: |
-      vector<int> sortedNums = nums;
+      cpp: |
+        vector<int> sortedNums = nums;
 
-      sort(sortedNums.begin(), sortedNums.end());
+        sort(sortedNums.begin(), sortedNums.end());
 
-    java: |
-      int[] sortedNums = nums.clone();
+      java: |
+        int[] sortedNums = nums.clone();
 
-      Arrays.sort(sortedNums);
+        Arrays.sort(sortedNums);
 
-    note: >
-      Python sorted returns a new list. C++ and Java need an explicit copy when
-      the original must stay unchanged.
+      note: >
+        Python sorted returns a new list. C++ and Java need an explicit copy when
+        the original must stay unchanged.
 
 transitions:
   python_to_cpp:
@@ -374,7 +390,7 @@ revision:
   cheat_table:
     title: Sequence Container Revision
     columns:
-    - Need
+    - Operation Needed
     - Python
     - C++
     - Java

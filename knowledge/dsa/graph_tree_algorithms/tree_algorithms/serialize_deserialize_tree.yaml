@@ -19,6 +19,30 @@ assets:
     alt: Serialize And Deserialize Tree trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a tree or prefix structure, solve by passing information down, collecting
+        information up, or traversing in the required order.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Serialization must preserve values and missing-child positions. Null markers are part of the data because they preserve the exact tree shape.
@@ -27,9 +51,9 @@ lesson:
       body: >
         Preorder writes node, left subtree, and right subtree. Deserialization consumes tokens in the same order with one advancing index, creating a node for values and returning null for markers.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -108,7 +132,7 @@ examples:
             out.append(str(node.val))
             serialize(node.left, out)
             serialize(node.right, out)
-        
+
         def build(tokens):
             val = next(tokens)
             if val == '#':
@@ -127,7 +151,7 @@ examples:
             serialize(node->left, out);
             serialize(node->right, out);
         }
-        
+
         TreeNode* build(vector<string>& tokens, int& i) {
             string val = tokens[i++];
             if (val == "#") return nullptr;
@@ -146,7 +170,7 @@ examples:
             serialize(node.left, out);
             serialize(node.right, out);
         }
-        
+
         private TreeNode build(String[] tokens, int[] index) {
             String val = tokens[index[0]++];
             if (val.equals("#")) return null;
@@ -181,7 +205,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Serialize And Deserialize Tree?
+  - question: What problem clue points to Serialize And Deserialize Tree?
     answer: turning tree shape and values into a reversible format.
   - question: What state should you name before coding?
     answer: Name token stream, null marker, read index, and rebuilt node.
@@ -194,7 +218,7 @@ revision:
   cheat_table:
     title: Serialize And Deserialize Tree Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

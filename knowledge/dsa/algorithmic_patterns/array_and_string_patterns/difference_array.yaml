@@ -19,6 +19,30 @@ assets:
     alt: Difference array with +delta at left boundary and -delta after right boundary, then prefix reconstruction.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given repeated range, subarray, or cumulative questions, convert repeated work into
+        prefix, suffix, or running-state updates.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem mentions subarray sums, range updates, product except self, maximum contiguous sum, or repeated queries."
+          - "A strong first thought is prefix sum, prefix count map, difference array, suffix pass, or Kadane state."
+          - "Define what the running value means before and after processing the current index."
+        -
+          - "The desired answer can be expressed as current cumulative state minus earlier state."
+          - ""
+          - ""
+        -
+          - "Nested loops are only recomputing totals."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         A difference array stores changes at boundaries. To add delta over an
@@ -35,7 +59,7 @@ lesson:
   - compare_table:
       title: When To Use
       columns:
-        - Signal
+        - What You Notice
         - Brute Force
         - Difference Array
       rows:

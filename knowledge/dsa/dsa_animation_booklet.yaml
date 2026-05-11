@@ -1,0 +1,3447 @@
+﻿type: animation_booklet
+title: DSA Interview Animation Booklet
+description: "Animation set for DSA interview patterns and important problems. Each animation includes an actual problem statement and state-focused explanation."
+playlist:
+  - two_sum_hash_map
+  - valid_parentheses_stack
+  - sliding_window_no_repeat
+  - minimum_window_substring
+  - prefix_sum_subarray_sum_k
+  - merge_intervals_animation
+  - binary_search_animation
+  - rotated_binary_search_animation
+  - reverse_linked_list_animation
+  - daily_temperatures_stack
+  - tree_max_depth_dfs
+  - binary_tree_level_order
+  - lca_tree_animation
+  - number_of_islands_grid
+  - topological_sort_course_schedule
+  - dijkstra_network_delay
+  - coin_change_dp
+  - house_robber_dp
+  - lis_tails_animation
+  - lcs_dp_table
+  - product_except_self_prefix_suffix
+  - container_with_most_water
+  - three_sum_two_pointers
+  - longest_consecutive_set
+  - clone_graph_mapping
+  - trie_insert_search
+  - validate_bst_range
+  - largest_rectangle_histogram
+  - zero_one_knapsack_direction
+  - pacific_atlantic_reverse_flow
+animations:
+  - id: two_sum_hash_map
+    title: "Two Sum: complement map"
+    source_lesson: "knowledge/dsa/important_problems/warmup_and_fundamentals/two_sum.yaml"
+    problem_statement: "Given an array nums and target, return indices of two numbers that add to target."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Two Sum: store earlier values"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given nums and target, return two indices whose values sum to target."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 2
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 7
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 11
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 15
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: nums is [2,7,11,15], target is 9. At 2, need 7 is not seen, so store 2 with index 0."
+        actions:
+          - highlight: [a0, s0]
+          - set_text:
+              target: "s0"
+              text: "seen:2->0"
+      - note: "At 7, need 2 is already in seen. The answer is previous index 0 and current index 1."
+        actions:
+          - clear_highlight: [a0]
+          - highlight: [a1, s0]
+          - set_text:
+              target: "s1"
+              text: "need 2"
+          - set_text:
+              target: "s2"
+              text: "ans 0,1"
+          - say: "Two Sum proof: the map stores only earlier indices, so the pair uses two different positions."
+
+  - id: valid_parentheses_stack
+    title: "Valid Parentheses: stack matching"
+    source_lesson: "knowledge/dsa/important_problems/warmup_and_fundamentals/valid_parentheses.yaml"
+    problem_statement: "Given a string containing brackets, determine whether every closing bracket matches the most recent opener."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Valid Parentheses: last opener must close first"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given bracket string, return true if brackets are valid."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "("
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "["
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "]"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: ")"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: string is ([]). Push openers because they are waiting to be matched."
+        actions:
+          - highlight: [a0, a1]
+          - set_text:
+              target: "s0"
+              text: "stack:("
+          - set_text:
+              target: "s1"
+              text: "stack:( ["
+      - note: "Read ]. It must match the most recent opener [, so pop it."
+        actions:
+          - clear_highlight: [a0]
+          - highlight: [a2, s1]
+          - set_text:
+              target: "s1"
+              text: "pop ["
+      - note: "Read ). It matches (, stack becomes empty, so the string is valid."
+        actions:
+          - clear_highlight: [a2]
+          - highlight: [a3, s0]
+          - set_text:
+              target: "s0"
+              text: "empty"
+          - set_text:
+              target: "s2"
+              text: "valid"
+
+  - id: sliding_window_no_repeat
+    title: "Longest Substring Without Repeating Characters"
+    source_lesson: "knowledge/dsa/important_problems/pointers_windows_and_search/longest_substring_without_repeating.yaml"
+    problem_statement: "Given a string s, return the length of the longest substring without repeated characters."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Sliding window: no repeated characters"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given s, find longest substring with all unique chars."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "a"
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "b"
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "c"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: "a"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: "b"
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: s is abcab. Expand right while characters are unique."
+        actions:
+          - highlight: [a0, a1, a2]
+          - set_text:
+              target: "s0"
+              text: "left=0"
+          - set_text:
+              target: "s1"
+              text: "best=3"
+      - note: "At the second a, the previous a is inside the window, so move left past it."
+        actions:
+          - clear_highlight: [a0]
+          - highlight: [a3, s0]
+          - set_text:
+              target: "s0"
+              text: "left=1"
+          - set_text:
+              target: "s2"
+              text: "last[a]=3"
+      - note: "The invariant is always true after the left move: current window has no duplicates."
+        actions:
+          - highlight: [a1, a2, a3]
+          - say: "Window proof: left moves only when a duplicate is inside the current window."
+
+  - id: minimum_window_substring
+    title: "Minimum Window Substring"
+    source_lesson: "knowledge/dsa/important_problems/pointers_windows_and_search/minimum_window_substring.yaml"
+    problem_statement: "Given strings s and t, return the smallest substring of s containing every character of t."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Minimum Window: satisfy then shrink"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given s=ADOBEC and t=ABC, find the smallest valid window."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "A"
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "D"
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "O"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: "B"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: "E"
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: "C"
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: need A, B, C. Expand right until missing reaches 0 at C."
+        actions:
+          - highlight: [a0, a3, a5]
+          - set_text:
+              target: "s0"
+              text: "missing=0"
+          - set_text:
+              target: "s1"
+              text: "window 0..5"
+      - note: "Now shrink from left while the window remains valid. The best answer is updated only when missing is 0."
+        actions:
+          - highlight: [s2]
+          - set_text:
+              target: "s2"
+              text: "best=ADOBEC"
+      - note: "If removing A makes missing positive, the window is no longer valid and expansion must resume."
+        actions:
+          - clear_highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "missing=1"
+
+  - id: prefix_sum_subarray_sum_k
+    title: "Subarray Sum Equals K"
+    source_lesson: "knowledge/dsa/important_problems/hashing_and_grouping/subarray_sum_equals_k.yaml"
+    problem_statement: "Given nums and k, count the number of contiguous subarrays whose sum equals k."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Prefix Sum: count earlier prefixes"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given nums=[1,2,1,2] and k=3, count subarrays with sum 3."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 1
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 2
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 1
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 2
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: running prefix becomes 3 at index 1. Earlier prefix 0 exists, so subarray 0..1 counts."
+        actions:
+          - highlight: [a0, a1]
+          - set_text:
+              target: "s0"
+              text: "pref=3"
+          - set_text:
+              target: "s1"
+              text: "need=0"
+          - set_text:
+              target: "s2"
+              text: "count=1"
+      - note: "At index 2, prefix is 4. Earlier prefix 1 exists, so subarray 1..2 counts."
+        actions:
+          - clear_highlight: [a0]
+          - highlight: [a1, a2]
+          - set_text:
+              target: "s0"
+              text: "pref=4"
+          - set_text:
+              target: "s1"
+              text: "need=1"
+          - set_text:
+              target: "s2"
+              text: "count=2"
+
+  - id: merge_intervals_animation
+    title: "Merge Intervals"
+    source_lesson: "knowledge/dsa/algorithmic_patterns/greedy_and_intervals/merge_intervals.yaml"
+    problem_statement: "Given intervals, merge all overlapping intervals and return the compressed list."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Merge Intervals: active block absorbs overlaps"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given intervals [1,3], [2,6], [8,10], merge overlaps."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "1-3"
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "2-6"
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "8-10"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: "15-18"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: after sorting by start, first active merged interval is 1 to 3."
+        actions:
+          - highlight: [a0, s0]
+          - set_text:
+              target: "s0"
+              text: "active 1-3"
+      - note: "Next interval starts at 2, which reaches the active block, so extend active end to 6."
+        actions:
+          - highlight: [a1, s0]
+          - set_text:
+              target: "s0"
+              text: "active 1-6"
+      - note: "Next interval starts at 8, after active end 6, so append a new block."
+        actions:
+          - clear_highlight: [a0, a1]
+          - highlight: [a2, s1]
+          - set_text:
+              target: "s1"
+              text: "new 8-10"
+
+  - id: binary_search_animation
+    title: "Binary Search"
+    source_lesson: "knowledge/dsa/quick_revision/must_know_patterns/binary_search.yaml"
+    problem_statement: "Given a sorted array and target, return the target index or report that it is absent."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Binary Search: discard the impossible half"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given sorted nums=[1,3,5,7,9] and target=7, find index."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 1
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 3
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 5
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 7
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 9
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: target is 7. Mid value 5 is too small, so every index at or left of mid is impossible."
+        actions:
+          - highlight: [a2]
+          - set_text:
+              target: "s0"
+              text: "mid=2"
+          - set_text:
+              target: "s1"
+              text: "lo=3"
+      - note: "New mid is 7. Found target at index 3."
+        actions:
+          - clear_highlight: [a2]
+          - highlight: [a3, s2]
+          - set_text:
+              target: "s2"
+              text: "answer=3"
+
+  - id: rotated_binary_search_animation
+    title: "Search In Rotated Sorted Array"
+    source_lesson: "knowledge/dsa/important_problems/pointers_windows_and_search/search_rotated_sorted_array.yaml"
+    problem_statement: "Given a rotated sorted array and target, return its index in logarithmic time."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Rotated Search: one half is sorted"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given nums=[4,5,6,7,0,1,2], target=0, find index."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 4
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 5
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 6
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 7
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 0
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 1
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a6"
+          type: "box"
+          text: 2
+          x: 538
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: mid is 7. Left half 4 to 7 is sorted, but target 0 is not inside it, so search right."
+        actions:
+          - highlight: [a0, a3]
+          - set_text:
+              target: "s0"
+              text: "left sorted"
+          - set_text:
+              target: "s1"
+              text: "lo=4"
+      - note: "Now mid is 1. Left half 0 to 1 is sorted and target 0 is inside, so move high left."
+        actions:
+          - clear_highlight: [a0, a3]
+          - highlight: [a4, a5]
+          - set_text:
+              target: "s2"
+              text: "found 0"
+
+  - id: reverse_linked_list_animation
+    title: "Reverse Linked List"
+    source_lesson: "knowledge/dsa/important_problems/linked_list_and_stack/reverse_linked_list.yaml"
+    problem_statement: "Given the head of a singly linked list, reverse the list and return the new head."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Reverse Linked List: save next before rewiring"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given 1 -> 2 -> 3, reverse it to 3 -> 2 -> 1."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "n1"
+          type: "node"
+          text: "1"
+          x: 130
+          y: 170
+        -
+          id: "n2"
+          type: "node"
+          text: "2"
+          x: 280
+          y: 170
+        -
+          id: "n3"
+          type: "node"
+          text: "3"
+          x: 430
+          y: 170
+        -
+          id: "e12"
+          type: "edge"
+          from: "n1"
+          to: "n2"
+        -
+          id: "e23"
+          type: "edge"
+          from: "n2"
+          to: "n3"
+        -
+          id: "prev"
+          type: "box"
+          text: "prev:null"
+          x: 120
+          y: 310
+          width: 110
+          height: 42
+        -
+          id: "cur"
+          type: "box"
+          text: "cur:1"
+          x: 250
+          y: 310
+          width: 110
+          height: 42
+        -
+          id: "nxt"
+          type: "box"
+          text: "next:2"
+          x: 380
+          y: 310
+          width: 110
+          height: 42
+    steps:
+      - note: "Problem: reverse 1 to 2 to 3. Save next first, because cur.next will be overwritten."
+        actions:
+          - highlight: [n1, n2, cur, nxt]
+      - note: "Set 1.next to prev, then move prev to 1 and cur to 2."
+        actions:
+          - set_text:
+              target: "prev"
+              text: "prev:1"
+          - set_text:
+              target: "cur"
+              text: "cur:2"
+          - set_text:
+              target: "nxt"
+              text: "next:3"
+          - mark_done: "n1"
+      - note: "Repeat until cur is null. Prev becomes the new head."
+        actions:
+          - highlight: [n3, prev]
+          - set_text:
+              target: "prev"
+              text: "prev:3"
+          - set_text:
+              target: "cur"
+              text: "cur:null"
+          - say: "Linked list proof: next preserves the unreversed suffix while cur.next is rewired."
+
+  - id: daily_temperatures_stack
+    title: "Daily Temperatures"
+    source_lesson: "knowledge/dsa/important_problems/linked_list_and_stack/daily_temperatures.yaml"
+    problem_statement: "Given daily temperatures, return how many days until a warmer temperature for each day."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Daily Temperatures: unresolved decreasing stack"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given [73,74,75,71], resolve next warmer days."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 73
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 74
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 75
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 71
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: at 73, stack stores index 0 because no warmer day is known yet."
+        actions:
+          - highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "stack:0"
+      - note: "At 74, it is warmer than 73, so index 0 is resolved with wait 1."
+        actions:
+          - highlight: [a1, s1]
+          - set_text:
+              target: "s1"
+              text: "ans[0]=1"
+      - note: "Each popped index is resolved exactly once by the first warmer temperature."
+        actions:
+          - set_text:
+              target: "s2"
+              text: "monotonic"
+
+  - id: tree_max_depth_dfs
+    title: "Maximum Depth Of Binary Tree"
+    source_lesson: "knowledge/dsa/important_problems/trees_and_tries/maximum_depth_binary_tree.yaml"
+    problem_statement: "Given the root of a binary tree, return its maximum depth."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Tree DFS: child heights return upward"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given a binary tree root, return the number of nodes on the longest root-to-leaf path."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a"
+          type: "node"
+          text: "3"
+          x: 260
+          y: 120
+        -
+          id: "b"
+          type: "node"
+          text: "9"
+          x: 160
+          y: 240
+        -
+          id: "c"
+          type: "node"
+          text: "20"
+          x: 360
+          y: 240
+        -
+          id: "d"
+          type: "node"
+          text: "15"
+          x: 310
+          y: 360
+        -
+          id: "e"
+          type: "node"
+          text: "7"
+          x: 430
+          y: 360
+        -
+          id: "ab"
+          type: "edge"
+          from: "a"
+          to: "b"
+        -
+          id: "ac"
+          type: "edge"
+          from: "a"
+          to: "c"
+        -
+          id: "cd"
+          type: "edge"
+          from: "c"
+          to: "d"
+        -
+          id: "ce"
+          type: "edge"
+          from: "c"
+          to: "e"
+        -
+          id: "left"
+          type: "box"
+          text: "left=?"
+          x: 650
+          y: 160
+          width: 110
+          height: 42
+        -
+          id: "right"
+          type: "box"
+          text: "right=?"
+          x: 780
+          y: 160
+          width: 110
+          height: 42
+        -
+          id: "ret"
+          type: "box"
+          text: "return"
+          x: 910
+          y: 160
+          width: 110
+          height: 42
+    steps:
+      - note: "Problem: return max depth. Leaves 9, 15, and 7 return height 1."
+        actions:
+          - highlight: [b, d, e]
+          - set_text:
+              target: "ret"
+              text: "leaf=1"
+      - note: "Node 20 receives left=1 and right=1, so it returns 2."
+        actions:
+          - mark_done: [d, e]
+          - highlight: [c, left, right]
+          - set_text:
+              target: "left"
+              text: "left=1"
+          - set_text:
+              target: "right"
+              text: "right=1"
+          - set_text:
+              target: "ret"
+              text: "20 returns 2"
+      - note: "Root 3 receives left=1 and right=2, so max depth is 3."
+        actions:
+          - highlight: [a]
+          - set_text:
+              target: "left"
+              text: "left=1"
+          - set_text:
+              target: "right"
+              text: "right=2"
+          - set_text:
+              target: "ret"
+              text: "answer=3"
+
+  - id: binary_tree_level_order
+    title: "Binary Tree Level Order Traversal"
+    source_lesson: "knowledge/dsa/important_problems/trees_and_tries/binary_tree_level_order.yaml"
+    problem_statement: "Given a binary tree root, return node values level by level from left to right."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Level Order: snapshot queue size"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given a tree, return [[root], [children], ...]."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "root"
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "L"
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "R"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: "LL"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: return levels. Queue starts with root, and size 1 freezes the first level."
+        actions:
+          - highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "size=1"
+          - set_text:
+              target: "s1"
+              text: "level root"
+      - note: "After popping root, push its children. They belong to the next level, not the current one."
+        actions:
+          - highlight: [a1, a2]
+          - set_text:
+              target: "s2"
+              text: "queue L,R"
+      - note: "Next snapshot size is 2, so L and R are emitted together."
+        actions:
+          - set_text:
+              target: "s0"
+              text: "size=2"
+          - set_text:
+              target: "s1"
+              text: "level L,R"
+
+  - id: lca_tree_animation
+    title: "Lowest Common Ancestor"
+    source_lesson: "knowledge/dsa/important_problems/trees_and_tries/lowest_common_ancestor.yaml"
+    problem_statement: "Given a binary tree and two nodes p and q, return their lowest common ancestor."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "LCA: return target or split point"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given p=5 and q=1, return their lowest common ancestor."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "r"
+          type: "node"
+          text: "3"
+          x: 300
+          y: 120
+        -
+          id: "p"
+          type: "node"
+          text: "5"
+          x: 180
+          y: 240
+        -
+          id: "q"
+          type: "node"
+          text: "1"
+          x: 420
+          y: 240
+        -
+          id: "rp"
+          type: "edge"
+          from: "r"
+          to: "p"
+        -
+          id: "rq"
+          type: "edge"
+          from: "r"
+          to: "q"
+        -
+          id: "left"
+          type: "box"
+          text: "left"
+          x: 650
+          y: 180
+          width: 100
+          height: 42
+        -
+          id: "right"
+          type: "box"
+          text: "right"
+          x: 780
+          y: 180
+          width: 100
+          height: 42
+        -
+          id: "ans"
+          type: "box"
+          text: "answer"
+          x: 910
+          y: 180
+          width: 110
+          height: 42
+    steps:
+      - note: "Problem: find LCA of 5 and 1. Left subtree returns 5 because it found p."
+        actions:
+          - highlight: [p, left]
+          - set_text:
+              target: "left"
+              text: "left=5"
+      - note: "Right subtree returns 1 because it found q."
+        actions:
+          - highlight: [q, right]
+          - set_text:
+              target: "right"
+              text: "right=1"
+      - note: "Root receives non-null from both sides, so root 3 is the split point and the LCA."
+        actions:
+          - highlight: [r, ans]
+          - set_text:
+              target: "ans"
+              text: "LCA=3"
+
+  - id: number_of_islands_grid
+    title: "Number Of Islands"
+    source_lesson: "knowledge/dsa/important_problems/graph_problems/number_of_islands.yaml"
+    problem_statement: "Given a grid of land and water, count connected groups of land cells."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Number of Islands: consume one component"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given a grid, count groups of adjacent land cells."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "1"
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "1"
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "0"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: "1"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: "0"
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: when a land cell is found, count one island and start DFS from it."
+        actions:
+          - highlight: [a0, s0]
+          - set_text:
+              target: "s0"
+              text: "islands=1"
+      - note: "DFS changes connected land to water or visited, so the same island is not counted twice."
+        actions:
+          - highlight: [a1]
+          - set_text:
+              target: "s1"
+              text: "mark visited"
+      - note: "Later land not connected starts a new island."
+        actions:
+          - clear_highlight: [a0, a1]
+          - highlight: [a3]
+          - set_text:
+              target: "s0"
+              text: "islands=2"
+
+  - id: topological_sort_course_schedule
+    title: "Course Schedule / Topological Sort"
+    source_lesson: "knowledge/dsa/important_problems/graph_problems/course_schedule.yaml"
+    problem_statement: "Given numCourses and prerequisites, decide whether all courses can be finished."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Topological Sort: remove zero indegree courses"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given prerequisites, return true if no cycle blocks all courses."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a"
+          type: "node"
+          text: "0"
+          x: 130
+          y: 170
+        -
+          id: "b"
+          type: "node"
+          text: "1"
+          x: 300
+          y: 170
+        -
+          id: "c"
+          type: "node"
+          text: "2"
+          x: 470
+          y: 170
+        -
+          id: "ab"
+          type: "edge"
+          from: "a"
+          to: "b"
+        -
+          id: "bc"
+          type: "edge"
+          from: "b"
+          to: "c"
+        -
+          id: "q"
+          type: "box"
+          text: "queue:0"
+          x: 650
+          y: 150
+          width: 130
+          height: 42
+        -
+          id: "done"
+          type: "box"
+          text: "done=0"
+          x: 800
+          y: 150
+          width: 120
+          height: 42
+        -
+          id: "indeg"
+          type: "box"
+          text: "in:0,1,1"
+          x: 650
+          y: 230
+          width: 220
+          height: 42
+    steps:
+      - note: "Problem: course 0 has indegree 0, so it can be taken first."
+        actions:
+          - highlight: [a, q]
+      - note: "Taking course 0 removes edge 0 to 1. Course 1 indegree becomes 0 and joins the queue."
+        actions:
+          - mark_done: "a"
+          - highlight: [ab, b]
+          - set_text:
+              target: "q"
+              text: "queue:1"
+          - set_text:
+              target: "done"
+              text: "done=1"
+      - note: "If processed count reaches numCourses, there is no cycle."
+        actions:
+          - mark_done: [b, c]
+          - set_text:
+              target: "done"
+              text: "done=3"
+          - say: "Course Schedule proof: every processed node had all prerequisites removed."
+
+  - id: dijkstra_network_delay
+    title: "Network Delay Time / Dijkstra"
+    source_lesson: "knowledge/dsa/important_problems/graph_problems/network_delay_time.yaml"
+    problem_statement: "Given directed weighted travel times and a source, return when all nodes receive the signal."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Network Delay: Dijkstra from source"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given times edges, n, and source k, compute the maximum shortest-path distance."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "s"
+          type: "node"
+          text: "K"
+          x: 120
+          y: 190
+        -
+          id: "a"
+          type: "node"
+          text: "A"
+          x: 300
+          y: 120
+        -
+          id: "b"
+          type: "node"
+          text: "B"
+          x: 300
+          y: 260
+        -
+          id: "c"
+          type: "node"
+          text: "C"
+          x: 500
+          y: 190
+        -
+          id: "sa"
+          type: "edge"
+          from: "s"
+          to: "a"
+          text: "1"
+        -
+          id: "sb"
+          type: "edge"
+          from: "s"
+          to: "b"
+          text: "4"
+        -
+          id: "ac"
+          type: "edge"
+          from: "a"
+          to: "c"
+          text: "2"
+        -
+          id: "bc"
+          type: "edge"
+          from: "b"
+          to: "c"
+          text: "1"
+        -
+          id: "dist"
+          type: "box"
+          text: "dist K=0"
+          x: 680
+          y: 130
+          width: 140
+          height: 42
+        -
+          id: "heap"
+          type: "box"
+          text: "heap (0,K)"
+          x: 680
+          y: 200
+          width: 150
+          height: 42
+        -
+          id: "ans"
+          type: "box"
+          text: "max dist?"
+          x: 680
+          y: 270
+          width: 150
+          height: 42
+    steps:
+      - note: "Problem: signal starts at K. Dijkstra pops the smallest known distance first."
+        actions:
+          - highlight: [s, heap]
+      - note: "Relax K to A and B. A gets distance 1, B gets distance 4."
+        actions:
+          - highlight: [sa, sb]
+          - set_text:
+              target: "dist"
+              text: "A=1 B=4"
+          - set_text:
+              target: "heap"
+              text: "(1,A),(4,B)"
+      - note: "Pop A and relax A to C. C becomes 3, which beats later alternatives."
+        actions:
+          - mark_done: "a"
+          - highlight: [ac, ans]
+          - set_text:
+              target: "dist"
+              text: "C=3"
+          - set_text:
+              target: "ans"
+              text: "delay=4"
+
+  - id: coin_change_dp
+    title: "Coin Change"
+    source_lesson: "knowledge/dsa/important_problems/dp_problems/coin_change.yaml"
+    problem_statement: "Given coin denominations and an amount, return the fewest coins needed to make that amount."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Coin Change: minimum coins per amount"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given coins [1,2,5] and amount 5, return minimum coins."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 0
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 1
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 2
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 3
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 4
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 5
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: dp[0] is 0 because zero coins make amount 0. Other amounts start impossible."
+        actions:
+          - highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "dp[0]=0"
+      - note: "Using coin 1 fills every amount with count equal to the amount."
+        actions:
+          - highlight: [a1, a2, a3]
+          - set_text:
+              target: "s1"
+              text: "coin=1"
+      - note: "Using coin 5 improves dp[5] to 1. The transition is dp[a] = min(dp[a], dp[a-coin]+1)."
+        actions:
+          - highlight: [a5, s2]
+          - set_text:
+              target: "s2"
+              text: "dp[5]=1"
+
+  - id: house_robber_dp
+    title: "House Robber"
+    source_lesson: "knowledge/dsa/important_problems/dp_problems/house_robber.yaml"
+    problem_statement: "Given money in houses, return the maximum amount you can rob without robbing adjacent houses."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "House Robber: take or skip"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given [2,7,9,3], maximize non-adjacent sum."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 2
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 7
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 9
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 3
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: at each house, keep two states: take current or skip current."
+        actions:
+          - highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "take=2"
+          - set_text:
+              target: "s1"
+              text: "skip=0"
+      - note: "At 7, taking current uses previous skip. Skipping current keeps max of older states."
+        actions:
+          - highlight: [a1]
+          - set_text:
+              target: "s0"
+              text: "take=7"
+          - set_text:
+              target: "s1"
+              text: "skip=2"
+      - note: "At 9, take becomes previous skip plus 9, giving 11."
+        actions:
+          - highlight: [a2, s2]
+          - set_text:
+              target: "s2"
+              text: "best=11"
+
+  - id: lis_tails_animation
+    title: "Longest Increasing Subsequence"
+    source_lesson: "knowledge/dsa/important_problems/dp_problems/longest_increasing_subsequence.yaml"
+    problem_statement: "Given nums, return the length of the longest strictly increasing subsequence."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "LIS: tails array"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given [10,9,2,5,3,7], return LIS length."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 10
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 9
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 2
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 5
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 3
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 7
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: tails keeps the smallest possible tail for each subsequence length."
+        actions:
+          - highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "tails 10"
+      - note: "9 replaces 10 because a smaller tail for length 1 is better for future extension."
+        actions:
+          - highlight: [a1, s0]
+          - set_text:
+              target: "s0"
+              text: "tails 9"
+      - note: "2 replaces 9, then 5 appends. Later 3 replaces 5, and 7 appends."
+        actions:
+          - highlight: [a2, a3, a4, a5]
+          - set_text:
+              target: "s1"
+              text: "tails 2,3,7"
+          - set_text:
+              target: "s2"
+              text: "len=3"
+
+  - id: lcs_dp_table
+    title: "Longest Common Subsequence"
+    source_lesson: "knowledge/dsa/important_problems/dp_problems/longest_common_subsequence.yaml"
+    problem_statement: "Given two strings, return the length of their longest subsequence that appears in both."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "LCS: match uses diagonal, mismatch uses max"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given a=abcde and b=ace, return 3."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: "a"
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: "b"
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: "c"
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: "d"
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: "e"
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: compare prefixes. When a matches a, extend diagonal by 1."
+        actions:
+          - highlight: [a0]
+          - set_text:
+              target: "s0"
+              text: "match a"
+          - set_text:
+              target: "s1"
+              text: "dp=1"
+      - note: "Characters b and next target c do not match, so carry max from top or left."
+        actions:
+          - highlight: [a1]
+          - set_text:
+              target: "s0"
+              text: "mismatch"
+      - note: "Matches c and e extend the subsequence to length 3."
+        actions:
+          - highlight: [a2, a4]
+          - set_text:
+              target: "s2"
+              text: "answer=3"
+
+  - id: product_except_self_prefix_suffix
+    title: "Product of Array Except Self"
+    source_lesson: "knowledge/dsa/important_problems/arrays_and_hashing/product_of_array_except_self.yaml"
+    problem_statement: "Given nums, return an array where answer[i] is the product of every element except nums[i], without division."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Product Except Self: prefix then suffix"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given [1,2,3,4], return products excluding each index."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 1
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 2
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 3
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 4
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: division is not allowed. First pass stores product of values strictly before each index."
+        actions:
+          - highlight: [a0, a1, s0]
+          - set_text:
+              target: "s0"
+              text: "prefix=2"
+      - note: "Second pass multiplies by product of values strictly after each index."
+        actions:
+          - highlight: [a3, s1]
+          - set_text:
+              target: "s1"
+              text: "suffix=4"
+      - note: "At index 1, answer is left product 1 times right product 12, so result is 12."
+        actions:
+          - highlight: [a1, s2]
+          - set_text:
+              target: "s2"
+              text: "ans[1]=12"
+
+  - id: container_with_most_water
+    title: "Container With Most Water"
+    source_lesson: "knowledge/dsa/important_problems/pointers_windows_and_search/container_with_most_water.yaml"
+    problem_statement: "Given vertical line heights, choose two lines that hold the most water."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Container Water: move the shorter wall"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given heights, maximize width times min(leftHeight,rightHeight)."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 1
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 8
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 6
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 2
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 5
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 4
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a6"
+          type: "box"
+          text: 8
+          x: 538
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: start with widest container because width is maximum."
+        actions:
+          - highlight: [a0, a6]
+          - set_text:
+              target: "s0"
+              text: "area=6"
+      - note: "Move the shorter wall. Keeping height 1 can never improve area after width shrinks."
+        actions:
+          - clear_highlight: [a0]
+          - highlight: [a1, a6]
+          - set_text:
+              target: "s1"
+              text: "area=40"
+      - note: "This is the proof line: only the shorter side limits water, so only that pointer may reveal a taller limit."
+        actions:
+          - highlight: [s2]
+          - set_text:
+              target: "s2"
+              text: "move short"
+
+  - id: three_sum_two_pointers
+    title: "3Sum"
+    source_lesson: "knowledge/dsa/important_problems/pointers_windows_and_search/three_sum.yaml"
+    problem_statement: "Given nums, return all unique triplets whose sum is zero."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "3Sum: sorted fixed value plus two pointers"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given sorted nums, find unique triples summing to zero."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: -4
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: -1
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: -1
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 0
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 1
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 2
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: sort first so duplicates can be skipped and pointer movement has meaning."
+        actions:
+          - highlight: [a1]
+          - set_text:
+              target: "s0"
+              text: "fixed=-1"
+      - note: "With fixed -1, left at -1 and right at 2 gives sum 0. Record the triplet."
+        actions:
+          - highlight: [a1, a2, a5]
+          - set_text:
+              target: "s1"
+              text: "[-1,-1,2]"
+      - note: "After a hit, move both pointers past duplicates to avoid repeating the same value triplet."
+        actions:
+          - highlight: [a3, a4]
+          - set_text:
+              target: "s2"
+              text: "skip dupes"
+
+  - id: longest_consecutive_set
+    title: "Longest Consecutive Sequence"
+    source_lesson: "knowledge/dsa/important_problems/arrays_and_hashing/longest_consecutive_sequence.yaml"
+    problem_statement: "Given unsorted integers, return the length of the longest consecutive sequence."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Longest Consecutive: start only at sequence heads"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given [100,4,200,1,3,2], return 4."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 100
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 4
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 200
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 1
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 3
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 2
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: put every value in a set so membership checks are constant time."
+        actions:
+          - highlight: [a0, a1, a2, a3, a4, a5]
+          - set_text:
+              target: "s0"
+              text: "set built"
+      - note: "A value starts a sequence only if value minus 1 is absent. That prevents recounting from the middle."
+        actions:
+          - highlight: [a3]
+          - set_text:
+              target: "s1"
+              text: "1 is head"
+      - note: "Walk 1,2,3,4 and update best to 4."
+        actions:
+          - highlight: [a3, a5, a4, a1]
+          - set_text:
+              target: "s2"
+              text: "best=4"
+
+  - id: clone_graph_mapping
+    title: "Clone Graph"
+    source_lesson: "knowledge/dsa/important_problems/graph_problems/clone_graph.yaml"
+    problem_statement: "Given a reference to a connected undirected graph node, return a deep copy of the graph."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Clone Graph: original node to clone node map"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: deep copy every node and preserve neighbor links without reusing original nodes."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "o1"
+          type: "node"
+          text: "O1"
+          x: 130
+          y: 170
+        -
+          id: "o2"
+          type: "node"
+          text: "O2"
+          x: 290
+          y: 120
+        -
+          id: "o3"
+          type: "node"
+          text: "O3"
+          x: 290
+          y: 240
+        -
+          id: "o12"
+          type: "edge"
+          from: "o1"
+          to: "o2"
+        -
+          id: "o13"
+          type: "edge"
+          from: "o1"
+          to: "o3"
+        -
+          id: "o23"
+          type: "edge"
+          from: "o2"
+          to: "o3"
+        -
+          id: "c1"
+          type: "node"
+          text: "C1"
+          x: 610
+          y: 170
+        -
+          id: "c2"
+          type: "node"
+          text: "C2"
+          x: 770
+          y: 120
+        -
+          id: "c3"
+          type: "node"
+          text: "C3"
+          x: 770
+          y: 240
+        -
+          id: "map"
+          type: "box"
+          text: "map O1->C1"
+          x: 420
+          y: 130
+          width: 140
+          height: 44
+        -
+          id: "queue"
+          type: "box"
+          text: "queue O1"
+          x: 420
+          y: 210
+          width: 140
+          height: 44
+    steps:
+      - note: "Problem: the map protects against cycles and guarantees every original node has exactly one clone."
+        actions:
+          - highlight: [o1, c1, map]
+      - note: "When visiting O1, create missing clones for O2 and O3 before connecting C1 to them."
+        actions:
+          - highlight: [o12, o13, c2, c3]
+          - set_text:
+              target: "map"
+              text: "O2,O3 added"
+      - note: "Later visits reuse clones from the map instead of creating duplicate nodes."
+        actions:
+          - highlight: [o23, queue]
+          - set_text:
+              target: "queue"
+              text: "reuse map"
+
+  - id: trie_insert_search
+    title: "Implement Trie"
+    source_lesson: "knowledge/dsa/important_problems/trees_and_tries/implement_trie_prefix_tree.yaml"
+    problem_statement: "Design a trie that supports insert, search for a full word, and startsWith for a prefix."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Trie: path per character, terminal flag per word"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: implement insert, search, and prefix queries for lowercase words."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "root"
+          type: "node"
+          text: "root"
+          x: 120
+          y: 210
+        -
+          id: "a"
+          type: "node"
+          text: "a"
+          x: 280
+          y: 130
+        -
+          id: "p"
+          type: "node"
+          text: "p"
+          x: 440
+          y: 130
+        -
+          id: "p2"
+          type: "node"
+          text: "p"
+          x: 600
+          y: 130
+        -
+          id: "l"
+          type: "node"
+          text: "l"
+          x: 760
+          y: 130
+        -
+          id: "e"
+          type: "node"
+          text: "e*"
+          x: 920
+          y: 130
+        -
+          id: "ra"
+          type: "edge"
+          from: "root"
+          to: "a"
+        -
+          id: "ap"
+          type: "edge"
+          from: "a"
+          to: "p"
+        -
+          id: "pp"
+          type: "edge"
+          from: "p"
+          to: "p2"
+        -
+          id: "pl"
+          type: "edge"
+          from: "p2"
+          to: "l"
+        -
+          id: "le"
+          type: "edge"
+          from: "l"
+          to: "e"
+    steps:
+      - note: "Problem: inserting apple creates or follows one child per character."
+        actions:
+          - highlight: [root, a, p, p2]
+      - note: "The star means terminal word. Prefix app may exist even before full word apple is completed."
+        actions:
+          - highlight: [p2]
+          - say: "Trie proof: prefix success only needs the path; word search also needs terminal true."
+      - note: "Search apple returns true because the final e node is terminal."
+        actions:
+          - highlight: [l, e]
+
+  - id: validate_bst_range
+    title: "Validate Binary Search Tree"
+    source_lesson: "knowledge/dsa/important_problems/trees_and_tries/validate_binary_search_tree.yaml"
+    problem_statement: "Given a binary tree root, determine whether it is a valid binary search tree."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Validate BST: carry ancestor bounds"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: every node must be greater than all left ancestors and less than all right ancestors."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "r"
+          type: "node"
+          text: "5"
+          x: 420
+          y: 110
+        -
+          id: "l"
+          type: "node"
+          text: "3"
+          x: 260
+          y: 220
+        -
+          id: "rr"
+          type: "node"
+          text: "7"
+          x: 580
+          y: 220
+        -
+          id: "bad"
+          type: "node"
+          text: "6"
+          x: 360
+          y: 330
+        -
+          id: "rl"
+          type: "edge"
+          from: "r"
+          to: "l"
+        -
+          id: "rrr"
+          type: "edge"
+          from: "r"
+          to: "rr"
+        -
+          id: "lbad"
+          type: "edge"
+          from: "l"
+          to: "bad"
+        -
+          id: "bounds"
+          type: "box"
+          text: "(-inf,5)"
+          x: 80
+          y: 270
+          width: 130
+          height: 44
+        -
+          id: "result"
+          type: "box"
+          text: "?"
+          x: 720
+          y: 270
+          width: 110
+          height: 44
+    steps:
+      - note: "Problem: local child checks are not enough; ancestor bounds must travel downward."
+        actions:
+          - highlight: [r, bounds]
+      - note: "Inside left subtree of 5, every value must stay below 5. Node 6 violates that ancestor bound."
+        actions:
+          - highlight: [bad, bounds]
+          - set_text:
+              target: "result"
+              text: "false"
+      - note: "In code, use strict bounds. Equal values fail unless the problem explicitly allows duplicates."
+        actions:
+          - say: "Interview caveat: int min and max sentinels can overflow; use nullable bounds or wider numeric type."
+
+  - id: largest_rectangle_histogram
+    title: "Largest Rectangle in Histogram"
+    source_lesson: "knowledge/dsa/important_problems/stacks_and_queues/largest_rectangle_in_histogram.yaml"
+    problem_statement: "Given bar heights, return the largest rectangle area in the histogram."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Histogram: increasing stack reveals left boundary"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Given heights [2,1,5,6,2,3], return largest rectangle area."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 2
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 1
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 5
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 6
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 2
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 3
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: stack stores indices with increasing heights. They are bars waiting for a right boundary."
+        actions:
+          - highlight: [a0, a1, a2, a3]
+          - set_text:
+              target: "s0"
+              text: "stack inc"
+      - note: "At height 2, pop 6 then 5 because their right boundary is now known."
+        actions:
+          - highlight: [a3, a2, a4]
+          - set_text:
+              target: "s1"
+              text: "pop areas"
+      - note: "After popping 5, width spans from after previous smaller bar to before current bar."
+        actions:
+          - set_text:
+              target: "s2"
+              text: "area=10"
+          - say: "The stack gives the nearest smaller bar on the left; current index is nearest smaller on the right."
+
+  - id: zero_one_knapsack_direction
+    title: "0/1 Knapsack Capacity Direction"
+    source_lesson: "knowledge/dsa/dynamic_programming/knapsack_patterns.yaml"
+    problem_statement: "Given item weights and values plus a capacity, maximize value when each item can be chosen at most once."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "0/1 Knapsack: scan capacity backward"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: Each item can be used once, so capacity must move high to low."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "a0"
+          type: "box"
+          text: 0
+          x: 70
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a1"
+          type: "box"
+          text: 1
+          x: 148
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a2"
+          type: "box"
+          text: 2
+          x: 226
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a3"
+          type: "box"
+          text: 3
+          x: 304
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a4"
+          type: "box"
+          text: 4
+          x: 382
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "a5"
+          type: "box"
+          text: 5
+          x: 460
+          y: 165
+          width: 82
+          height: 42
+        -
+          id: "state"
+          type: "label"
+          text: "State"
+          x: 70
+          y: 290
+          width: 140
+          size: 14
+        -
+          id: "s0"
+          type: "box"
+          text: ""
+          x: 140
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s1"
+          type: "box"
+          text: ""
+          x: 270
+          y: 278
+          width: 115
+          height: 42
+        -
+          id: "s2"
+          type: "box"
+          text: ""
+          x: 400
+          y: 278
+          width: 115
+          height: 42
+    steps:
+      - note: "Problem: when processing one item, dp[c] must read the previous row value dp[c-weight]."
+        actions:
+          - highlight: [a5, a3]
+          - set_text:
+              target: "s0"
+              text: "read old"
+      - note: "Scanning capacity backward prevents the same item from feeding itself in the current row."
+        actions:
+          - highlight: [a5, a4, a3]
+          - set_text:
+              target: "s1"
+              text: "5->0"
+      - note: "If this were unbounded knapsack, forward scanning would be intentional because reuse is allowed."
+        actions:
+          - set_text:
+              target: "s2"
+              text: "0/1 != unbounded"
+
+  - id: pacific_atlantic_reverse_flow
+    title: "Pacific Atlantic Water Flow"
+    source_lesson: "knowledge/dsa/important_problems/graph_problems/pacific_atlantic_water_flow.yaml"
+    problem_statement: "Given a height grid, return cells from which water can flow to both the Pacific and Atlantic oceans."
+    scene:
+      objects:
+        -
+          id: "title"
+          type: "label"
+          text: "Pacific Atlantic: reverse BFS from oceans"
+          x: 44
+          y: 28
+          width: 860
+          size: 20
+        -
+          id: "problem"
+          type: "label"
+          text: "Problem: find cells that can reach both oceans by flowing downhill or equal height."
+          x: 44
+          y: 62
+          width: 980
+          size: 14
+        -
+          id: "p"
+          type: "box"
+          text: "Pacific"
+          x: 70
+          y: 120
+          width: 110
+          height: 42
+        -
+          id: "c1"
+          type: "box"
+          text: "1"
+          x: 230
+          y: 120
+          width: 58
+          height: 42
+        -
+          id: "c2"
+          type: "box"
+          text: "2"
+          x: 300
+          y: 120
+          width: 58
+          height: 42
+        -
+          id: "c3"
+          type: "box"
+          text: "2"
+          x: 370
+          y: 120
+          width: 58
+          height: 42
+        -
+          id: "c4"
+          type: "box"
+          text: "3"
+          x: 230
+          y: 185
+          width: 58
+          height: 42
+        -
+          id: "c5"
+          type: "box"
+          text: "2"
+          x: 300
+          y: 185
+          width: 58
+          height: 42
+        -
+          id: "c6"
+          type: "box"
+          text: "3"
+          x: 370
+          y: 185
+          width: 58
+          height: 42
+        -
+          id: "a"
+          type: "box"
+          text: "Atlantic"
+          x: 470
+          y: 185
+          width: 120
+          height: 42
+        -
+          id: "pac"
+          type: "box"
+          text: "Pacific seen"
+          x: 690
+          y: 120
+          width: 140
+          height: 42
+        -
+          id: "atl"
+          type: "box"
+          text: "Atlantic seen"
+          x: 690
+          y: 185
+          width: 140
+          height: 42
+        -
+          id: "both"
+          type: "box"
+          text: "intersection"
+          x: 690
+          y: 250
+          width: 140
+          height: 42
+    steps:
+      - note: "Problem: instead of testing every cell outward, start from each ocean and walk reverse flow uphill."
+        actions:
+          - highlight: [p, pac]
+      - note: "Reverse move is allowed from low to equal or higher neighbor, because that neighbor could flow down to the ocean."
+        actions:
+          - highlight: [c1, c2, c4]
+          - set_text:
+              target: "pac"
+              text: "P reachable"
+      - note: "Cells visited by both ocean searches are the answer."
+        actions:
+          - highlight: [atl, both, c5, c6]
+          - set_text:
+              target: "both"
+              text: "answer cells"
+
+

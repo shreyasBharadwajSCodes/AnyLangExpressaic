@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an interview solution, use Time Complexity Discussions to explain the hidden cost,
+        language behavior, or correctness risk before finalizing code.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Time complexity describes how the number of operations grows as input size
@@ -54,7 +78,7 @@ lesson:
         - Prefer deque for queue front removal.
       behind_the_scenes:
         - "'x in list' is O(n), while 'x in set' is average O(1)."
-        - "'s += piece' repeatedly can create many strings."
+        - "'s += part' repeatedly can create many strings."
         - "'nums[a:b]' copies O(k) elements."
         - Python function calls and object operations have larger constants than C++.
       avoid:
@@ -219,7 +243,7 @@ transitions:
       - From method names to operator costs.
     habit_swaps:
       - java: StringBuilder append.
-        python: collect pieces and use join.
+        python: collect parts and use join.
       - java: HashSet.contains.
         python: x in set.
       - java: int[] scan.

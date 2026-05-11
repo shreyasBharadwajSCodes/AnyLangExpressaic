@@ -19,6 +19,30 @@ assets:
     alt: Topological Sort trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given nodes, edges, prerequisites, grid movement, or connectivity, model the state as a
+        graph and traverse or relax edges deliberately.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Topological sort is an ordering where every directed edge goes from earlier to later. It exists only when the directed graph has no cycle.
@@ -27,9 +51,9 @@ lesson:
       body: >
         Use Kahn with zero-indegree nodes or DFS postorder. If the final order does not include every node, a cycle prevented a valid ordering.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -102,7 +126,7 @@ examples:
       idea: Keep the state names visible so the dry run matches the explanation.
       python: |
         from collections import deque
-        
+
         q = deque([i for i in range(n) if indeg[i] == 0])
         order = []
         while q:
@@ -170,7 +194,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Topological Sort?
+  - question: What problem clue points to Topological Sort?
     answer: ordering directed tasks so prerequisites come first.
   - question: What state should you name before coding?
     answer: Name indegree or state, order, queue, and processed count.
@@ -183,7 +207,7 @@ revision:
   cheat_table:
     title: Topological Sort Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

@@ -20,6 +20,30 @@ assets:
     alt: Tree Diameter And Height trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a tree or prefix structure, solve by passing information down, collecting
+        information up, or traversing in the required order.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Height is the one-sided value returned to the parent. Diameter is the two-sided path that may pass through the current node, so it is usually tracked as a separate best answer.
@@ -28,9 +52,9 @@ lesson:
       body: >
         At each node, get left and right heights. Update best with left plus right because that path passes through the node. Return one plus the larger child height because the parent can extend only one side.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -103,12 +127,12 @@ examples:
       idea: Keep the state names visible so the dry run matches the explanation.
       python: |
         best = 0
-        
+
         def height(node):
             global best
             if node is None:
                 return 0
-        
+
             left = height(node.left)
             right = height(node.right)
             # Diameter through node uses both sides; parent can extend only one side.
@@ -116,10 +140,10 @@ examples:
             return 1 + max(left, right)
       cpp: |
         int best = 0;
-        
+
         int height(TreeNode* node) {
             if (node == nullptr) return 0;
-        
+
             int left = height(node->left);
             int right = height(node->right);
             // Diameter through node uses both sides; parent can extend only one side.
@@ -128,10 +152,10 @@ examples:
         }
       java: |
         private int best = 0;
-        
+
         private int height(TreeNode node) {
             if (node == null) return 0;
-        
+
             int left = height(node.left);
             int right = height(node.right);
             // Diameter through node uses both sides; parent can extend only one side.
@@ -164,7 +188,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Tree Diameter And Height?
+  - question: What problem clue points to Tree Diameter And Height?
     answer: longest tree path through subtree heights.
   - question: What state should you name before coding?
     answer: Name node, left height, right height, returned height, and best diameter.
@@ -177,7 +201,7 @@ revision:
   cheat_table:
     title: Tree Diameter And Height Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

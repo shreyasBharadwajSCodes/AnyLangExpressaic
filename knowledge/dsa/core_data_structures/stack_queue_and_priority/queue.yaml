@@ -12,6 +12,30 @@ assets:
     alt: BFS queue with front node, newly enqueued neighbors, and visited set.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem where the most recent unresolved item should be matched or resolved
+        first, use a stack.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - "A strong first thought is stack or monotonic stack."
+          - "Store indices when distance, width, or stale position matters; state the stack invariant."
+        -
+          - "The current item resolves earlier items in last-in-first-out order."
+          - ""
+          - ""
+        -
+          - "The unresolved candidates must keep a useful order."
+          - ""
+          - ""
+  - explain:
       title: Queue Strategy
       body: >
         A queue is first-in, first-out. In BFS, q is the frontier, front/node is the
@@ -26,7 +50,7 @@ lesson:
 
   - compare_table:
       title: Queue Operations
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Push back", "q.append(x)", "q.push(x)", "q.offer(x)"]
         - ["Read front", "q[0]", "q.front()", "q.peek()"]
@@ -144,7 +168,7 @@ revision:
     - "Interview working idea: Queue is FIFO. q is frontier. node comes from front. neighbors go to back."
   cheat_table:
     title: Queue Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["push", "append", "push", "offer"]
       - ["pop", "popleft", "front+pop", "poll"]

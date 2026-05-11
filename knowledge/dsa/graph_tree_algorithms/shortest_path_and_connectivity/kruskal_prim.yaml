@@ -21,6 +21,30 @@ assets:
     alt: Kruskal And Prim trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given nodes, edges, prerequisites, grid movement, or connectivity, model the state as a
+        graph and traverse or relax edges deliberately.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Kruskal thinks globally by sorting all edges. Prim thinks locally by growing one connected region. Both rely on taking the cheapest safe crossing edge.
@@ -29,9 +53,9 @@ lesson:
       body: >
         Use Kruskal when edge lists and union find are natural. Use Prim when adjacency lists are natural and the graph is connected from a start node.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -104,12 +128,12 @@ examples:
       idea: Keep the state names visible so the dry run matches the explanation.
       python: |
         import heapq
-        
+
         seen = {0}
         heap = list(adj[0])
         heapq.heapify(heap)
         total = 0
-        
+
         while heap and len(seen) < n:
             w, node = heapq.heappop(heap)
             if node in seen:
@@ -126,7 +150,7 @@ examples:
         seen[0] = 1;
         for (auto [w, nei] : adj[0]) pq.push({w, nei});
         long long total = 0;
-        
+
         while (!pq.empty()) {
             auto [w, node] = pq.top();
             pq.pop();
@@ -144,7 +168,7 @@ examples:
         seen[0] = true;
         for (int[] edge : adj.get(0)) pq.offer(edge);
         long total = 0;
-        
+
         while (!pq.isEmpty()) {
             int[] cur = pq.poll();
             int w = cur[0], node = cur[1];
@@ -182,7 +206,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Kruskal And Prim?
+  - question: What problem clue points to Kruskal And Prim?
     answer: choosing the right MST implementation style.
   - question: What state should you name before coding?
     answer: Name sorted edges or heap frontier, visited set, union find, and total cost.
@@ -195,7 +219,7 @@ revision:
   cheat_table:
     title: Kruskal And Prim Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

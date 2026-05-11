@@ -1,0 +1,198 @@
+id: java_interview_traps
+title: Java Interview Traps
+category: dsa
+level: final_revision
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - final_revision
+  - interview
+  - trap_lists
+goal: Provide make-or-break final revision for java interview traps with caveats, quick tables, code comments, short explanations, and interview questions.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given a final-round interview problem, use Java Interview Traps to recognize the pattern,
+        explain the approach, test edge cases, and avoid language traps.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
+          - "A strong first thought is memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
+          - "Write the state meaning in words before code, then verify the transition reads only already-known states."
+        -
+          - "The same suffix, prefix, index, capacity, or pair of indices repeats."
+          - ""
+          - ""
+        -
+          - "Greedy choice is not obviously safe."
+          - ""
+          - ""
+  - explain:
+      title: Final-Hour Mental Model
+      body: >
+        This page is meant for the final review pass. The goal is fast recall with
+        precision: recognize the clue, name the state, choose the structure, say
+        the caveat, and dry-run the line where the state changes.
+  - explain:
+      title: What To Say In An Interview
+      body: >
+        Start with the brute force in one sentence, then name the optimization.
+        State the invariant before code. After code, give complexity using the
+        input size and the dominant operation. If there is a language caveat, say
+        it before the interviewer finds it.
+  - compare_table:
+      title: What To Notice Before Coding
+      columns:
+        - What You Notice
+        - Move
+        - Interview Answer
+        - Caveat
+      rows:
+        -
+          - "You need fastest lookup"
+          - "hash map or set"
+          - "Average constant time lookup after hashing"
+          - "Keys must be stable and equality must match hash"
+        -
+          - "You need sorted order"
+          - "sort, binary search, tree map, or heap"
+          - "Pay for ordering only when the problem asks for it"
+          - "Sorted structure changes operation cost"
+        -
+          - "You need shortest unweighted path"
+          - "BFS"
+          - "First time reached is shortest"
+          - "Mark visited when enqueueing"
+        -
+          - "You need repeated subproblem reuse"
+          - "DP or memoization"
+          - "Define state before recurrence"
+          - "Wrong state creates wrong table"
+        -
+          - "You need final explanation"
+          - "state invariant plus complexity"
+          - "Interviewer must hear why updates are safe"
+          - "Do not only narrate code"
+  - compare_table:
+      title: Language Caveat Table
+      columns:
+        - Topic
+        - Python
+        - C++
+        - Java
+      rows:
+        -
+          - "queue"
+          - "deque popleft"
+          - "front then pop"
+          - "ArrayDeque poll"
+        -
+          - "heap"
+          - "heapq is min heap"
+          - "priority queue is max heap by default"
+          - "PriorityQueue uses comparator"
+        -
+          - "2D DP"
+          - "avoid multiplied rows"
+          - "avoid huge stack arrays"
+          - "fill each row when using sentinels"
+        -
+          - "sort"
+          - "key function"
+          - "strict bool comparator"
+          - "Comparator helpers avoid overflow"
+examples:
+  - code_compare:
+      title: Quick BFS Template With Meaningful Comments
+      idea: Comments mark state changes, not syntax.
+      python: |
+        from collections import deque
+
+        q = deque([start])
+        seen = {start}
+        while q:
+            node = q.popleft()
+            for nei in adj[node]:
+                if nei in seen:
+                    continue
+                # Mark before enqueue so the same node is not queued twice.
+                seen.add(nei)
+                q.append(nei)
+      cpp: |
+        queue<int> q;
+        vector<int> seen(n, 0);
+        q.push(start);
+        seen[start] = 1;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            for (int nei : adj[node]) {
+                if (seen[nei]) continue;
+                // Mark before push so the same node is not queued twice.
+                seen[nei] = 1;
+                q.push(nei);
+            }
+        }
+      java: |
+        Deque<Integer> q = new ArrayDeque<>();
+        boolean[] seen = new boolean[n];
+        q.offer(start);
+        seen[start] = true;
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            for (int nei : adj.get(node)) {
+                if (seen[nei]) continue;
+                // Mark before offer so the same node is not queued twice.
+                seen[nei] = true;
+                q.offer(nei);
+            }
+        }
+      note: >
+        The comment explains the timing of visited, which is the interview-critical
+        detail. Avoid comments that only restate syntax.
+interview_questions:
+  - question: What should your first explanation include?
+    answer: Include the problem clue, chosen pattern, state invariant, and why the main update is safe.
+  - question: What is the fastest way to debug a wrong answer in an interview?
+    answer: Dry-run the state table and inspect the exact line where state changes.
+  - question: What is the fastest way to improve brute force?
+    answer: Identify repeated work or expensive lookup, then replace it with hashing, sorting, two pointers, DP, BFS, or a heap as appropriate.
+revision:
+  quick_summary:
+    - "Java Interview Traps helps with avoiding Java mistakes in arrays and collections."
+    - "Working idea: track initialization, boxing, comparator safety, equality, and references, state the caveat before coding, and dry-run the mutation line."
+  cheat_table:
+    title: One-Minute Recall
+    columns:
+      - Step
+      - Sentence To Say
+    rows:
+      -
+        - "Pattern"
+        - "This is a pattern-name problem because the problem gives a clear clue."
+      -
+        - "Invariant"
+        - "My state means this, and every update preserves it."
+      -
+        - "Complexity"
+        - "The dominant operation is this, so time and space are this."
+  flashcards:
+    - question: What makes final revision useful?
+      answer: It helps you recall the invariant and caveat, not just the syntax.
+notes:
+  - "Caveats are not decoration: they are where interview solutions usually fail."
+  - Keep final answers short, but never omit state meaning or complexity.
+tlm_hooks:
+  possible_tasks:
+    - drill_java_interview_traps
+    - generate_java_interview_traps_mock_questions
+  context: Focus on initialization, boxing, comparator safety, equality, and references.

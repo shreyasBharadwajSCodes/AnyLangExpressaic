@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an interview solution, use Recursion Stack Cost to explain the hidden cost,
+        language behavior, or correctness risk before finalizing code.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - "A strong first thought is stack or monotonic stack."
+          - "Store indices when distance, width, or stale position matters; state the stack invariant."
+        -
+          - "The current item resolves earlier items in last-in-first-out order."
+          - ""
+          - ""
+        -
+          - "The unresolved candidates must keep a useful order."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Every recursive call creates a stack frame holding parameters, local variables,

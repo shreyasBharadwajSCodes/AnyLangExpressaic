@@ -12,6 +12,30 @@ assets:
     alt: Graph nodes mapped to adjacency lists with node, neighbor, weight, and visited variables.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given nodes, edges, prerequisites, grid movement, or connectivity, model the state as a
+        graph and traverse or relax edges deliberately.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Adjacency List Strategy
       body: >
         An adjacency list maps each node to its outgoing neighbors. Track adj as the
@@ -29,7 +53,7 @@ lesson:
       title: Representation Choices
       columns: [Representation, Best For, Caveat]
       rows:
-        - ["Adjacency list", "Sparse graphs, traversal", "Need build carefully"]
+        - ["Adjacency list", "Sparse graphs, traversal", "You need build carefully"]
         - ["Adjacency matrix", "Dense graphs, O(1) edge check", "O(n^2) space"]
         - ["Edge list", "Kruskal, Bellman-Ford", "Traversal slower"]
   - language_lens:
@@ -156,7 +180,7 @@ revision:
     - "Interview working idea: adj stores graph shape. node is current vertex. nei iterates outgoing edges. visited/dist stores traversal state."
   cheat_table:
     title: Graph Representation Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["unweighted adj", "list[list[int]]", "vector<vector<int>>", "List<List<Integer>>"]
       - ["weighted adj", "list of pairs", "vector<vector<pair<int,int>>>", "List<List<int[]>>"]

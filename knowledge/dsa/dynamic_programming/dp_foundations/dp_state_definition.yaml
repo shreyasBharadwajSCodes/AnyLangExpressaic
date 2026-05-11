@@ -1,0 +1,226 @@
+id: dp_state_definition
+title: DP State Definition
+category: dsa
+level: intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - dp_state
+  - recurrence
+  - interview
+goal: Teach dp state definition across Python, C++, and Java with state definition, recurrence writing, base cases, computation order, and interview explanation.
+assets:
+  dp_state_definition_trace:
+    type: image
+    path: assets/dsa/dp_state_definition/dp-state-definition-trace.png
+    alt: DP State Definition state table and transition trace.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given overlapping choices or repeated subproblems, define a state, transition, base case,
+        and answer position.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
+          - "A strong first thought is memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
+          - "Write the state meaning in words before code, then verify the transition reads only already-known states."
+        -
+          - "The same suffix, prefix, index, capacity, or pair of indices repeats."
+          - ""
+          - ""
+        -
+          - "Greedy choice is not obviously safe."
+          - ""
+          - ""
+  - explain:
+      title: Core Mental Model
+      body: >
+        The state definition is the heart of DP. A good state sentence says exactly what information is already decided and what the answer for this state represents.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Start from the decision boundary: index, position, remaining amount, previous value, or interval. Add only variables needed to make the future independent of the past.
+  - compare_table:
+      title: Variables And Transitions
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Use
+      rows:
+        -
+          - "index"
+          - "where choices start"
+          - "used in 1D DP"
+        -
+          - "capacity or amount"
+          - "remaining resource"
+          - "used in knapsack"
+        -
+          - "previous choice"
+          - "constraint memory"
+          - "used in subsequences"
+        -
+          - "interval"
+          - "left and right boundaries"
+          - "used in interval DP"
+  - language_lens:
+      language: python
+      title: Python DP Strategy
+      body: >
+        Python makes memoization concise and tables easy, but row aliasing, recursion depth, and mutable cache keys can break correct ideas.
+      default_instincts:
+        - Use lru_cache or cache for top-down DP with hashable state.
+        - Use row comprehensions for two-dimensional tables.
+        - Use large numeric sentinels for minimum problems.
+      behind_the_scenes:
+        - Cached function arguments must be hashable.
+        - Multiplying nested lists aliases rows.
+        - Python recursion depth can fail on long state chains.
+      avoid:
+        - Passing mutable lists into cached functions.
+        - Rebuilding slices inside transitions.
+        - Forgetting whether dp means prefix answer or suffix answer.
+  - language_lens:
+      language: cpp
+      title: C++ DP Strategy
+      body: >
+        C++ DP is fast when tables are passed by reference and numeric types are chosen deliberately.
+      default_instincts:
+        - Use vector tables and pass them by reference.
+        - Use long long for counts, costs, and sums when constraints can grow.
+        - Use safe INF values and guard before adding.
+      behind_the_scenes:
+        - Passing vectors by value copies the table.
+        - Large local arrays can overflow the stack.
+        - int overflow can silently change answers.
+      avoid:
+        - Updating a one-dimensional table in the wrong direction.
+        - Using INT_MAX and then adding a cost.
+        - Copying memo tables into recursive helpers.
+  - language_lens:
+      language: java
+      title: Java DP Strategy
+      body: >
+        Java DP is clearest with primitive arrays, explicit initialization, and helper methods for memoized recursion.
+      default_instincts:
+        - Use int arrays or long arrays for bounded states.
+        - Use Arrays.fill for sentinel initialization.
+        - Use helper methods with shared memo fields or parameters.
+      behind_the_scenes:
+        - Two-dimensional arrays are arrays of rows.
+        - Integer objects allow null sentinels but add boxing.
+        - Recursive DP can overflow the Java call stack.
+      avoid:
+        - Filling only the outer array and forgetting each row.
+        - Using int when the result needs long.
+        - Reallocating tables inside recursive calls.
+examples:
+  - code_compare:
+      title: DP State Definition Core Code Shape
+      idea: Track indices, remaining capacity, previous choice, and target value.
+      python: |
+        from functools import lru_cache
+
+        @lru_cache(None)
+        def solve(i):
+            if i >= len(nums):
+                return 0
+
+            skip = solve(i + 1)
+            take = nums[i] + solve(i + 2)
+            # solve(i) means best answer starting at index i.
+            return max(skip, take)
+      cpp: |
+        int solve(int i, const vector<int>& nums, vector<int>& memo) {
+            if (i >= nums.size()) return 0;
+            if (memo[i] != -1) return memo[i];
+
+            int skip = solve(i + 1, nums, memo);
+            int take = nums[i] + solve(i + 2, nums, memo);
+            // solve(i) means best answer starting at index i.
+            return memo[i] = max(skip, take);
+        }
+      java: |
+        private int solve(int i, int[] nums, int[] memo) {
+            if (i >= nums.length) return 0;
+            if (memo[i] != -1) return memo[i];
+
+            int skip = solve(i + 1, nums, memo);
+            int take = nums[i] + solve(i + 2, nums, memo);
+            // solve(i) means best answer starting at index i.
+            memo[i] = Math.max(skip, take);
+            return memo[i];
+        }
+      note: >
+        Read the code by first saying what each state means, then checking that every transition uses already valid smaller states.
+transitions:
+  python_to_cpp:
+    title: Python DP State Definition To C++
+    mindset_shift:
+      - Replace decorator caches with explicit memo tables or vectors.
+      - Choose int, long long, and INF deliberately.
+      - Pass tables and inputs by reference to avoid copying.
+    habit_swaps:
+      - python: Use lru_cache for recursive state.
+        cpp: Use vector memo passed by reference.
+    false_friends:
+      - term: overflow
+        warning: C++ int can overflow in counts, sums, and sentinel additions.
+  python_to_java:
+    title: Python DP State Definition To Java
+    mindset_shift:
+      - Replace compact list setup with explicit arrays and Arrays.fill.
+      - Use primitive arrays for speed when dimensions are known.
+      - Keep memo state shared across helper calls.
+    habit_swaps:
+      - python: Use list comprehension for tables.
+        java: Allocate arrays and fill each row when needed.
+    false_friends:
+      - term: boxed memo
+        warning: Integer arrays allow null but cost more than primitive arrays with a sentinel.
+interview_questions:
+  - question: What clue points to DP State Definition?
+    answer: turning the problem into a precise dp state sentence.
+  - question: What must you say before coding?
+    answer: Define indices, remaining capacity, previous choice, and target value, then state the recurrence and base cases.
+  - question: What is the common bug?
+    answer: Using a transition before its dependency is ready, or changing one-dimensional update direction incorrectly.
+revision:
+  quick_summary:
+    - "DP State Definition is the DP tool for turning the problem into a precise dp state sentence."
+    - "Working idea: Start from the decision boundary: index, position, remaining amount, previous value, or interval. Add only variables needed to make the future independent of the past."
+  cheat_table:
+    title: DP State Definition Revision Table
+    columns:
+      - What You Notice
+      - State
+      - Caveat
+    rows:
+      -
+        - "turning the problem into a precise dp state sentence"
+        - "indices, remaining capacity, previous choice, and target value"
+        - "Define state in one sentence before writing code."
+      -
+        - "language risk"
+        - "table and numeric type"
+        - "Watch Python row aliasing, C++ copies and overflow, Java initialization."
+  flashcards:
+    - question: What is the most important DP interview sentence?
+      answer: Say exactly what the state means.
+notes:
+  - "DP code should be read as state definition, base case, transition, fill order, answer location."
+  - Use the clear table first; optimize space only after the dependency direction is obvious.
+tlm_hooks:
+  possible_tasks:
+    - trace_dp_state_definition
+    - generate_dp_state_definition_drills
+  context: Focus on indices, remaining capacity, previous choice, and target value.

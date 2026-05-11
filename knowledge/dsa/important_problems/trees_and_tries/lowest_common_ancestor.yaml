@@ -1,0 +1,188 @@
+id: lowest_common_ancestor
+title: Lowest Common Ancestor
+category: dsa
+level: important_problem
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - important_problem
+  - interview
+  - trees_and_tries
+goal: Teach Lowest Common Ancestor as an interview problem with recognition cue, approach, state tracking, edge cases, coordinated code, and language caveats.
+assets:
+  lowest_common_ancestor_trace:
+    type: image
+    path: assets/dsa/lowest_common_ancestor/lowest-common-ancestor-trace.png
+    alt: Lowest Common Ancestor variable trace and interview dry run.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given a binary tree and two nodes, return their lowest common ancestor.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
+      title: When To Use This
+      body: >
+        Bring this idea in when the problem is quietly asking for DFS returning found target or split node. Before
+        coding, say what the input shape is, what answer must be returned, and which
+        state proves progress.
+  - explain:
+      title: Approach And State
+      body: >
+        Track node, left result, right result. The important interview move is to explain when this state
+        changes, why that timing is safe, and which cases are intentionally skipped
+        or resolved.
+  - compare_table:
+      title: Variables And Edge Cases
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Caveat
+      rows:
+        -
+          - "state"
+          - "node, left result, right result"
+          - "Name this before writing code."
+        -
+          - "update timing"
+          - "the line where progress becomes official"
+          - "Most bugs happen before or after this line."
+        -
+          - "edge case"
+          - "empty, one item, duplicates, boundary, or unreachable state"
+          - "Test it after the main dry run."
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Keep the solution compact, but make the state variable names explicit enough for a dry run.
+      default_instincts:
+        - Use dictionaries, sets, deque, heapq, or lists based on the pattern.
+        - Prefer tuple state for immutable compound keys.
+        - Watch list aliasing and recursion depth.
+      avoid:
+        - Hiding an O n operation inside a loop.
+        - Using mutable objects as dictionary keys.
+        - Updating the answer before the state is valid.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        Choose containers and numeric types deliberately, and avoid copying large state inside helpers.
+      default_instincts:
+        - Pass large vectors, strings, and adjacency lists by reference.
+        - Use long long when counts, products, sums, or distances can grow.
+        - Configure comparators and heaps explicitly.
+      avoid:
+        - Passing vectors by value accidentally.
+        - Using unsafe int sentinels with addition.
+        - Dereferencing null pointers in linked-list or tree problems.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Use explicit arrays, initialized collections, helper methods, and safe comparator or equality choices.
+      default_instincts:
+        - Use primitive arrays for fixed-size state.
+        - Use ArrayDeque for queues and stacks.
+        - Initialize every nested collection before adding to it.
+      avoid:
+        - Comparator subtraction when values can be large.
+        - Double equals for string value comparison.
+        - Forgetting null checks on node references.
+examples:
+  - code_compare:
+      title: Lowest Common Ancestor Core Implementation
+      idea: DFS returning found target or split node.
+      python: |
+        def lca(node, p, q):
+            if node is None or node is p or node is q:
+                return node
+            left = lca(node.left, p, q)
+            right = lca(node.right, p, q)
+            if left and right:
+                # Targets split across both sides, so this node is the answer.
+                return node
+            return left or right
+      cpp: |
+        TreeNode* lca(TreeNode* node, TreeNode* p, TreeNode* q) {
+            if (node == nullptr || node == p || node == q) return node;
+            TreeNode* left = lca(node->left, p, q);
+            TreeNode* right = lca(node->right, p, q);
+            if (left != nullptr && right != nullptr) {
+                // Targets split across both sides, so this node is the answer.
+                return node;
+            }
+            return left != nullptr ? left : right;
+        }
+      java: |
+        private TreeNode lca(TreeNode node, TreeNode p, TreeNode q) {
+            if (node == null || node == p || node == q) return node;
+            TreeNode left = lca(node.left, p, q);
+            TreeNode right = lca(node.right, p, q);
+            if (left != null && right != null) {
+                // Targets split across both sides, so this node is the answer.
+                return node;
+            }
+            return left != null ? left : right;
+        }
+      note: >
+        Read the code by following node, left result, right result. The comments mark non-trivial state
+        changes only, so the explanation and implementation stay coordinated.
+interview_questions:
+  - question: What is the pattern clue for Lowest Common Ancestor?
+    answer: DFS returning found target or split node.
+  - question: What variables should you dry-run?
+    answer: Dry-run node, left result, right result, plus the answer variable and any boundary pointer.
+  - question: What edge cases should you test?
+    answer: Test empty or minimal input, duplicate values where relevant, boundary indices, and cases where no valid answer exists.
+revision:
+  quick_summary:
+    - "Lowest Common Ancestor is solved by DFS returning found target or split node."
+    - "Working idea: track node, left result, right result, update it at the safe moment, and dry-run the edge case that can break the invariant."
+  cheat_table:
+    title: Lowest Common Ancestor Quick Recall
+    columns:
+      - Remember
+      - Why
+    rows:
+      -
+        - "Name the state"
+        - "The code becomes readable immediately."
+      -
+        - "Explain update timing"
+        - "This proves correctness."
+      -
+        - "Test the smallest input"
+        - "This catches most boundary mistakes."
+  flashcards:
+    - question: What should you say if asked why this works?
+      answer: State the invariant and explain why each update preserves it.
+notes:
+  - Keep comments around meaningful state changes only.
+  - In interviews, explain the brute force briefly, then point to the repeated work removed by this pattern.
+tlm_hooks:
+  possible_tasks:
+    - trace_lowest_common_ancestor
+    - generate_lowest_common_ancestor_drills
+  context: Focus on node, left result, right result.

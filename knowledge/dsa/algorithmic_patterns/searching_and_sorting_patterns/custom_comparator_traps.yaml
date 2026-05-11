@@ -12,6 +12,30 @@ assets:
     alt: Comparator contract showing equal elements, transitivity, and safe numeric comparison.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given items that must be ordered by start time, end time, value, frequency, or priority,
+        sort them and make one pass with a chosen invariant.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives intervals, ordering, custom ranking, minimum removals, overlap, schedule, or greedy choice."
+          - "A strong first thought is sorting, comparator, greedy, merge intervals, sweep line, or counting sort."
+          - "Explain why the sort key makes future choices safe and how ties are handled."
+        -
+          - "A local choice becomes safe after sorting by the right key."
+          - ""
+          - ""
+        -
+          - "The hard part is choosing the key and tie-break."
+          - ""
+          - ""
+  - explain:
       title: Comparator Contract
       body: >
         A comparator must define a consistent order. Python usually avoids this by
@@ -128,7 +152,7 @@ interview_questions:
     answer: The subtraction can overflow and produce the wrong sign.
 revision:
   quick_summary:
-    - "Custom Comparator Traps is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Custom Comparator Traps is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Python prefers keys. C++ comparator is strict bool. Java uses compare helpers."
   cheat_table:
     title: Comparator Trap Table

@@ -1,0 +1,196 @@
+id: product_of_array_except_self
+title: Product Of Array Except Self
+category: dsa
+level: important_problem
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - important_problem
+  - interview
+  - warmup_and_fundamentals
+goal: Teach Product Of Array Except Self as an interview problem with recognition cue, approach, state tracking, edge cases, coordinated code, and language caveats.
+assets:
+  product_of_array_except_self_trace:
+    type: image
+    path: assets/dsa/product_of_array_except_self/product-of-array-except-self-trace.png
+    alt: Product Of Array Except Self variable trace and interview dry run.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given an integer array nums, return an array answer where answer[i] is the product of
+        every element except nums[i], without using division.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem mentions subarray sums, range updates, product except self, maximum contiguous sum, or repeated queries."
+          - "A strong first thought is prefix sum, prefix count map, difference array, suffix pass, or Kadane state."
+          - "Define what the running value means before and after processing the current index."
+        -
+          - "The desired answer can be expressed as current cumulative state minus earlier state."
+          - ""
+          - ""
+        -
+          - "Nested loops are only recomputing totals."
+          - ""
+          - ""
+  - explain:
+      title: When To Use This
+      body: >
+        Bring this idea in when the problem is quietly asking for prefix and suffix products without division. Before
+        coding, say what the input shape is, what answer must be returned, and which
+        state proves progress.
+  - explain:
+      title: Approach And State
+      body: >
+        Track answer array, prefix product, suffix product. The important interview move is to explain when this state
+        changes, why that timing is safe, and which cases are intentionally skipped
+        or resolved.
+  - compare_table:
+      title: Variables And Edge Cases
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Caveat
+      rows:
+        -
+          - "state"
+          - "answer array, prefix product, suffix product"
+          - "Name this before writing code."
+        -
+          - "update timing"
+          - "the line where progress becomes official"
+          - "Most bugs happen before or after this line."
+        -
+          - "edge case"
+          - "empty, one item, duplicates, boundary, or unreachable state"
+          - "Test it after the main dry run."
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Keep the solution compact, but make the state variable names explicit enough for a dry run.
+      default_instincts:
+        - Use dictionaries, sets, deque, heapq, or lists based on the pattern.
+        - Prefer tuple state for immutable compound keys.
+        - Watch list aliasing and recursion depth.
+      avoid:
+        - Hiding an O n operation inside a loop.
+        - Using mutable objects as dictionary keys.
+        - Updating the answer before the state is valid.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        Choose containers and numeric types deliberately, and avoid copying large state inside helpers.
+      default_instincts:
+        - Pass large vectors, strings, and adjacency lists by reference.
+        - Use long long when counts, products, sums, or distances can grow.
+        - Configure comparators and heaps explicitly.
+      avoid:
+        - Passing vectors by value accidentally.
+        - Using unsafe int sentinels with addition.
+        - Dereferencing null pointers in linked-list or tree problems.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Use explicit arrays, initialized collections, helper methods, and safe comparator or equality choices.
+      default_instincts:
+        - Use primitive arrays for fixed-size state.
+        - Use ArrayDeque for queues and stacks.
+        - Initialize every nested collection before adding to it.
+      avoid:
+        - Comparator subtraction when values can be large.
+        - Double equals for string value comparison.
+        - Forgetting null checks on node references.
+examples:
+  - code_compare:
+      title: Product Of Array Except Self Core Implementation
+      idea: prefix and suffix products without division.
+      python: |
+        ans = [1] * len(nums)
+        prefix = 1
+        for i, x in enumerate(nums):
+            ans[i] = prefix
+            prefix *= x
+
+        suffix = 1
+        for i in range(len(nums) - 1, -1, -1):
+            # ans[i] already has product on the left; suffix adds product on the right.
+            ans[i] *= suffix
+            suffix *= nums[i]
+      cpp: |
+        vector<int> ans(nums.size(), 1);
+        int prefix = 1;
+        for (int i = 0; i < nums.size(); i++) {
+            ans[i] = prefix;
+            prefix *= nums[i];
+        }
+        int suffix = 1;
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            // ans[i] already has product on the left; suffix adds product on the right.
+            ans[i] *= suffix;
+            suffix *= nums[i];
+        }
+      java: |
+        int[] ans = new int[nums.length];
+        Arrays.fill(ans, 1);
+        int prefix = 1;
+        for (int i = 0; i < nums.length; i++) {
+            ans[i] = prefix;
+            prefix *= nums[i];
+        }
+        int suffix = 1;
+        for (int i = nums.length - 1; i >= 0; i--) {
+            // ans[i] already has product on the left; suffix adds product on the right.
+            ans[i] *= suffix;
+            suffix *= nums[i];
+        }
+      note: >
+        Read the code by following answer array, prefix product, suffix product. The comments mark non-trivial state
+        changes only, so the explanation and implementation stay coordinated.
+interview_questions:
+  - question: What is the pattern clue for Product Of Array Except Self?
+    answer: prefix and suffix products without division.
+  - question: What variables should you dry-run?
+    answer: Dry-run answer array, prefix product, suffix product, plus the answer variable and any boundary pointer.
+  - question: What edge cases should you test?
+    answer: Test empty or minimal input, duplicate values where relevant, boundary indices, and cases where no valid answer exists.
+revision:
+  quick_summary:
+    - "Product Of Array Except Self is solved by prefix and suffix products without division."
+    - "Working idea: track answer array, prefix product, suffix product, update it at the safe moment, and dry-run the edge case that can break the invariant."
+  cheat_table:
+    title: Product Of Array Except Self Quick Recall
+    columns:
+      - Remember
+      - Why
+    rows:
+      -
+        - "Name the state"
+        - "The code becomes readable immediately."
+      -
+        - "Explain update timing"
+        - "This proves correctness."
+      -
+        - "Test the smallest input"
+        - "This catches most boundary mistakes."
+  flashcards:
+    - question: What should you say if asked why this works?
+      answer: State the invariant and explain why each update preserves it.
+notes:
+  - Keep comments around meaningful state changes only.
+  - In interviews, explain the brute force briefly, then point to the repeated work removed by this pattern.
+tlm_hooks:
+  possible_tasks:
+    - trace_product_of_array_except_self
+    - generate_product_of_array_except_self_drills
+  context: Focus on answer array, prefix product, suffix product.

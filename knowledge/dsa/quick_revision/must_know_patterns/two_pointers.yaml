@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Two Pointers as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for a pair, boundary, reversal, cycle, or in-place scan."
+          - "A strong first thought is two pointers, fast and slow pointers, or pointer rewiring."
+          - "Name what each pointer means, why it moves, and what condition proves progress."
+        -
+          - "Sorted input, linked nodes, or opposite ends are useful."
+          - ""
+          - ""
+        -
+          - "Brute force compares many pairs or repeatedly rescans."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Two pointers means maintaining two positions that move through a sequence
@@ -31,7 +55,7 @@ lesson:
   - compare_table:
       title: Recognition Map
       columns:
-        - Signal
+        - What You Notice
         - Typical Move
         - Example
       rows:
@@ -318,7 +342,7 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Two Pointers is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Two Pointers is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Two pointers work when each move safely eliminates candidates. Sorted input often justifies inward movement. Write pointers compact arrays in place. Slow/fast pointers are for linked lists and cycle-style patterns."
   cheat_table:
     title: Two Pointers Revision

@@ -12,6 +12,30 @@ assets:
     alt: Current value x checked against seen set, then inserted.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a collection of values, solve membership, grouping, counting, or complement lookup
+        using stable keys.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Set Strategy
       body: >
         A set answers "have I seen this before?" Track x as the current value,
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Set Operations
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Create", "set()", "unordered_set<T>", "HashSet<T>"]
         - ["Contains", "x in seen", "seen.count(x)", "seen.contains(x)"]
@@ -131,7 +155,7 @@ revision:
     - "Interview working idea: Set lookup is average O(1). Track seen before insertion. Custom keys need stable hashing."
   cheat_table:
     title: Set Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["contains", "x in seen", "seen.count(x)", "seen.contains(x)"]
       - ["add", "add", "insert", "add"]

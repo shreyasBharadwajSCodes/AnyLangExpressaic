@@ -23,6 +23,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use BFS And DFS Readiness as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         BFS and DFS are traversal strategies. BFS explores by distance or level using
@@ -32,12 +56,12 @@ lesson:
   - compare_table:
       title: BFS Versus DFS
       columns:
-        - Need
+        - Operation Needed
         - Prefer
         - Why
       rows:
         - ["Shortest path in unweighted graph", "BFS", "First time reached is shortest"]
-        - ["Connected components", "Either", "Need visit all reachable nodes"]
+        - ["Connected components", "Either", "You need visit all reachable nodes"]
         - ["Cycle detection", "DFS or BFS", "Depends on directed/undirected state"]
         - ["Tree height/diameter", "DFS", "Natural recursion"]
         - ["Level order", "BFS", "Queue preserves levels"]
@@ -280,12 +304,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "BFS And DFS Readiness is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "BFS And DFS Readiness is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: BFS uses a queue and explores by level. DFS uses recursion or a stack and explores deeply. Mark visited deliberately. Use iterative traversal when recursion depth is risky."
   cheat_table:
     title: BFS DFS Revision
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

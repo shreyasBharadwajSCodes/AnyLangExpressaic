@@ -12,6 +12,30 @@ assets:
     alt: Deque with front, back, incoming item, and outgoing stale item.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem where the most recent unresolved item should be matched or resolved
+        first, use a stack.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - "A strong first thought is stack or monotonic stack."
+          - "Store indices when distance, width, or stale position matters; state the stack invariant."
+        -
+          - "The current item resolves earlier items in last-in-first-out order."
+          - ""
+          - ""
+        -
+          - "The unresolved candidates must keep a useful order."
+          - ""
+          - ""
+  - explain:
       title: Deque Strategy
       body: >
         A deque supports both ends. Track front as the oldest or next-to-expire item,
@@ -26,7 +50,7 @@ lesson:
 
   - compare_table:
       title: Deque Operations
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Push back", "append", "push_back", "offerLast"]
         - ["Push front", "appendleft", "push_front", "offerFirst"]
@@ -128,7 +152,7 @@ revision:
     - "Interview working idea: Deque is both-ended. Track which end has which meaning."
   cheat_table:
     title: Deque Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["front push", "appendleft", "push_front", "offerFirst"]
       - ["back pop", "pop", "pop_back", "pollLast"]

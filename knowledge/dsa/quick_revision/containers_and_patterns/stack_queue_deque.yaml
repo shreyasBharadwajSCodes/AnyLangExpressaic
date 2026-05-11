@@ -23,6 +23,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Stack Queue Deque Readiness as a quick recognition
+        and implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Stack, queue, and deque are about access order. Stack is last-in first-out.
@@ -32,7 +56,7 @@ lesson:
   - compare_table:
       title: First Mapping
       columns:
-        - Need
+        - Operation Needed
         - Python
         - C++
         - Java
@@ -112,7 +136,7 @@ lesson:
         - Container
         - Why
       rows:
-        - ["Valid parentheses", "Stack", "Need most recent unmatched opener"]
+        - ["Valid parentheses", "Stack", "You need most recent unmatched opener"]
         - ["BFS", "Queue", "Process by arrival order"]
         - ["Sliding-window maximum", "Deque", "Drop stale front, maintain monotonic back"]
         - ["DFS iterative", "Stack", "Simulate recursion"]
@@ -323,12 +347,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Stack Queue Deque Readiness is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Stack Queue Deque Readiness is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Stack means LIFO; queue means FIFO; deque means both ends. Python list is fine for stack, deque for queue. C++ stack and queue pop methods return void. Java ArrayDeque is the usual stack/queue choice."
   cheat_table:
     title: Stack Queue Deque Revision
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

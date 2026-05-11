@@ -12,6 +12,30 @@ assets:
     alt: Trie insert path with current node, character, child edge, and end marker.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a tree or prefix structure, solve by passing information down, collecting
+        information up, or traversing in the required order.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Trie Strategy
       body: >
         A trie stores strings by shared prefixes. Track node as the current trie node,

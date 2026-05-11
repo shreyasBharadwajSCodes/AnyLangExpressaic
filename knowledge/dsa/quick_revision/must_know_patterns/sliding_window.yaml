@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Sliding Window as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
+          - "A strong first thought is fixed window, variable window, frequency map, or monotonic deque."
+          - "Track what the window currently contains and shrink only when the invariant tells you to."
+        -
+          - "The answer changes when one boundary enters or leaves."
+          - ""
+          - ""
+        -
+          - "Recomputing each segment would repeat the same work."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Sliding window keeps a contiguous range [left, right] and updates its state
@@ -31,7 +55,7 @@ lesson:
       title: Fixed Versus Variable Window
       columns:
         - Type
-        - Signal
+        - What You Notice
         - Main Invariant
       rows:
         - ["Fixed", "Exactly k length", "Window size equals k"]
@@ -323,12 +347,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Sliding Window is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Sliding Window is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Sliding window is for contiguous ranges. Fixed windows maintain exact size. Variable windows expand right and shrink left until valid. Keep state incremental; do not rescan the window."
   cheat_table:
     title: Sliding Window Revision
     columns:
-      - Problem Signal
+      - Problem Clue
       - Window Type
       - State
       - Caveat

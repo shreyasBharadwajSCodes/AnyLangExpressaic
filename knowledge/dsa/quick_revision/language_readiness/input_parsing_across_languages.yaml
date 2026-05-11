@@ -37,6 +37,30 @@ related_patterns:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Input Parsing Across Languages as a quick
+        recognition and implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: The Interview Goal
       body: >
         Input parsing should be invisible once the problem starts. Your goal is to
@@ -46,7 +70,7 @@ lesson:
   - compare_table:
       title: Parsing Mental Model
       columns:
-        - Need
+        - Operation Needed
         - Python
         - C++
         - Java
@@ -409,12 +433,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Input Parsing Across Languages is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Input Parsing Across Languages is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Parse into the exact shape your algorithm needs. Token-based input is ideal for most DSA numbers and words. Line-based input is needed when spaces inside a field matter. Python is concise, C++ streams are reliable, and Java needs a faster scanner for large input."
   cheat_table:
     title: Input Parsing Readiness Table
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

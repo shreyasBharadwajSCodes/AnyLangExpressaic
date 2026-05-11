@@ -12,6 +12,30 @@ assets:
     alt: Linked list trace where slow moves one step and fast moves two steps until they meet or fast reaches null.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an ordered sequence or linked structure, solve the task by moving one or more
+        pointers while preserving a clear invariant.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for a pair, boundary, reversal, cycle, or in-place scan."
+          - "A strong first thought is two pointers, fast and slow pointers, or pointer rewiring."
+          - "Name what each pointer means, why it moves, and what condition proves progress."
+        -
+          - "Sorted input, linked nodes, or opposite ends are useful."
+          - ""
+          - ""
+        -
+          - "Brute force compares many pairs or repeatedly rescans."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         Fast and slow pointers use different speeds to reveal structure. In linked
@@ -28,7 +52,7 @@ lesson:
         two-step move and comparing node identity, not stored values.
   - compare_table:
       title: Recognition Signals
-      columns: [Problem Signal, Use This Pattern, What To Track]
+      columns: [Problem Clue, Use This Pattern, What To Track]
       rows:
         - ["cycle in linked list", "Floyd cycle detection", "slow, fast, meeting"]
         - ["find middle", "slow one step, fast two steps", "slow final node"]
@@ -210,11 +234,11 @@ interview_questions:
     answer: With both pointers starting at head and while fast and fast.next, slow returns the second middle.
 revision:
   quick_summary:
-    - "Fast And Slow Pointers is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Fast And Slow Pointers is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Slow moves one step; fast moves two. Null end means no cycle; meeting means cycle. In linked lists, compare node identity, not values."
   cheat_table:
     title: Fast Slow Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["safe loop", "fast and fast.next", "fast && fast->next", "fast != null && fast.next != null"]
       - ["move slow", "slow = slow.next", "slow = slow->next", "slow = slow.next"]

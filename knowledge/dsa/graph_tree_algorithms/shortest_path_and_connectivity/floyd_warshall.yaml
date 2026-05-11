@@ -19,6 +19,30 @@ assets:
     alt: Floyd Warshall trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given nodes, edges, prerequisites, grid movement, or connectivity, model the state as a
+        graph and traverse or relax edges deliberately.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Floyd Warshall asks whether allowing one more intermediate node improves every source-destination pair.
@@ -27,9 +51,9 @@ lesson:
       body: >
         Initialize the distance matrix, then use the intermediate node as the outer loop. For every source and destination, try routing through the intermediate node.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -154,7 +178,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Floyd Warshall?
+  - question: What problem clue points to Floyd Warshall?
     answer: all-pairs shortest paths on a small dense graph.
   - question: What state should you name before coding?
     answer: Name distance matrix, intermediate node, source, and destination.
@@ -167,7 +191,7 @@ revision:
   cheat_table:
     title: Floyd Warshall Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

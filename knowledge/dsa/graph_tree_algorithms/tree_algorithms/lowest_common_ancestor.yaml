@@ -19,6 +19,29 @@ assets:
     alt: Lowest Common Ancestor trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a binary tree and two nodes, return their lowest common ancestor.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Lowest common ancestor asks every subtree whether it contains either target. A node becomes the answer when one target is found on each side or when the node itself is one target and the other is below it.
@@ -27,9 +50,9 @@ lesson:
       body: >
         Return null for no target, return current when current is a target, then ask left and right. If both sides return something, current is the split point; otherwise pass the non-null result upward.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -104,10 +127,10 @@ examples:
         def lca(node, p, q):
             if node is None or node is p or node is q:
                 return node
-        
+
             left = lca(node.left, p, q)
             right = lca(node.right, p, q)
-        
+
             if left and right:
                 # Targets split across both sides, so node is the lowest meeting point.
                 return node
@@ -115,10 +138,10 @@ examples:
       cpp: |
         TreeNode* lca(TreeNode* node, TreeNode* p, TreeNode* q) {
             if (node == nullptr || node == p || node == q) return node;
-        
+
             TreeNode* left = lca(node->left, p, q);
             TreeNode* right = lca(node->right, p, q);
-        
+
             if (left != nullptr && right != nullptr) {
                 // Targets split across both sides, so node is the lowest meeting point.
                 return node;
@@ -128,10 +151,10 @@ examples:
       java: |
         private TreeNode lca(TreeNode node, TreeNode p, TreeNode q) {
             if (node == null || node == p || node == q) return node;
-        
+
             TreeNode left = lca(node.left, p, q);
             TreeNode right = lca(node.right, p, q);
-        
+
             if (left != null && right != null) {
                 // Targets split across both sides, so node is the lowest meeting point.
                 return node;
@@ -164,7 +187,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Lowest Common Ancestor?
+  - question: What problem clue points to Lowest Common Ancestor?
     answer: finding the deepest node whose subtree contains both targets.
   - question: What state should you name before coding?
     answer: Name current node, target match, left result, and right result.
@@ -177,7 +200,7 @@ revision:
   cheat_table:
     title: Lowest Common Ancestor Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

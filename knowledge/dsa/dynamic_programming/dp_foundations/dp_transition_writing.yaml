@@ -1,0 +1,217 @@
+id: dp_transition_writing
+title: DP Transition Writing
+category: dsa
+level: intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - dp_transition
+  - recurrence
+  - interview
+goal: Teach dp transition writing across Python, C++, and Java with state definition, recurrence writing, base cases, computation order, and interview explanation.
+assets:
+  dp_transition_writing_trace:
+    type: image
+    path: assets/dsa/dp_transition_writing/dp-transition-writing-trace.png
+    alt: DP Transition Writing state table and transition trace.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given overlapping choices or repeated subproblems, define a state, transition, base case,
+        and answer position.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
+          - "A strong first thought is memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
+          - "Write the state meaning in words before code, then verify the transition reads only already-known states."
+        -
+          - "The same suffix, prefix, index, capacity, or pair of indices repeats."
+          - ""
+          - ""
+        -
+          - "Greedy choice is not obviously safe."
+          - ""
+          - ""
+  - explain:
+      title: Core Mental Model
+      body: >
+        A transition is the legal move from smaller solved states into the current state. Most DP bugs are wrong choice coverage or wrong min, max, count, or boolean aggregation.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Name each choice in plain language before code. Compute candidate values from already valid states, then aggregate them into the current state with min, max, sum, or or.
+  - compare_table:
+      title: Variables And Transitions
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Use
+      rows:
+        -
+          - "take skip"
+          - "choose or ignore item"
+          - "knapsack and subsequence"
+        -
+          - "match mismatch"
+          - "compare two symbols"
+          - "LCS and edit distance"
+        -
+          - "split"
+          - "partition interval"
+          - "interval DP"
+        -
+          - "extend"
+          - "continue sequence"
+          - "LIS and strings"
+  - language_lens:
+      language: python
+      title: Python DP Strategy
+      body: >
+        Python makes memoization concise and tables easy, but row aliasing, recursion depth, and mutable cache keys can break correct ideas.
+      default_instincts:
+        - Use lru_cache or cache for top-down DP with hashable state.
+        - Use row comprehensions for two-dimensional tables.
+        - Use large numeric sentinels for minimum problems.
+      behind_the_scenes:
+        - Cached function arguments must be hashable.
+        - Multiplying nested lists aliases rows.
+        - Python recursion depth can fail on long state chains.
+      avoid:
+        - Passing mutable lists into cached functions.
+        - Rebuilding slices inside transitions.
+        - Forgetting whether dp means prefix answer or suffix answer.
+  - language_lens:
+      language: cpp
+      title: C++ DP Strategy
+      body: >
+        C++ DP is fast when tables are passed by reference and numeric types are chosen deliberately.
+      default_instincts:
+        - Use vector tables and pass them by reference.
+        - Use long long for counts, costs, and sums when constraints can grow.
+        - Use safe INF values and guard before adding.
+      behind_the_scenes:
+        - Passing vectors by value copies the table.
+        - Large local arrays can overflow the stack.
+        - int overflow can silently change answers.
+      avoid:
+        - Updating a one-dimensional table in the wrong direction.
+        - Using INT_MAX and then adding a cost.
+        - Copying memo tables into recursive helpers.
+  - language_lens:
+      language: java
+      title: Java DP Strategy
+      body: >
+        Java DP is clearest with primitive arrays, explicit initialization, and helper methods for memoized recursion.
+      default_instincts:
+        - Use int arrays or long arrays for bounded states.
+        - Use Arrays.fill for sentinel initialization.
+        - Use helper methods with shared memo fields or parameters.
+      behind_the_scenes:
+        - Two-dimensional arrays are arrays of rows.
+        - Integer objects allow null sentinels but add boxing.
+        - Recursive DP can overflow the Java call stack.
+      avoid:
+        - Filling only the outer array and forgetting each row.
+        - Using int when the result needs long.
+        - Reallocating tables inside recursive calls.
+examples:
+  - code_compare:
+      title: DP Transition Writing Core Code Shape
+      idea: Track choice variables, previous states, current state, and aggregation function.
+      python: |
+        dp = [0] * (capacity + 1)
+        for weight, value in items:
+            for cap in range(capacity, weight - 1, -1):
+                # Descending cap prevents reusing the same item in this round.
+                dp[cap] = max(dp[cap], dp[cap - weight] + value)
+      cpp: |
+        vector<int> dp(capacity + 1, 0);
+        for (auto& item : items) {
+            int weight = item[0], value = item[1];
+            for (int cap = capacity; cap >= weight; cap--) {
+                // Descending cap prevents reusing the same item in this round.
+                dp[cap] = max(dp[cap], dp[cap - weight] + value);
+            }
+        }
+      java: |
+        int[] dp = new int[capacity + 1];
+        for (int[] item : items) {
+            int weight = item[0], value = item[1];
+            for (int cap = capacity; cap >= weight; cap--) {
+                // Descending cap prevents reusing the same item in this round.
+                dp[cap] = Math.max(dp[cap], dp[cap - weight] + value);
+            }
+        }
+      note: >
+        Read the code by first saying what each state means, then checking that every transition uses already valid smaller states.
+transitions:
+  python_to_cpp:
+    title: Python DP Transition Writing To C++
+    mindset_shift:
+      - Replace decorator caches with explicit memo tables or vectors.
+      - Choose int, long long, and INF deliberately.
+      - Pass tables and inputs by reference to avoid copying.
+    habit_swaps:
+      - python: Use lru_cache for recursive state.
+        cpp: Use vector memo passed by reference.
+    false_friends:
+      - term: overflow
+        warning: C++ int can overflow in counts, sums, and sentinel additions.
+  python_to_java:
+    title: Python DP Transition Writing To Java
+    mindset_shift:
+      - Replace compact list setup with explicit arrays and Arrays.fill.
+      - Use primitive arrays for speed when dimensions are known.
+      - Keep memo state shared across helper calls.
+    habit_swaps:
+      - python: Use list comprehension for tables.
+        java: Allocate arrays and fill each row when needed.
+    false_friends:
+      - term: boxed memo
+        warning: Integer arrays allow null but cost more than primitive arrays with a sentinel.
+interview_questions:
+  - question: What clue points to DP Transition Writing?
+    answer: writing choices such as take, skip, split, extend, or match.
+  - question: What must you say before coding?
+    answer: Define choice variables, previous states, current state, and aggregation function, then state the recurrence and base cases.
+  - question: What is the common bug?
+    answer: Using a transition before its dependency is ready, or changing one-dimensional update direction incorrectly.
+revision:
+  quick_summary:
+    - "DP Transition Writing is the DP tool for writing choices such as take, skip, split, extend, or match."
+    - "Working idea: Name each choice in plain language before code. Compute candidate values from already valid states, then aggregate them into the current state with min, max, sum, or or."
+  cheat_table:
+    title: DP Transition Writing Revision Table
+    columns:
+      - What You Notice
+      - State
+      - Caveat
+    rows:
+      -
+        - "writing choices such as take, skip, split, extend, or match"
+        - "choice variables, previous states, current state, and aggregation function"
+        - "Define state in one sentence before writing code."
+      -
+        - "language risk"
+        - "table and numeric type"
+        - "Watch Python row aliasing, C++ copies and overflow, Java initialization."
+  flashcards:
+    - question: What is the most important DP interview sentence?
+      answer: Say exactly what the state means.
+notes:
+  - "DP code should be read as state definition, base case, transition, fill order, answer location."
+  - Use the clear table first; optimize space only after the dependency direction is obvious.
+tlm_hooks:
+  possible_tasks:
+    - trace_dp_transition_writing
+    - generate_dp_transition_writing_drills
+  context: Focus on choice variables, previous states, current state, and aggregation function.

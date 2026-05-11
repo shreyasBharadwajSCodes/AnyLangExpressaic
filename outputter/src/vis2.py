@@ -15,6 +15,7 @@ else:
 DEFAULT_CONCEPT = PROJECT_ROOT / "templates" / "vis2_welcome_template.yaml"
 CONFIG_FILE = PROJECT_ROOT / "vis2_config.yaml"
 LESSON_BUILDER_VIS2 = PROJECT_ROOT / "outputter" / "src" / "lesson_builder_vis2.py"
+DSA_ANIMATION_BOOKLET = PROJECT_ROOT / "knowledge" / "dsa" / "dsa_animation_booklet.yaml"
 
 APP_BG = "#f4f6f8"
 SURFACE = "#ffffff"
@@ -31,6 +32,14 @@ PURPLE = "#6d28d9"
 CODE_BG = "#fff7ed"
 CODE_FG = "#1f2937"
 CODE_ACCENT = "#9a3412"
+ANIM_BG = "#eef6ff"
+ANIM_PANEL = "#f8fbff"
+ANIM_LINE = "#93c5fd"
+ANIM_BLUE = "#38bdf8"
+ANIM_PINK = "#ec4899"
+ANIM_GREEN = "#22c55e"
+ANIM_PURPLE = "#a855f7"
+ANIM_YELLOW = "#facc15"
 BOOKLET_LINK_COLORS = [
     ACCENT,
     GREEN,
@@ -229,6 +238,359 @@ class ScrollFrame(ttk.Frame):
         self.mouse_active = False
 
 
+class EmbeddedAnimationPlayer:
+    def __init__(self, parent, animation):
+        self.parent = parent
+        self.animation = animation
+        self.objects = {}
+        self.object_defs = {}
+        self.steps = animation.get("steps") or animation.get("timeline") or []
+        self.current_step = -1
+        self.playing = False
+        self.running_step = False
+        self.jobs = []
+        self.note_text = tk.StringVar(value="")
+        self.status_text = tk.StringVar(value="")
+        self.scale = 0.82
+        self.canvas_height = 340
+
+        self.frame = tk.Frame(parent, bg=ANIM_BG, padx=14, pady=12, highlightbackground=ANIM_LINE, highlightthickness=1)
+        self.frame.pack(fill=tk.X, padx=18, pady=(0, 12))
+        self.build()
+        self.reset()
+
+    def build(self):
+        top = tk.Frame(self.frame, bg=ANIM_BG)
+        top.pack(fill=tk.X, pady=(0, 8))
+        tk.Label(
+            top,
+            text=f"Animation: {self.animation.get('title', 'Concept Walkthrough')}",
+            bg=ANIM_BG,
+            fg=ANIM_PINK,
+            font=("Segoe UI", 14, "bold"),
+            anchor="w",
+        ).pack(side=tk.LEFT, fill=tk.X, expand=True)
+        tk.Label(top, textvariable=self.status_text, bg=ANIM_BG, fg=MUTED, font=("Segoe UI", 9, "bold")).pack(side=tk.RIGHT)
+
+        body = tk.Frame(self.frame, bg=ANIM_BG)
+        body.pack(fill=tk.X)
+        body.grid_columnconfigure(0, weight=3, uniform="anim_body")
+        body.grid_columnconfigure(1, weight=2, uniform="anim_body")
+        body.grid_rowconfigure(0, weight=1)
+
+        visual_area = tk.Frame(body, bg=ANIM_BG)
+        visual_area.grid(row=0, column=0, sticky="nsew")
+        visual_area.grid_columnconfigure(0, weight=1)
+        visual_area.grid_rowconfigure(0, weight=1)
+
+        self.canvas = tk.Canvas(visual_area, height=self.canvas_height, bg=ANIM_PANEL, highlightthickness=0)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+
+        controls = tk.Frame(visual_area, bg=ANIM_BG)
+        controls.grid(row=1, column=0, sticky="ew", pady=(8, 0))
+        for text, command, tip in [
+            ("⏮", self.previous_step, "Previous step  Alt+J"),
+            ("⏭", self.next_step, "Next step  Alt+K"),
+            ("▶", self.play_from_current, "Play from current step  Alt+L"),
+            ("⏸", self.pause, "Pause  Alt+P"),
+        ]:
+            button = tk.Button(
+                controls,
+                text=text,
+                command=command,
+                bg=ANIM_PANEL,
+                fg=INK,
+                activebackground="#dbeafe",
+                activeforeground=INK,
+                relief=tk.FLAT,
+                font=("Segoe UI Symbol", 15, "bold"),
+                padx=14,
+                pady=5,
+                cursor="hand2",
+                highlightbackground=ANIM_LINE,
+                highlightthickness=1,
+            )
+            button.pack(side=tk.LEFT, padx=(0, 8))
+            Tooltip(button, tip)
+
+        note_panel = tk.Frame(body, bg=ANIM_PANEL, padx=12, pady=12, highlightbackground=ANIM_LINE, highlightthickness=1)
+        note_panel.grid(row=0, column=1, sticky="nsew", padx=(12, 0))
+        note_panel.grid_propagate(False)
+        tk.Label(note_panel, text="Explanation", bg=ANIM_PANEL, fg=ANIM_PINK, font=("Segoe UI", 11, "bold"), anchor="w").pack(fill=tk.X)
+        note = tk.Label(
+            note_panel,
+            textvariable=self.note_text,
+            bg=ANIM_PANEL,
+            fg="#0f172a",
+            font=("Segoe UI", 12, "bold"),
+            anchor="nw",
+            justify="left",
+        )
+        note.pack(fill=tk.BOTH, expand=True, pady=(8, 10))
+        bind_wrap(note, note_panel, margin=36, minimum=210)
+
+        tk.Label(note_panel, text="Shortcuts", bg=ANIM_PANEL, fg=INK, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(4, 3))
+        for shortcut in ["Alt+J  previous", "Alt+K  next", "Alt+L  play", "Alt+P  pause"]:
+            tk.Label(note_panel, text=shortcut, bg=ANIM_PANEL, fg=MUTED, font=("Segoe UI", 9), anchor="w").pack(fill=tk.X, pady=1)
+
+    def reset(self):
+        self.stop_jobs()
+        self.playing = False
+        self.running_step = False
+        self.current_step = -1
+        self.canvas.delete("all")
+        self.objects = {}
+        self.update_scale()
+        scene = self.animation.get("scene", self.animation)
+        for spec in scene.get("objects", []):
+            self.create_object(spec)
+        self.note_text.set("")
+        self.update_status()
+
+    def update_scale(self):
+        scene = self.animation.get("scene", self.animation)
+        max_x = 1
+        max_y = 1
+        for spec in scene.get("objects", []):
+            kind = spec.get("type", "box")
+            x = spec.get("x", 0)
+            y = spec.get("y", 0)
+            if kind == "node":
+                extent_x = x + spec.get("radius", 26) * 2
+                extent_y = y + spec.get("radius", 26) * 2
+            elif kind == "label":
+                extent_x = x + spec.get("width", 260)
+                extent_y = y + max(34, spec.get("size", 12) * 3)
+            elif kind == "edge":
+                continue
+            else:
+                extent_x = x + spec.get("width", 64)
+                extent_y = y + spec.get("height", 42)
+            max_x = max(max_x, extent_x)
+            max_y = max(max_y, extent_y)
+
+        self.parent.update_idletasks()
+        frame_width = self.frame.winfo_width() or self.parent.winfo_width() or 980
+        reserved_width = max(300, int(frame_width * 0.38))
+        available_width = max(460, frame_width - reserved_width) - 36
+        available_height = self.canvas_height - 28
+        self.scale = min(0.94, available_width / max_x, available_height / max_y)
+
+    def create_object(self, spec):
+        object_id = spec.get("id")
+        if not object_id:
+            return
+        self.object_defs[object_id] = dict(spec)
+        kind = spec.get("type", "box")
+        if kind == "node":
+            self.create_node(spec)
+        elif kind == "edge":
+            self.create_edge(spec)
+        elif kind == "label":
+            self.create_label(spec)
+        elif kind == "box":
+            self.create_box(spec)
+
+    def scaled(self, value):
+        return value * self.scale
+
+    def shape_padding(self, base):
+        return max(6, self.scaled(base))
+
+    def create_box(self, spec):
+        x, y = self.scaled(spec.get("x", 80)), self.scaled(spec.get("y", 80))
+        w = self.scaled(spec.get("width", 64)) + self.shape_padding(18)
+        h = self.scaled(spec.get("height", 42)) + self.shape_padding(14)
+        fill = spec.get("fill", "#e0f2fe")
+        rect = self.canvas.create_rectangle(x, y, x + w, y + h, fill=fill, outline="#0284c7", width=2)
+        text = self.canvas.create_text(
+            x + w / 2,
+            y + h / 2,
+            text=spec.get("text", ""),
+            fill=INK,
+            font=("Segoe UI", 9, "bold"),
+            width=max(34, w - self.shape_padding(16)),
+            justify="center",
+        )
+        self.objects[spec["id"]] = {"kind": "box", "items": [rect, text], "x": x, "y": y, "width": w, "height": h, "text_item": text}
+
+    def create_node(self, spec):
+        x, y = self.scaled(spec.get("x", 80)), self.scaled(spec.get("y", 80))
+        radius = self.scaled(spec.get("radius", 26)) + self.shape_padding(6)
+        colors = ["#bae6fd", "#fbcfe8", "#bbf7d0", "#ddd6fe", "#fde68a", "#fecaca"]
+        fill = spec.get("fill", colors[sum(ord(ch) for ch in spec["id"]) % len(colors)])
+        outline_colors = ["#0284c7", "#db2777", "#16a34a", "#7c3aed", "#d97706", "#dc2626"]
+        outline = outline_colors[sum(ord(ch) for ch in spec["id"]) % len(outline_colors)]
+        oval = self.canvas.create_oval(x, y, x + radius * 2, y + radius * 2, fill=fill, outline=outline, width=2)
+        text = self.canvas.create_text(
+            x + radius,
+            y + radius,
+            text=spec.get("text", spec["id"]),
+            fill=INK,
+            font=("Segoe UI", 10, "bold"),
+            width=max(28, radius * 1.65),
+            justify="center",
+        )
+        self.objects[spec["id"]] = {"kind": "node", "items": [oval, text], "x": x, "y": y, "width": radius * 2, "height": radius * 2, "text_item": text}
+
+    def create_edge(self, spec):
+        coords = self.edge_coords(spec)
+        item = self.canvas.create_line(*coords, arrow=tk.LAST if spec.get("directed") else tk.NONE, fill="#60a5fa", width=3, smooth=True)
+        self.canvas.tag_lower(item)
+        label_item = None
+        if spec.get("text") is not None:
+            sx, sy, tx, ty = coords
+            label_item = self.canvas.create_text(
+                (sx + tx) / 2,
+                (sy + ty) / 2 - 10,
+                text=str(spec.get("text")),
+                fill=ANIM_PINK,
+                font=("Segoe UI", 10, "bold"),
+                width=48,
+                justify="center",
+            )
+        self.objects[spec["id"]] = {"kind": "edge", "items": [item] + ([label_item] if label_item else []), "from": spec.get("from"), "to": spec.get("to"), "x": 0, "y": 0, "width": 0, "height": 0}
+
+    def create_label(self, spec):
+        x, y = self.scaled(spec.get("x", 80)), self.scaled(spec.get("y", 80))
+        item = self.canvas.create_text(
+            x,
+            y,
+            text=spec.get("text", ""),
+            fill=spec.get("fill", INK),
+            font=("Segoe UI", max(9, int(spec.get("size", 12) * min(1, self.scale + 0.1))), "bold"),
+            anchor=spec.get("anchor", "nw"),
+            width=max(160, self.scaled(spec.get("width", 360))),
+        )
+        self.objects[spec["id"]] = {"kind": "label", "items": [item], "x": x, "y": y, "width": 0, "height": 0, "text_item": item}
+
+    def edge_coords(self, spec):
+        sx, sy = self.center(spec.get("from"))
+        tx, ty = self.center(spec.get("to"))
+        return sx, sy, tx, ty
+
+    def center(self, object_id):
+        obj = self.objects.get(object_id, {})
+        return obj.get("x", 0) + obj.get("width", 0) / 2, obj.get("y", 0) + obj.get("height", 0) / 2
+
+    def next_step(self):
+        if self.running_step:
+            return "break"
+        self.pause()
+        if self.current_step + 1 >= len(self.steps):
+            return "break"
+        self.current_step += 1
+        self.run_step(self.steps[self.current_step])
+        self.update_status()
+        return "break"
+
+    def previous_step(self):
+        if self.running_step:
+            return "break"
+        self.pause()
+        target = max(-1, self.current_step - 1)
+        self.reset()
+        for step_index in range(target + 1):
+            self.current_step = step_index
+            self.run_step(self.steps[step_index])
+        self.update_status()
+        return "break"
+
+    def play_from_current(self):
+        if self.playing:
+            return "break"
+        self.playing = True
+        self.update_status()
+        self.play_next()
+        return "break"
+
+    def play_next(self):
+        if not self.playing or self.running_step:
+            return
+        if self.current_step + 1 >= len(self.steps):
+            self.pause()
+            return
+        self.current_step += 1
+        self.run_step(self.steps[self.current_step])
+        self.running_step = True
+        self.update_status()
+        wait = self.steps[self.current_step].get("wait", 1700)
+        self.jobs.append(self.parent.after(wait, self.finish_play_step))
+
+    def finish_play_step(self):
+        self.running_step = False
+        self.update_status()
+        self.play_next()
+
+    def run_step(self, step):
+        self.note_text.set(step.get("note", ""))
+        for action in step.get("actions", []):
+            self.run_action(action)
+
+    def run_action(self, action):
+        if "highlight" in action or "compare" in action:
+            for target in as_list(action.get("highlight", action.get("compare"))):
+                self.set_outline(target, ANIM_YELLOW, width=5)
+        elif "clear_highlight" in action:
+            for target in as_list(action["clear_highlight"]):
+                self.set_outline(target, ANIM_LINE, width=2)
+        elif "mark_done" in action:
+            for target in as_list(action["mark_done"]):
+                self.set_outline(target, ANIM_GREEN, width=5)
+        elif "set_text" in action:
+            data = action["set_text"]
+            self.set_text(data.get("target"), data.get("text", ""))
+        elif "set_color" in action:
+            data = action["set_color"]
+            self.set_fill(data.get("target"), data.get("fill"))
+        elif "say" in action:
+            self.note_text.set(str(action["say"]))
+
+    def set_outline(self, target, color, width=3):
+        obj = self.objects.get(target)
+        if obj and obj["kind"] in {"box", "node"}:
+            self.canvas.itemconfigure(obj["items"][0], outline=color, width=width)
+        elif obj and obj["kind"] == "edge":
+            self.canvas.itemconfigure(obj["items"][0], fill=color, width=width)
+
+    def set_fill(self, target, fill):
+        obj = self.objects.get(target)
+        if obj and fill and obj["kind"] in {"box", "node"}:
+            self.canvas.itemconfigure(obj["items"][0], fill=fill)
+
+    def set_text(self, target, text):
+        obj = self.objects.get(target)
+        if obj and obj.get("text_item"):
+            self.canvas.itemconfigure(obj["text_item"], text=str(text))
+            if obj["kind"] == "box":
+                self.canvas.itemconfigure(obj["text_item"], width=max(34, obj["width"] - self.shape_padding(16)))
+            elif obj["kind"] == "node":
+                self.canvas.itemconfigure(obj["text_item"], width=max(28, obj["width"] * 0.72))
+
+    def pause(self):
+        self.playing = False
+        self.running_step = False
+        self.stop_jobs()
+        self.update_status()
+        return "break"
+
+    def stop_jobs(self):
+        for job in self.jobs:
+            try:
+                self.parent.after_cancel(job)
+            except tk.TclError:
+                pass
+        self.jobs = []
+
+    def update_status(self):
+        total = len(self.steps)
+        current = self.current_step + 1 if self.current_step >= 0 else 0
+        mode = "Playing" if self.playing else "Ready"
+        if self.running_step:
+            mode = "Animating"
+        self.status_text.set(f"{mode} | Step {current}/{total}")
+
+
 class Vis2App:
     def __init__(self, root):
         self.root = root
@@ -255,6 +617,8 @@ class Vis2App:
         self.find_matches = []
         self.find_index = -1
         self.find_highlight = None
+        self.animation_player = None
+        self.animation_booklet_cache = None
 
         self.mode_var = tk.StringVar(value="lesson")
         self.source_var = tk.StringVar()
@@ -468,6 +832,14 @@ class Vis2App:
         self.root.bind("<Control-t>", lambda _event: self.show_transition())
         self.root.bind("<Control-T>", lambda _event: self.show_transition())
         self.root.bind("<Control-Shift-T>", lambda _event: self.swap_transition_languages())
+        self.root.bind("<Alt-j>", lambda _event: self.animation_previous_step())
+        self.root.bind("<Alt-J>", lambda _event: self.animation_previous_step())
+        self.root.bind("<Alt-k>", lambda _event: self.animation_next_step())
+        self.root.bind("<Alt-K>", lambda _event: self.animation_next_step())
+        self.root.bind("<Alt-l>", lambda _event: self.animation_play_from_current())
+        self.root.bind("<Alt-L>", lambda _event: self.animation_play_from_current())
+        self.root.bind("<Alt-p>", lambda _event: self.animation_pause())
+        self.root.bind("<Alt-P>", lambda _event: self.animation_pause())
 
     def open_builder_vis2(self):
         if not LESSON_BUILDER_VIS2.exists():
@@ -1057,6 +1429,9 @@ class Vis2App:
         self.find_matches = []
         self.find_index = -1
         self.image_refs = []
+        if self.animation_player:
+            self.animation_player.stop_jobs()
+            self.animation_player = None
         self.content.clear()
 
         if not self.concept:
@@ -1296,6 +1671,63 @@ class Vis2App:
             variable.set(True)
         self.render()
 
+    def load_animation_booklet(self):
+        if self.animation_booklet_cache is not None:
+            return self.animation_booklet_cache
+        if not DSA_ANIMATION_BOOKLET.exists():
+            self.animation_booklet_cache = {}
+            return self.animation_booklet_cache
+        try:
+            self.animation_booklet_cache = load_yaml(DSA_ANIMATION_BOOKLET)
+        except Exception:
+            self.animation_booklet_cache = {}
+        return self.animation_booklet_cache
+
+    def current_relative_path(self):
+        if not self.current_file:
+            return ""
+        try:
+            return self.current_file.resolve().relative_to(PROJECT_ROOT.resolve()).as_posix()
+        except ValueError:
+            return self.current_file.name
+
+    def animation_for_current_file(self):
+        current = self.current_relative_path()
+        if not current:
+            return None
+        booklet = self.load_animation_booklet()
+        for animation in booklet.get("animations", []):
+            source = str(animation.get("source_lesson", "")).replace("\\", "/")
+            if source == current:
+                return animation
+        return None
+
+    def _render_matching_animation(self):
+        animation = self.animation_for_current_file()
+        if not animation:
+            return
+        self.animation_player = EmbeddedAnimationPlayer(self.content.inner, animation)
+
+    def animation_previous_step(self):
+        if self.animation_player:
+            return self.animation_player.previous_step()
+        return None
+
+    def animation_next_step(self):
+        if self.animation_player:
+            return self.animation_player.next_step()
+        return None
+
+    def animation_play_from_current(self):
+        if self.animation_player:
+            return self.animation_player.play_from_current()
+        return None
+
+    def animation_pause(self):
+        if self.animation_player:
+            return self.animation_player.pause()
+        return None
+
     def _render_lesson(self):
         self._page_title(
             "Lesson Mode",
@@ -1303,6 +1735,7 @@ class Vis2App:
             self.concept.get("goal"),
         )
         self._language_filter()
+        self._render_matching_animation()
 
         for block in self.concept.get("lesson", []):
             self._render_component(block)
@@ -1427,6 +1860,7 @@ class Vis2App:
         revision = self.concept.get("revision", {})
         self._page_title("Revision Mode", self.concept.get("title", "Untitled Concept"), "Fast review material.")
         self._language_filter()
+        self._render_matching_animation()
 
         if revision.get("quick_summary"):
             card = self._card("Quick Summary", GREEN)
@@ -1463,6 +1897,7 @@ class Vis2App:
         )
 
         self._language_filter()
+        self._render_matching_animation()
         self._transition_controls()
 
         if len(selected) < 2:

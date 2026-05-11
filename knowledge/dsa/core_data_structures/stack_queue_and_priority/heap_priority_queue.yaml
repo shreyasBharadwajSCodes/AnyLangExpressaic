@@ -12,6 +12,30 @@ assets:
     alt: Heap with top priority item, pushed candidate, and popped result.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem where the most recent unresolved item should be matched or resolved
+        first, use a stack.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - "A strong first thought is stack or monotonic stack."
+          - "Store indices when distance, width, or stale position matters; state the stack invariant."
+        -
+          - "The current item resolves earlier items in last-in-first-out order."
+          - ""
+          - ""
+        -
+          - "The unresolved candidates must keep a useful order."
+          - ""
+          - ""
+  - explain:
       title: Heap Strategy
       body: >
         A heap repeatedly gives the best-priority item. Track heap as pending
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Heap Defaults
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Default heap", "min-heap", "max-heap", "min-heap"]
         - ["Push", "heappush", "push", "offer"]
@@ -127,7 +151,7 @@ revision:
     - "Interview working idea: Python/Java default min-heap. C++ default max-heap. Track priority separately from item."
   cheat_table:
     title: Heap Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["min heap", "default", "greater/custom", "default"]
       - ["max heap", "negate", "default", "reverse comparator"]

@@ -12,6 +12,30 @@ assets:
     alt: Multiple keys landing in the same hash bucket and affecting lookup.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a collection of values, solve membership, grouping, counting, or complement lookup
+        using stable keys.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Hash Quality Strategy
       body: >
         Hash tables are average O(1), not magic. Track key, hash(key), bucket, and
@@ -117,7 +141,7 @@ revision:
     - "Interview working idea: Hashing maps keys to buckets. Equality resolves collisions. Custom keys need stable hash/equality."
   cheat_table:
     title: Hash Quality Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["custom key contract", "__eq__/__hash__", "==/hash functor", "equals/hashCode"]
       - ["stable key", "immutable", "do not mutate", "do not mutate"]

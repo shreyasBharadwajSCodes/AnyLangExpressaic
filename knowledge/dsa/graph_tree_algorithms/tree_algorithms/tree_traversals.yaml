@@ -20,6 +20,30 @@ assets:
     alt: Tree Traversals trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a tree or prefix structure, solve by passing information down, collecting
+        information up, or traversing in the required order.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Tree traversal is deciding when the current node is processed relative to its children. Preorder records before children, inorder records between left and right, postorder records after children, and level order records by depth.
@@ -28,9 +52,9 @@ lesson:
       body: >
         At each node, identify the arrive moment, the return-from-left moment, and the return-from-right moment. Moving the record line between those moments changes DFS order; replacing recursion with a queue gives level order.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -105,7 +129,7 @@ examples:
         def inorder(node, out):
             if node is None:
                 return
-        
+
             inorder(node.left, out)
             # Recording here means the left subtree is already complete.
             out.append(node.val)
@@ -113,7 +137,7 @@ examples:
       cpp: |
         void inorder(TreeNode* node, vector<int>& out) {
             if (node == nullptr) return;
-        
+
             inorder(node->left, out);
             // Recording here means the left subtree is already complete.
             out.push_back(node->val);
@@ -122,7 +146,7 @@ examples:
       java: |
         private void inorder(TreeNode node, List<Integer> out) {
             if (node == null) return;
-        
+
             inorder(node.left, out);
             // Recording here means the left subtree is already complete.
             out.add(node.val);
@@ -154,7 +178,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Tree Traversals?
+  - question: What problem clue points to Tree Traversals?
     answer: visiting every tree node in a controlled order.
   - question: What state should you name before coding?
     answer: Name node, traversal order, output list, and call stack.
@@ -167,7 +191,7 @@ revision:
   cheat_table:
     title: Tree Traversals Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

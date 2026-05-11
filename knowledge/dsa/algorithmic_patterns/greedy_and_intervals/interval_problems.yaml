@@ -20,6 +20,30 @@ assets:
     alt: Intervals with start, end, overlap, touching endpoints, and sorted order.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given items that must be ordered by start time, end time, value, frequency, or priority,
+        sort them and make one pass with a chosen invariant.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives intervals, ordering, custom ranking, minimum removals, overlap, schedule, or greedy choice."
+          - "A strong first thought is sorting, comparator, greedy, merge intervals, sweep line, or counting sort."
+          - "Explain why the sort key makes future choices safe and how ties are handled."
+        -
+          - "A local choice becomes safe after sorting by the right key."
+          - ""
+          - ""
+        -
+          - "The hard part is choosing the key and tie-break."
+          - ""
+          - ""
+  - explain:
       title: Interval Mental Model
       body: >
         Interval problems are about boundaries. First clarify whether intervals are

@@ -12,6 +12,30 @@ assets:
     alt: Include/exclude recursion tree for subset generation.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a collection of values, solve membership, grouping, counting, or complement lookup
+        using stable keys.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Subset Mental Model
       body: >
         Every element has two choices: include it or skip it. The path represents
@@ -124,7 +148,7 @@ interview_questions:
     answer: Every prefix of choices is already a valid subset.
 revision:
   quick_summary:
-    - "Subsets is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Subsets is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Record current path. choose later candidates. pop before next candidate."
   cheat_table:
     title: Subsets Cheat Table

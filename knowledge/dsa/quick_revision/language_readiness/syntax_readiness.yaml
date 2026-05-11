@@ -38,6 +38,30 @@ related_patterns:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Syntax Readiness For Interviews as a quick
+        recognition and implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: The Interview Goal
       body: >
         Syntax readiness is not memorizing every language feature. In an interview,
@@ -47,7 +71,7 @@ lesson:
   - compare_table:
       title: Fast Mental Map
       columns:
-        - Need
+        - Operation Needed
         - Python
         - C++
         - Java
@@ -134,11 +158,11 @@ lesson:
         - Interview-Safe Habit
         - Caveat
       rows:
-        - ["Need helper recursion", "Keep state parameters explicit", "Python recursion limit, C++ references, Java object mutation all differ"]
-        - ["Need fast lookup", "Use hash map or set", "Missing-key behavior is different in every language"]
-        - ["Need sorting by custom rule", "Write comparator/key carefully", "C++/Java comparators must obey ordering contracts"]
-        - ["Need mutable shared state", "Name what is shared", "Python closures, C++ references, Java fields can hide mutation"]
-        - ["Need large arithmetic", "Check constraints before coding", "Python safe from overflow, C++/Java not safe with int"]
+        - ["You need helper recursion", "Keep state parameters explicit", "Python recursion limit, C++ references, Java object mutation all differ"]
+        - ["You need fast lookup", "Use hash map or set", "Missing-key behavior is different in every language"]
+        - ["You need sorting by custom rule", "Write comparator/key carefully", "C++/Java comparators must obey ordering contracts"]
+        - ["You need mutable shared state", "Name what is shared", "Python closures, C++ references, Java fields can hide mutation"]
+        - ["You need large arithmetic", "Check constraints before coding", "Python safe from overflow, C++/Java not safe with int"]
 
 examples:
   - code_compare:
@@ -282,7 +306,7 @@ transitions:
       - java: Use nums.length and nums[i].
         python: Use len(nums), nums[i], or direct iteration depending on need.
       - java: Use StringBuilder in loops.
-        python: Collect pieces in a list and join them for large strings.
+        python: Collect parts in a list and join them for large strings.
       - java: Write helper methods with typed parameters.
         python: Write small def helpers and keep state explicit.
     false_friends:
@@ -343,12 +367,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Syntax Readiness For Interviews is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Syntax Readiness For Interviews is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Write syntax that keeps the algorithm visible. Python is concise but aliasing and mutable defaults matter. C++ is powerful but copies, references, lifetimes, and overflow matter. Java is structured but boxed types, equality, null, and collection choices matter."
   cheat_table:
     title: Interview Syntax Readiness Table
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

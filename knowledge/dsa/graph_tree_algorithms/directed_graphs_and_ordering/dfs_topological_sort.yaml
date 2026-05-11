@@ -19,6 +19,30 @@ assets:
     alt: DFS Topological Sort trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given nodes, edges, prerequisites, grid movement, or connectivity, model the state as a
+        graph and traverse or relax edges deliberately.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         DFS topological sort appends a node only after all outgoing neighbors are finished. Reversing the postorder places prerequisites before dependents.
@@ -27,9 +51,9 @@ lesson:
       body: >
         Use three states to detect cycles. Mark visiting on entry, recurse through neighbors, mark done on exit, and append after all neighbors finish.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -102,7 +126,7 @@ examples:
       idea: Keep the state names visible so the dry run matches the explanation.
       python: |
         from collections import deque
-        
+
         q = deque([i for i in range(n) if indeg[i] == 0])
         order = []
         while q:
@@ -170,7 +194,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to DFS Topological Sort?
+  - question: What problem clue points to DFS Topological Sort?
     answer: ordering a DAG using postorder DFS.
   - question: What state should you name before coding?
     answer: Name state array, active recursion path, output, and node.
@@ -183,7 +207,7 @@ revision:
   cheat_table:
     title: DFS Topological Sort Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

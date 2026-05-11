@@ -12,6 +12,30 @@ assets:
     alt: Linked list nodes with prev, curr, next, dummy, and tail pointers labeled.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an interview problem, choose the container whose operations match the work, then
+        track the state it owns without hidden cost.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
+  - explain:
       title: Linked List Mental Model
       body: >
         Linked list problems are pointer-mutation problems. Track curr as the node
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Node Model
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Node reference", "object reference", "ListNode*", "ListNode reference"]
         - ["Null", "None", "nullptr", "null"]
@@ -151,7 +175,7 @@ revision:
     - "Interview working idea: Track curr. prev. and next_node. Check null before dereference. Dummy nodes simplify building."
   cheat_table:
     title: Linked List Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["null", "None", "nullptr", "null"]
       - ["next", "node.next", "node->next", "node.next"]

@@ -12,6 +12,30 @@ assets:
     alt: Deque of indices maintaining decreasing values for sliding window maximum.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an array or string, find the best contiguous segment while maintaining window state
+        as the right boundary moves.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
+          - "A strong first thought is fixed window, variable window, frequency map, or monotonic deque."
+          - "Track what the window currently contains and shrink only when the invariant tells you to."
+        -
+          - "The answer changes when one boundary enters or leaves."
+          - ""
+          - ""
+        -
+          - "Recomputing each segment would repeat the same work."
+          - ""
+          - ""
+  - explain:
       title: Monotonic Queue Strategy
       body: >
         A monotonic queue is a deque of useful indices. For window maximum, values
@@ -140,7 +164,7 @@ revision:
     - "Interview working idea: Store useful indices. Front is best. Back removes dominated candidates. Stale boundary is i-k."
   cheat_table:
     title: Monotonic Queue Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["front", "dq[0]", "dq.front()", "peekFirst"]
       - ["back", "dq[-1]", "dq.back()", "peekLast"]

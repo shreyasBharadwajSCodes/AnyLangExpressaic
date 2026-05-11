@@ -19,6 +19,30 @@ assets:
     alt: Tree DFS Patterns trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a tree or prefix structure, solve by passing information down, collecting
+        information up, or traversing in the required order.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Tree DFS is a return contract. Each call owns one subtree, asks children for answers, combines them, and returns one summary upward.
@@ -27,9 +51,9 @@ lesson:
       body: >
         Define the helper return value before code. Handle the empty subtree, recurse left and right, combine their returned values, update any outside answer, and return exactly what the parent needs.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -104,7 +128,7 @@ examples:
         def solve(node):
             if node is None:
                 return 0
-        
+
             left = solve(node.left)
             right = solve(node.right)
             # The parent receives one clean subtree summary from this node.
@@ -112,7 +136,7 @@ examples:
       cpp: |
         int solve(TreeNode* node) {
             if (node == nullptr) return 0;
-        
+
             int left = solve(node->left);
             int right = solve(node->right);
             // The parent receives one clean subtree summary from this node.
@@ -121,7 +145,7 @@ examples:
       java: |
         private int solve(TreeNode node) {
             if (node == null) return 0;
-        
+
             int left = solve(node.left);
             int right = solve(node.right);
             // The parent receives one clean subtree summary from this node.
@@ -153,7 +177,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Tree DFS Patterns?
+  - question: What problem clue points to Tree DFS Patterns?
     answer: combining subtree answers at a parent.
   - question: What state should you name before coding?
     answer: Name node, left answer, right answer, returned summary, and best answer.
@@ -166,7 +190,7 @@ revision:
   cheat_table:
     title: Tree DFS Patterns Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

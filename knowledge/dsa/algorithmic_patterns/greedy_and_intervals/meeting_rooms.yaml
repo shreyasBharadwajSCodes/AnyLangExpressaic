@@ -12,6 +12,30 @@ assets:
     alt: Meeting intervals sorted by start with min-heap of active end times.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given repeated need for the smallest, largest, earliest, or most frequent candidate,
+        process candidates with a heap or priority queue.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem asks for top k, kth, minimum cost next step, earliest finishing item, or shortest weighted path."
+          - "A strong first thought is heap, priority queue, or Dijkstra-style frontier."
+          - "State what the priority is and how stale heap entries are ignored or avoided."
+        -
+          - "Sorting everything each time would be wasteful."
+          - ""
+          - ""
+        -
+          - "The next best candidate changes after each update."
+          - ""
+          - ""
+  - explain:
       title: Room Allocation Model
       body: >
         Sort meetings by start time. A min-heap of end times represents rooms
@@ -130,11 +154,11 @@ interview_questions:
     answer: The number of rooms occupied after processing the current meeting.
 revision:
   quick_summary:
-    - "Meeting Rooms is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Meeting Rooms is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Meeting room problems ask how many intervals are active at once, so the solution tracks reusable rooms by their end times. sort meetings by start, keep active end times in a min-heap, and reuse a room when the earliest end is before the next start."
   cheat_table:
     title: Meeting Rooms Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["min end", "heap[0]", "heap.top with greater", "heap.peek"]
       - ["free room", "heappop", "pop", "poll"]

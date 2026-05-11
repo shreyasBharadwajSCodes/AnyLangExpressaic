@@ -12,6 +12,30 @@ assets:
     alt: Stack with top element, incoming token, and pop operation.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem where the most recent unresolved item should be matched or resolved
+        first, use a stack.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - "A strong first thought is stack or monotonic stack."
+          - "Store indices when distance, width, or stale position matters; state the stack invariant."
+        -
+          - "The current item resolves earlier items in last-in-first-out order."
+          - ""
+          - ""
+        -
+          - "The unresolved candidates must keep a useful order."
+          - ""
+          - ""
+  - explain:
       title: Stack Strategy
       body: >
         A stack is last-in, first-out. Track st as unresolved items, top as st's last
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Stack Operations
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Push", "st.append(x)", "st.push(x)", "st.push(x)"]
         - ["Peek", "st[-1]", "st.top()", "st.peek()"]
@@ -135,7 +159,7 @@ revision:
     - "Interview working idea: Stack is LIFO. Always check empty before peek/pop. C++ pop returns void."
   cheat_table:
     title: Stack Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["push", "append", "push", "push"]
       - ["peek", "[-1]", "top", "peek"]

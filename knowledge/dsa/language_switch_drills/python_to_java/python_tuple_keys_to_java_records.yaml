@@ -13,6 +13,30 @@ tags:
 goal: Help users switch python tuple keys to java records habits under interview pressure with direct mappings, caveats, and quick code shapes.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a known solution in one language, translate the Python Tuple Keys To Java Records
+        idea into the target language without changing the algorithm or breaking container semantics.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: Drill Purpose
       body: >
         This drill is for tuple compound keys to Java records or encoded strings. The goal is not to translate syntax word by

@@ -1,0 +1,212 @@
+id: one_d_dynamic_programming
+title: 1D Dynamic Programming
+category: dsa
+level: beginner_to_intermediate
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - one_d_dp
+  - dynamic_programming
+  - interview
+goal: Teach 1d dynamic programming across Python, C++, and Java with state definition, recurrence writing, base cases, computation order, and interview explanation.
+assets:
+  one_d_dynamic_programming_trace:
+    type: image
+    path: assets/dsa/one_d_dynamic_programming/one-d-dynamic-programming-trace.png
+    alt: 1D Dynamic Programming state table and transition trace.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given overlapping choices or repeated subproblems, define a state, transition, base case,
+        and answer position.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
+          - "A strong first thought is memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
+          - "Write the state meaning in words before code, then verify the transition reads only already-known states."
+        -
+          - "The same suffix, prefix, index, capacity, or pair of indices repeats."
+          - ""
+          - ""
+        -
+          - "Greedy choice is not obviously safe."
+          - ""
+          - ""
+  - explain:
+      title: Core Mental Model
+      body: >
+        1D DP walks a line of decisions. The state usually means best, count, or possibility up to index i or starting from index i.
+  - explain:
+      title: How The Algorithm Works
+      body: >
+        Decide whether dp is prefix-based or suffix-based. Seed base cases, scan in the direction where dependencies are already known, and update the answer at each index or at the end.
+  - compare_table:
+      title: Variables And Transitions
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Use
+      rows:
+        -
+          - "prefix dp"
+          - "answer up to i"
+          - "scan left to right"
+        -
+          - "suffix dp"
+          - "answer from i onward"
+          - "scan right to left or recurse"
+        -
+          - "rolling state"
+          - "last few values"
+          - "constant memory"
+  - language_lens:
+      language: python
+      title: Python DP Strategy
+      body: >
+        Python makes memoization concise and tables easy, but row aliasing, recursion depth, and mutable cache keys can break correct ideas.
+      default_instincts:
+        - Use lru_cache or cache for top-down DP with hashable state.
+        - Use row comprehensions for two-dimensional tables.
+        - Use large numeric sentinels for minimum problems.
+      behind_the_scenes:
+        - Cached function arguments must be hashable.
+        - Multiplying nested lists aliases rows.
+        - Python recursion depth can fail on long state chains.
+      avoid:
+        - Passing mutable lists into cached functions.
+        - Rebuilding slices inside transitions.
+        - Forgetting whether dp means prefix answer or suffix answer.
+  - language_lens:
+      language: cpp
+      title: C++ DP Strategy
+      body: >
+        C++ DP is fast when tables are passed by reference and numeric types are chosen deliberately.
+      default_instincts:
+        - Use vector tables and pass them by reference.
+        - Use long long for counts, costs, and sums when constraints can grow.
+        - Use safe INF values and guard before adding.
+      behind_the_scenes:
+        - Passing vectors by value copies the table.
+        - Large local arrays can overflow the stack.
+        - int overflow can silently change answers.
+      avoid:
+        - Updating a one-dimensional table in the wrong direction.
+        - Using INT_MAX and then adding a cost.
+        - Copying memo tables into recursive helpers.
+  - language_lens:
+      language: java
+      title: Java DP Strategy
+      body: >
+        Java DP is clearest with primitive arrays, explicit initialization, and helper methods for memoized recursion.
+      default_instincts:
+        - Use int arrays or long arrays for bounded states.
+        - Use Arrays.fill for sentinel initialization.
+        - Use helper methods with shared memo fields or parameters.
+      behind_the_scenes:
+        - Two-dimensional arrays are arrays of rows.
+        - Integer objects allow null sentinels but add boxing.
+        - Recursive DP can overflow the Java call stack.
+      avoid:
+        - Filling only the outer array and forgetting each row.
+        - Using int when the result needs long.
+        - Reallocating tables inside recursive calls.
+examples:
+  - code_compare:
+      title: 1D Dynamic Programming Core Code Shape
+      idea: Track index, previous values, current answer, and final position.
+      python: |
+        if n <= 1:
+            return 1
+
+        dp = [0] * (n + 1)
+        dp[0] = dp[1] = 1
+        for i in range(2, n + 1):
+            # dp[i] is built from the two ways to arrive at step i.
+            dp[i] = dp[i - 1] + dp[i - 2]
+      cpp: |
+        vector<long long> dp(n + 1, 0);
+        dp[0] = dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            // dp[i] is built from the two ways to arrive at step i.
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+      java: |
+        long[] dp = new long[n + 1];
+        dp[0] = dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            // dp[i] is built from the two ways to arrive at step i.
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+      note: >
+        Read the code by first saying what each state means, then checking that every transition uses already valid smaller states.
+transitions:
+  python_to_cpp:
+    title: Python 1D Dynamic Programming To C++
+    mindset_shift:
+      - Replace decorator caches with explicit memo tables or vectors.
+      - Choose int, long long, and INF deliberately.
+      - Pass tables and inputs by reference to avoid copying.
+    habit_swaps:
+      - python: Use lru_cache for recursive state.
+        cpp: Use vector memo passed by reference.
+    false_friends:
+      - term: overflow
+        warning: C++ int can overflow in counts, sums, and sentinel additions.
+  python_to_java:
+    title: Python 1D Dynamic Programming To Java
+    mindset_shift:
+      - Replace compact list setup with explicit arrays and Arrays.fill.
+      - Use primitive arrays for speed when dimensions are known.
+      - Keep memo state shared across helper calls.
+    habit_swaps:
+      - python: Use list comprehension for tables.
+        java: Allocate arrays and fill each row when needed.
+    false_friends:
+      - term: boxed memo
+        warning: Integer arrays allow null but cost more than primitive arrays with a sentinel.
+interview_questions:
+  - question: What clue points to 1D Dynamic Programming?
+    answer: linear problems where dp at one index depends on earlier indices.
+  - question: What must you say before coding?
+    answer: Define index, previous values, current answer, and final position, then state the recurrence and base cases.
+  - question: What is the common bug?
+    answer: Using a transition before its dependency is ready, or changing one-dimensional update direction incorrectly.
+revision:
+  quick_summary:
+    - "1D Dynamic Programming is the DP tool for linear problems where dp at one index depends on earlier indices."
+    - "Working idea: Decide whether dp is prefix-based or suffix-based. Seed base cases, scan in the direction where dependencies are already known, and update the answer at each index or at the end."
+  cheat_table:
+    title: 1D Dynamic Programming Revision Table
+    columns:
+      - What You Notice
+      - State
+      - Caveat
+    rows:
+      -
+        - "linear problems where dp at one index depends on earlier indices"
+        - "index, previous values, current answer, and final position"
+        - "Define state in one sentence before writing code."
+      -
+        - "language risk"
+        - "table and numeric type"
+        - "Watch Python row aliasing, C++ copies and overflow, Java initialization."
+  flashcards:
+    - question: What is the most important DP interview sentence?
+      answer: Say exactly what the state means.
+notes:
+  - "DP code should be read as state definition, base case, transition, fill order, answer location."
+  - Use the clear table first; optimize space only after the dependency direction is obvious.
+tlm_hooks:
+  possible_tasks:
+    - trace_one_d_dynamic_programming
+    - generate_one_d_dynamic_programming_drills
+  context: Focus on index, previous values, current answer, and final position.

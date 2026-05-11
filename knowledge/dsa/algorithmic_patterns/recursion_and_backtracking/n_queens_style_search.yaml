@@ -12,6 +12,30 @@ assets:
     alt: Board showing column, row, row-col diagonal, and row+col diagonal constraints.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem that asks to generate all valid choices, explore a decision tree while
+        undoing state after each branch.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem asks for all subsets, permutations, combinations, boards, paths, or valid configurations."
+          - "A strong first thought is recursion, backtracking, pruning, choose-explore-unchoose."
+          - "Name the decision at each level and the state that must be restored before the next branch."
+        -
+          - "You must try choices and reject invalid partial states."
+          - ""
+          - ""
+        -
+          - "The output size itself may be exponential."
+          - ""
+          - ""
+  - explain:
       title: Constraint Search Mental Model
       body: >
         N-Queens style problems place one decision per row and maintain sets of
@@ -146,7 +170,7 @@ interview_questions:
     answer: Cells on the same main diagonal have the same row-column difference.
 revision:
   quick_summary:
-    - "N-Queens Style Search is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "N-Queens Style Search is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: One row at a time. track columns and two diagonals. undo every changed constraint."
   cheat_table:
     title: N-Queens Cheat Table

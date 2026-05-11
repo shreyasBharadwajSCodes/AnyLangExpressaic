@@ -13,6 +13,30 @@ tags:
 goal: Help users switch java comparators to c++ comparators habits under interview pressure with direct mappings, caveats, and quick code shapes.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a known solution in one language, translate the Java Comparators To C++ Comparators
+        idea into the target language without changing the algorithm or breaking container semantics.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives intervals, ordering, custom ranking, minimum removals, overlap, schedule, or greedy choice."
+          - "A strong first thought is sorting, comparator, greedy, merge intervals, sweep line, or counting sort."
+          - "Explain why the sort key makes future choices safe and how ties are handled."
+        -
+          - "A local choice becomes safe after sorting by the right key."
+          - ""
+          - ""
+        -
+          - "The hard part is choosing the key and tie-break."
+          - ""
+          - ""
+  - explain:
       title: Drill Purpose
       body: >
         This drill is for Java comparator return values to C++ strict bool comparators. The goal is not to translate syntax word by

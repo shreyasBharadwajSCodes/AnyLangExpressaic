@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Dynamic Programming Readiness as a quick recognition
+        and implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
+          - "A strong first thought is memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
+          - "Write the state meaning in words before code, then verify the transition reads only already-known states."
+        -
+          - "The same suffix, prefix, index, capacity, or pair of indices repeats."
+          - ""
+          - ""
+        -
+          - "Greedy choice is not obviously safe."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Dynamic programming is controlled reuse. You define a state, write the answer
@@ -38,8 +62,8 @@ lesson:
         - ["Can states repeat in recursion?", "Memoization", "Fibonacci, grid paths"]
         - ["Can order be built bottom-up?", "Tabulation", "Climbing stairs"]
         - ["State depends only on previous row?", "Space optimize", "Knapsack/LCS variants"]
-        - ["Need choose/take/skip?", "Recurrence branches", "House robber, subsequence"]
-        - ["Need count/min/max?", "Define dp value carefully", "Coin change, LIS"]
+        - ["You need choose/take/skip?", "Recurrence branches", "House robber, subsequence"]
+        - ["You need count/min/max?", "Define dp value carefully", "Coin change, LIS"]
   - language_lens:
       language: python
       title: Python DP Thinking
@@ -273,12 +297,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Dynamic Programming Readiness is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Dynamic Programming Readiness is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: DP means compute each repeated state once. Define state in words before recurrence. Memoization is top-down; tabulation is bottom-up. Watch row aliasing, overflow, and recursion depth."
   cheat_table:
     title: DP Readiness Revision
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

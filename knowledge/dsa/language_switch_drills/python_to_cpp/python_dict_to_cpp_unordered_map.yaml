@@ -13,6 +13,30 @@ tags:
 goal: Help users switch python dict to c++ unordered_map habits under interview pressure with direct mappings, caveats, and quick code shapes.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a known solution in one language, translate the Python Dict To C++ unordered_map
+        idea into the target language without changing the algorithm or breaking container semantics.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Drill Purpose
       body: >
         This drill is for dict lookup and counting to unordered_map. The goal is not to translate syntax word by

@@ -26,268 +26,32 @@ assets:
     path: assets/hash-table.png
     alt: Hash table buckets used by dict, unordered_map, and HashMap.
 lesson:
-- explain:
-    title: Same ideas, different instincts
-    body: >
-      Python, C++, and Java all give you tools for storing many values: sequences,
-      maps, sets, queues, stacks, and heaps. The idea is shared, but each language
-      trains a different instinct. Python favors direct built-in types. C++ asks you
-      to choose containers by performance and memory behavior. Java asks you to think
-      through interfaces and contracts.
-
-- image:
-    asset: collection_family
-    caption: Collections are best understood by what access pattern they support.
-- compare_table:
-    title: First mapping
-    columns:
-    - Idea
-    - Python
-    - C++
-    - Java
-    rows:
-    - - Growable sequence
-      - list
-      - vector
-      - ArrayList
-    - - Key-value lookup
-      - dict
-      - unordered_map
-      - HashMap
-    - - Unique values
-      - set
-      - unordered_set
-      - HashSet
-    - - Sorted key-value lookup
-      - sorted dict pattern
-      - map
-      - TreeMap
-    - - Queue
-      - deque
-      - queue/deque
-      - ArrayDeque
-    - - Heap
-      - heapq over list
-      - priority_queue
-      - PriorityQueue
-- language_lens:
-    language: python
-    title: How Python wants you to think
-    body: >
-      Start with the simplest built-in collection. Use list for ordered sequences,
-      dict for lookup, set for uniqueness, and deque for queue-like behavior. Python
-      hides most memory details so you can focus on clarity.
-
-    default_instincts:
-    - Use literals when possible.
-    - Prefer readable built-ins over custom structures.
-    - Use dict and set for fast average lookup.
-    avoid:
-    - Using list for frequent membership checks.
-    - Expecting type safety at compile time.
-    - Assuming dict is sorted by key.
-- language_lens:
-    language: cpp
-    title: How C++ STL wants you to think
-    body: >
-      Choose the container whose guarantees match your access pattern. STL containers
-      expose tradeoffs around contiguous memory, iterator validity, ordering, allocation,
-      and copying.
-
-    default_instincts:
-    - Prefer vector for general sequences.
-    - Use unordered_map or unordered_set for average O(1) lookup.
-    - Use map or set when sorted order or range queries matter.
-    - Think about copies, references, lifetimes, and invalidation.
-    avoid:
-    - Picking list just because insertion sounds cheap.
-    - Forgetting vector reallocation can invalidate references.
-    - Using map when unordered_map is enough.
-- language_lens:
-    language: java
-    title: How Java Collections want you to think
-    body: >
-      Think in terms of interfaces first: List, Set, Map, Queue, and Deque. Then
-      choose an implementation such as ArrayList, HashMap, TreeMap, HashSet, or ArrayDeque.
-
-    default_instincts:
-    - Code to interfaces when possible.
-    - Choose implementation by ordering, lookup, and concurrency needs.
-    - Use generics to make collection contents explicit.
-    avoid:
-    - Using concrete types everywhere in APIs.
-    - Forgetting equals() and hashCode() for custom keys.
-    - Using old Stack when ArrayDeque is usually better.
-examples:
-- code_compare:
-    title: Growable sequence
-    idea: Store items in order and append new values.
-    python: |
-      nums = [10, 20, 30]
-
-      nums.append(40)
-
-      print(nums[0])
-
-    cpp: |
-      vector<int> nums = {10, 20, 30};
-
-      nums.push_back(40);
-
-      cout << nums[0];
-
-    java: |
-      List<Integer> nums = new ArrayList<>();
-
-      nums.add(10);
-
-      nums.add(20);
-
-      nums.add(30);
-
-      nums.add(40);
-
-      System.out.println(nums.get(0));
-
-    note: >
-      These look similar at the usage level, but C++ vector stores typed values
-      contiguously, Java stores object references through an interface, and Python
-      stores references in a flexible dynamic list.
-
-- code_compare:
-    title: Fast lookup by key
-    idea: Associate a key with a value.
-    python: |
-      ages = {"Ada": 36}
-
-      ages["Grace"] = 85
-
-      print(ages["Ada"])
-
-    cpp: |
-      unordered_map<string, int> ages;
-
-      ages["Ada"] = 36;
-
-      ages["Grace"] = 85;
-
-      cout << ages["Ada"];
-
-    java: |
-      Map<String, Integer> ages = new HashMap<>();
-
-      ages.put("Ada", 36);
-
-      ages.put("Grace", 85);
-
-      System.out.println(ages.get("Ada"));
-
-    note: >
-      The shared idea is hash-based lookup. The transition differences are syntax,
-      typing, key equality rules, and what happens when a key is absent.
-
-- code_compare:
-    title: Queue behavior
-    idea: Add at the back and remove from the front.
-    python: |
-      from collections import deque
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use STL vs Collections as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
 
 
-      q = deque()
-
-      q.append("task")
-
-      q.popleft()
-
-    cpp: |
-      queue<string> q;
-
-      q.push("task");
-
-      q.pop();
-
-    java: |
-      Queue<String> q = new ArrayDeque<>();
-
-      q.add("task");
-
-      q.poll();
-
-
-      // Java syntax
-    note: >
-      Python exposes deque directly, C++ queue is an adapter over an underlying
-      container, and Java usually uses the Queue interface with ArrayDeque.
-
-transitions:
-  python_to_cpp:
-    title: Moving from Python collections to C++ STL
-    mindset_shift:
-    - From flexible values to explicit element types.
-    - From convenience first to container guarantees first.
-    - From hidden memory behavior to visible allocation and invalidation.
-    habit_swaps:
-    - python: Use list for most ordered data.
-      cpp: Start with vector, but check whether deque, array, list, or set fits better.
-    - python: Trust the runtime to manage object lifetime.
-      cpp: Notice copying, references, ownership, and iterator validity.
-    - python: Use dict and move on.
-      cpp: Choose unordered_map for hash lookup or map for sorted keys.
-    false_friends:
-    - term: list
-      warning: C++ list is a linked list, not the usual equivalent of Python list.
-    - term: map
-      warning: C++ map is sorted and tree-based; Python dict is hash-based and insertion
-        ordered.
-  cpp_to_python:
-    title: Moving from C++ STL to Python collections
-    mindset_shift:
-    - From exact container control to readable built-in expression.
-    - From value semantics to reference-based object behavior.
-    - From compile-time type enforcement to runtime flexibility.
-    habit_swaps:
-    - cpp: Choose among many STL containers early.
-      python: Use list, dict, set, tuple, or deque unless there is a clear reason
-        not to.
-    - cpp: Think about iterator invalidation.
-      python: Think about mutation side effects and shared references.
-    - cpp: Write loops around container operations.
-      python: Use comprehensions, Counter, defaultdict, sorted, and built-in functions.
-    false_friends:
-    - term: list
-      warning: Python list is closer to C++ vector than C++ list.
-    - term: set order
-      warning: Python set should not be treated as sorted.
-  java_to_cpp:
-    title: Moving from Java Collections to C++ STL
-    mindset_shift:
-    - From interface-first design to concrete container guarantees.
-    - From garbage-collected references to value semantics and lifetimes.
-    - From runtime polymorphism habits to templates and compile-time types.
-    habit_swaps:
-    - java: Declare List or Map and choose implementation behind it.
-      cpp: Choose vector, unordered_map, map, set, deque, or priority_queue directly.
-    - java: Let GC handle object lifetime.
-      cpp: Understand ownership, copying, references, and moves.
-    - java: Rely on equals() and hashCode().
-      cpp: Provide equality, ordering, or hash behavior through operators or functors.
-    false_friends: []
-  cpp_to_java:
-    title: Moving from C++ STL to Java Collections
-    mindset_shift:
-    - From concrete containers to interface-based APIs.
-    - From manual lifetime awareness to garbage-collected object references.
-    - From templates to generics with type erasure.
-    habit_swaps:
-    - cpp: Expose vector or unordered_map in interfaces.
-      java: Expose List, Set, Map, Queue, or Deque when possible.
-    - cpp: Use value copies naturally.
-      java: Remember collections hold object references.
-    - cpp: Use operators for equality and ordering.
-      java: Implement equals(), hashCode(), Comparable, or Comparator.
-    false_friends: []
-revision:
-  quick_summary:
   - Python collections are direct, flexible, and built into the language.
   - C++ STL containers are explicit tools with strong performance and memory tradeoffs.
   - Java Collections are interface-driven and implementation-selected.
@@ -296,7 +60,7 @@ revision:
   cheat_table:
     title: Revision map
     columns:
-    - Need
+    - Operation Needed
     - Python instinct
     - C++ instinct
     - Java instinct

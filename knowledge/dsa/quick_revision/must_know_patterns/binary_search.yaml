@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Binary Search as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions sorted input, first or last occurrence, minimum feasible value, or rotated sorted array."
+          - "A strong first thought is binary search on index, value, boundary, or answer."
+          - "Define the true and false sides before choosing mid update rules."
+        -
+          - "For a candidate x, the answer to can we do it is monotonic."
+          - ""
+          - ""
+        -
+          - "Linear scan wastes the order or monotonic condition."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Binary search repeatedly discards half the candidate space using a monotonic
@@ -363,12 +387,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Binary Search is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Binary Search is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Binary search needs sorted data or a monotonic predicate. Lower bound means first index where value is at least target. Keep one template consistent. C++ and Java need overflow-safe midpoint."
   cheat_table:
     title: Binary Search Revision
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

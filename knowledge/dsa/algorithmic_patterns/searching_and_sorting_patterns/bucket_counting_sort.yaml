@@ -12,6 +12,30 @@ assets:
     alt: Values counted into frequency buckets and emitted back in sorted order.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given items that must be ordered by start time, end time, value, frequency, or priority,
+        sort them and make one pass with a chosen invariant.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives intervals, ordering, custom ranking, minimum removals, overlap, schedule, or greedy choice."
+          - "A strong first thought is sorting, comparator, greedy, merge intervals, sweep line, or counting sort."
+          - "Explain why the sort key makes future choices safe and how ties are handled."
+        -
+          - "A local choice becomes safe after sorting by the right key."
+          - ""
+          - ""
+        -
+          - "The hard part is choosing the key and tie-break."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         Counting sort replaces comparisons with counts when values live in a small
@@ -162,11 +186,11 @@ interview_questions:
     answer: A value can appear from 1 to n times, so frequency n needs an index.
 revision:
   quick_summary:
-    - "Bucket Sort And Counting Sort is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Bucket Sort And Counting Sort is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Count values when range is small. Bucket by frequency for top-k. Initialize every Java bucket."
   cheat_table:
     title: Bucket Counting Cheat Table
-    columns: [Need, Structure]
+    columns: [Question Type, Structure]
     rows:
       - ["small range", "count[value]"]
       - ["top k frequent", "buckets[frequency]"]

@@ -12,6 +12,30 @@ assets:
     alt: Array window of size k showing incoming element, outgoing element, running sum, and best answer.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an array or string, find the best contiguous segment while maintaining window state
+        as the right boundary moves.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
+          - "A strong first thought is fixed window, variable window, frequency map, or monotonic deque."
+          - "Track what the window currently contains and shrink only when the invariant tells you to."
+        -
+          - "The answer changes when one boundary enters or leaves."
+          - ""
+          - ""
+        -
+          - "Recomputing each segment would repeat the same work."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         A fixed window keeps exactly k items active. Instead of recomputing the
@@ -27,7 +51,7 @@ lesson:
         be a sum, count array, frequency map, or any value that supports add/remove.
   - compare_table:
       title: Recognition Signals
-      columns: [Problem Signal, Window State, Answer Timing]
+      columns: [Problem Clue, Window State, Answer Timing]
       rows:
         - ["subarray of length k", "running sum/count", "after first k elements"]
         - ["max average length k", "running sum", "every full window"]
@@ -216,11 +240,11 @@ interview_questions:
     answer: Before that point the window has fewer than k elements and is not a valid candidate.
 revision:
   quick_summary:
-    - "Fixed Window is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Fixed Window is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Add incoming element. Remove outgoing element when size exceeds k. Update answer only when the window has exactly k elements."
   cheat_table:
     title: Fixed Window Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["outgoing", "nums[i-k]", "nums[i-k]", "nums[i-k]"]
       - ["large sum", "int is safe", "long long", "long"]

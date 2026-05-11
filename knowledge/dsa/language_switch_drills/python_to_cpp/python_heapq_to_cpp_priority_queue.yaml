@@ -13,6 +13,30 @@ tags:
 goal: Help users switch python heapq to c++ priority_queue habits under interview pressure with direct mappings, caveats, and quick code shapes.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a known solution in one language, translate the Python Heapq To C++ priority_queue
+        idea into the target language without changing the algorithm or breaking container semantics.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem asks for top k, kth, minimum cost next step, earliest finishing item, or shortest weighted path."
+          - "A strong first thought is heap, priority queue, or Dijkstra-style frontier."
+          - "State what the priority is and how stale heap entries are ignored or avoided."
+        -
+          - "Sorting everything each time would be wasteful."
+          - ""
+          - ""
+        -
+          - "The next best candidate changes after each update."
+          - ""
+          - ""
+  - explain:
       title: Drill Purpose
       body: >
         This drill is for min heap habits to C++ priority_queue configuration. The goal is not to translate syntax word by

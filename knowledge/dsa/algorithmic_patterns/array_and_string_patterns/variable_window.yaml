@@ -12,6 +12,30 @@ assets:
     alt: Window with left and right boundaries, validity condition, count state, and best answer.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an array or string, find the best contiguous segment while maintaining window state
+        as the right boundary moves.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
+          - "A strong first thought is fixed window, variable window, frequency map, or monotonic deque."
+          - "Track what the window currently contains and shrink only when the invariant tells you to."
+        -
+          - "The answer changes when one boundary enters or leaves."
+          - ""
+          - ""
+        -
+          - "Recomputing each segment would repeat the same work."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         A variable window grows with right and shrinks with left until a validity
@@ -219,7 +243,7 @@ interview_questions:
     answer: Every valid window before removing left is a candidate, and shrinking may find a shorter one.
 revision:
   quick_summary:
-    - "Variable Window is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Variable Window is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Expand with right. shrink with left. preserve a named invariant. update answer at the correct moment."
   cheat_table:
     title: Variable Window Cheat Table

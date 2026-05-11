@@ -12,6 +12,30 @@ assets:
     alt: Stack of indices maintaining monotonic values while current index resolves previous indices.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem where the most recent unresolved item should be matched or resolved
+        first, use a stack.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - "A strong first thought is stack or monotonic stack."
+          - "Store indices when distance, width, or stale position matters; state the stack invariant."
+        -
+          - "The current item resolves earlier items in last-in-first-out order."
+          - ""
+          - ""
+        -
+          - "The unresolved candidates must keep a useful order."
+          - ""
+          - ""
+  - explain:
       title: Monotonic Invariant
       body: >
         A monotonic stack stores candidates in sorted value order, often as indices.
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Common Forms
-      columns: [Problem, Stack Invariant, Resolves When]
+      columns: [Problem Style, Stack Invariant, When It Resolves]
       rows:
         - ["Next greater", "decreasing values", "current value is greater"]
         - ["Next smaller", "increasing values", "current value is smaller"]
@@ -137,7 +161,7 @@ revision:
     - "Interview working idea: Store unresolved indices. Maintain value order. Current item resolves popped indices."
   cheat_table:
     title: Monotonic Stack Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["top index", "st[-1]", "st.back()", "st.peek()"]
       - ["pop index", "st.pop()", "pop_back", "pop"]

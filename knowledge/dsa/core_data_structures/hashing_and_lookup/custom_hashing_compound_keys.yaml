@@ -12,6 +12,30 @@ assets:
     alt: State variables r, c, mask combined into a stable key for visited or memo.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a collection of values, solve membership, grouping, counting, or complement lookup
+        using stable keys.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Compound Key Strategy
       body: >
         A compound key combines multiple state variables into one lookup identity.
@@ -28,7 +52,7 @@ lesson:
 
   - compare_table:
       title: Key Strategies
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Coordinate", "(r, c)", "pair in map / custom hash", "record Cell / encoded int / String"]
         - ["State triple", "(i, j, mask)", "tuple/custom struct hash", "record State"]
@@ -132,7 +156,7 @@ revision:
     - "Interview working idea: Compound keys encode state. Keys must be stable. Equality and hashing must agree."
   cheat_table:
     title: Compound Key Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["coord", "tuple", "pair/map or custom hash", "record/encoded"]
       - ["dense encode", "r*cols+c", "r*cols+c", "r*cols+c"]

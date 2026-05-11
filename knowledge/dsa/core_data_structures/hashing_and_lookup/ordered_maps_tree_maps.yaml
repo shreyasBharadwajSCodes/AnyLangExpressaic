@@ -12,6 +12,30 @@ assets:
     alt: Sorted keys with current key, lower key, higher key, and range boundaries.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a collection of values, solve membership, grouping, counting, or complement lookup
+        using stable keys.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
+        -
+          - "Order is not the main requirement, but identity or counts are."
+          - ""
+          - ""
+        -
+          - "A scan with a map or set removes an inner loop."
+          - ""
+          - ""
+  - explain:
       title: Ordered Lookup Strategy
       body: >
         Ordered maps keep keys sorted, which supports predecessor, successor, min,
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: Ordered Map Availability
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Sorted map", "use sorted keys or external library", "map", "TreeMap"]
         - ["Min key", "min(keys)", "begin()", "firstKey()"]
@@ -121,7 +145,7 @@ revision:
     - "Interview working idea: Ordered maps trade O(1) hash lookup for O(log n) sorted-key power."
   cheat_table:
     title: Ordered Map Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["ceiling", "bisect_left", "lower_bound", "ceilingKey"]
       - ["floor", "bisect - 1", "prev(upper_bound)", "floorKey"]

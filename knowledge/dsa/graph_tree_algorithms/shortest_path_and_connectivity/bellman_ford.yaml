@@ -19,6 +19,30 @@ assets:
     alt: Bellman Ford trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given nodes, edges, prerequisites, grid movement, or connectivity, model the state as a
+        graph and traverse or relax edges deliberately.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "Define the graph representation, when a node becomes visited, and what each edge update means."
+        -
+          - "The same state can be reached from multiple directions."
+          - ""
+          - ""
+        -
+          - "Visited timing or distance relaxation is the correctness risk."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Bellman Ford relaxes every edge repeatedly. After nodes minus one passes, every shortest simple path has had enough edges to settle.
@@ -27,9 +51,9 @@ lesson:
       body: >
         Initialize distances, repeat all-edge relaxation nodes minus one times, and stop early if nothing changes. One extra improving pass means a reachable negative cycle exists.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -103,7 +127,7 @@ examples:
       python: |
         dist = [float("inf")] * n
         dist[src] = 0
-        
+
         for _ in range(n - 1):
             changed = False
             for u, v, w in edges:
@@ -118,7 +142,7 @@ examples:
       cpp: |
         vector<long long> dist(n, INF);
         dist[src] = 0;
-        
+
         for (int pass = 0; pass < n - 1; pass++) {
             bool changed = false;
             for (auto& e : edges) {
@@ -136,7 +160,7 @@ examples:
         long[] dist = new long[n];
         Arrays.fill(dist, INF);
         dist[src] = 0;
-        
+
         for (int pass = 0; pass < n - 1; pass++) {
             boolean changed = false;
             for (int[] e : edges) {
@@ -176,7 +200,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Bellman Ford?
+  - question: What problem clue points to Bellman Ford?
     answer: shortest path with negative edges or negative-cycle detection.
   - question: What state should you name before coding?
     answer: Name edge list, distance array, pass count, and changed flag.
@@ -189,7 +213,7 @@ revision:
   cheat_table:
     title: Bellman Ford Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

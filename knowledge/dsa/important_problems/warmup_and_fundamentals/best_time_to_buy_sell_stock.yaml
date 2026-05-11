@@ -1,0 +1,177 @@
+id: best_time_to_buy_sell_stock
+title: Best Time To Buy And Sell Stock
+category: dsa
+level: important_problem
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - important_problem
+  - interview
+  - warmup_and_fundamentals
+goal: Teach Best Time To Buy And Sell Stock as an interview problem with recognition cue, approach, state tracking, edge cases, coordinated code, and language caveats.
+assets:
+  best_time_to_buy_sell_stock_trace:
+    type: image
+    path: assets/dsa/best_time_to_buy_sell_stock/best-time-to-buy-sell-stock-trace.png
+    alt: Best Time To Buy And Sell Stock variable trace and interview dry run.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given daily stock prices, choose one buy day and one later sell day to maximize profit.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks what you would say, how to dry run, which edge cases to test, or when to optimize."
+          - "Use the final interview execution checklist."
+          - "Give brute force, optimized idea, invariant, edge cases, and complexity in that order."
+        -
+          - "The code may work but the interview answer is incomplete."
+          - ""
+          - ""
+        -
+          - "The missing part is proof, complexity, or test coverage."
+          - ""
+          - ""
+  - explain:
+      title: When To Use This
+      body: >
+        Bring this idea in when the problem is quietly asking for one-pass best profit from earlier buy. Before
+        coding, say what the input shape is, what answer must be returned, and which
+        state proves progress.
+  - explain:
+      title: Approach And State
+      body: >
+        Track minimum price so far and best profit. The important interview move is to explain when this state
+        changes, why that timing is safe, and which cases are intentionally skipped
+        or resolved.
+  - compare_table:
+      title: Variables And Edge Cases
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Caveat
+      rows:
+        -
+          - "state"
+          - "minimum price so far and best profit"
+          - "Name this before writing code."
+        -
+          - "update timing"
+          - "the line where progress becomes official"
+          - "Most bugs happen before or after this line."
+        -
+          - "edge case"
+          - "empty, one item, duplicates, boundary, or unreachable state"
+          - "Test it after the main dry run."
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Keep the solution compact, but make the state variable names explicit enough for a dry run.
+      default_instincts:
+        - Use dictionaries, sets, deque, heapq, or lists based on the pattern.
+        - Prefer tuple state for immutable compound keys.
+        - Watch list aliasing and recursion depth.
+      avoid:
+        - Hiding an O n operation inside a loop.
+        - Using mutable objects as dictionary keys.
+        - Updating the answer before the state is valid.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        Choose containers and numeric types deliberately, and avoid copying large state inside helpers.
+      default_instincts:
+        - Pass large vectors, strings, and adjacency lists by reference.
+        - Use long long when counts, products, sums, or distances can grow.
+        - Configure comparators and heaps explicitly.
+      avoid:
+        - Passing vectors by value accidentally.
+        - Using unsafe int sentinels with addition.
+        - Dereferencing null pointers in linked-list or tree problems.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Use explicit arrays, initialized collections, helper methods, and safe comparator or equality choices.
+      default_instincts:
+        - Use primitive arrays for fixed-size state.
+        - Use ArrayDeque for queues and stacks.
+        - Initialize every nested collection before adding to it.
+      avoid:
+        - Comparator subtraction when values can be large.
+        - Double equals for string value comparison.
+        - Forgetting null checks on node references.
+examples:
+  - code_compare:
+      title: Best Time To Buy And Sell Stock Core Implementation
+      idea: one-pass best profit from earlier buy.
+      python: |
+        min_price = float("inf")
+        best = 0
+        for price in prices:
+            # min_price is the cheapest buy day before or at today.
+            min_price = min(min_price, price)
+            best = max(best, price - min_price)
+      cpp: |
+        int minPrice = INT_MAX, best = 0;
+        for (int price : prices) {
+            // minPrice is the cheapest buy day before or at today.
+            minPrice = min(minPrice, price);
+            best = max(best, price - minPrice);
+        }
+      java: |
+        int minPrice = Integer.MAX_VALUE, best = 0;
+        for (int price : prices) {
+            // minPrice is the cheapest buy day before or at today.
+            minPrice = Math.min(minPrice, price);
+            best = Math.max(best, price - minPrice);
+        }
+      note: >
+        Read the code by following minimum price so far and best profit. The comments mark non-trivial state
+        changes only, so the explanation and implementation stay coordinated.
+interview_questions:
+  - question: What is the pattern clue for Best Time To Buy And Sell Stock?
+    answer: one-pass best profit from earlier buy.
+  - question: What variables should you dry-run?
+    answer: Dry-run minimum price so far and best profit, plus the answer variable and any boundary pointer.
+  - question: What edge cases should you test?
+    answer: Test empty or minimal input, duplicate values where relevant, boundary indices, and cases where no valid answer exists.
+revision:
+  quick_summary:
+    - "Best Time To Buy And Sell Stock is solved by one-pass best profit from earlier buy."
+    - "Working idea: track minimum price so far and best profit, update it at the safe moment, and dry-run the edge case that can break the invariant."
+  cheat_table:
+    title: Best Time To Buy And Sell Stock Quick Recall
+    columns:
+      - Remember
+      - Why
+    rows:
+      -
+        - "Name the state"
+        - "The code becomes readable immediately."
+      -
+        - "Explain update timing"
+        - "This proves correctness."
+      -
+        - "Test the smallest input"
+        - "This catches most boundary mistakes."
+  flashcards:
+    - question: What should you say if asked why this works?
+      answer: State the invariant and explain why each update preserves it.
+notes:
+  - Keep comments around meaningful state changes only.
+  - In interviews, explain the brute force briefly, then point to the repeated work removed by this pattern.
+tlm_hooks:
+  possible_tasks:
+    - trace_best_time_to_buy_sell_stock
+    - generate_best_time_to_buy_sell_stock_drills
+  context: Focus on minimum price so far and best profit.

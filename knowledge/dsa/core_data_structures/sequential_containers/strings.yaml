@@ -12,6 +12,30 @@ assets:
     alt: String characters with index pointers, current character, and result buffer.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem that repeatedly builds, edits, or returns text, choose a safe
+        string-building strategy and avoid repeated full-string copies.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
+  - explain:
       title: Mental Model
       body: >
         A string problem is usually an index-tracking problem. As you read code,
@@ -29,7 +53,7 @@ lesson:
 
   - compare_table:
       title: Core Operations
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Length", "len(s)", "s.size()", "s.length()"]
         - ["Character", "s[i]", "s[i]", "s.charAt(i)"]
@@ -118,7 +142,7 @@ examples:
         out = []
 
         for ch in reversed(s):
-            # Append pieces first; join materializes the final string once.
+            # Append parts first; join materializes the final string once.
             out.append(ch)
 
         ans = ''.join(out)
@@ -168,7 +192,7 @@ revision:
     - "Interview working idea: Track indices and active substring boundaries visually. Python and Java strings are immutable; C++ string can mutate. Substring operations often allocate."
   cheat_table:
     title: String Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["char at i", "s[i]", "s[i]", "s.charAt(i)"]
       - ["substring l..r", "s[l:r]", "s.substr(l, r-l)", "s.substring(l, r)"]

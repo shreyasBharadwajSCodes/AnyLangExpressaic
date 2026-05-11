@@ -335,49 +335,35 @@ chapters:
         lessons:
           - title: Dynamic Programming Basics
             file: knowledge/dsa/dynamic_programming/dp_foundations/dynamic_programming_basics.yaml
-            status: planned
           - title: Memoization vs Tabulation
             file: knowledge/dsa/dynamic_programming/dp_foundations/memoization_vs_tabulation.yaml
-            status: planned
           - title: State Definition
             file: knowledge/dsa/dynamic_programming/dp_foundations/dp_state_definition.yaml
-            status: planned
           - title: Transition Writing
             file: knowledge/dsa/dynamic_programming/dp_foundations/dp_transition_writing.yaml
-            status: planned
           - title: Space Optimization
             file: knowledge/dsa/dynamic_programming/dp_foundations/dp_space_optimization.yaml
-            status: planned
 
       - title: Common DP Families
         lessons:
           - title: 1D Dynamic Programming
             file: knowledge/dsa/dynamic_programming/common_dp_families/one_d_dynamic_programming.yaml
-            status: planned
           - title: 2D Dynamic Programming
             file: knowledge/dsa/dynamic_programming/common_dp_families/two_d_dynamic_programming.yaml
-            status: planned
           - title: Knapsack Patterns
             file: knowledge/dsa/dynamic_programming/common_dp_families/knapsack_patterns.yaml
-            status: planned
           - title: Unbounded Knapsack
             file: knowledge/dsa/dynamic_programming/common_dp_families/unbounded_knapsack.yaml
-            status: planned
           - title: Subsequence DP
             file: knowledge/dsa/dynamic_programming/common_dp_families/subsequence_dp.yaml
-            status: planned
           - title: LCS And Substring Patterns
             file: knowledge/dsa/dynamic_programming/common_dp_families/lcs_substring_patterns.yaml
-            status: planned
           - title: LIS Pattern
             file: knowledge/dsa/dynamic_programming/common_dp_families/lis_pattern.yaml
-            status: planned
           - title: Interval DP
             file: knowledge/dsa/dynamic_programming/common_dp_families/interval_dp.yaml
-            status: planned
           - title: Tree DP
             file: knowledge/dsa/dynamic_programming/common_dp_families/tree_dp.yaml
-            status: planned
 
   - id: important_problems
     title: Important Problems
@@ -387,124 +373,90 @@ chapters:
         lessons:
           - title: Two Sum
             file: knowledge/dsa/important_problems/warmup_and_fundamentals/two_sum.yaml
-            status: planned
           - title: Valid Parentheses
             file: knowledge/dsa/important_problems/warmup_and_fundamentals/valid_parentheses.yaml
-            status: planned
           - title: Best Time To Buy And Sell Stock
             file: knowledge/dsa/important_problems/warmup_and_fundamentals/best_time_to_buy_sell_stock.yaml
-            status: planned
           - title: Product Of Array Except Self
             file: knowledge/dsa/important_problems/warmup_and_fundamentals/product_of_array_except_self.yaml
-            status: planned
           - title: Maximum Subarray
             file: knowledge/dsa/important_problems/warmup_and_fundamentals/maximum_subarray.yaml
-            status: planned
 
       - title: Hashing And Grouping
         lessons:
           - title: Group Anagrams
             file: knowledge/dsa/important_problems/hashing_and_grouping/group_anagrams.yaml
-            status: planned
           - title: Longest Consecutive Sequence
             file: knowledge/dsa/important_problems/hashing_and_grouping/longest_consecutive_sequence.yaml
-            status: planned
           - title: Subarray Sum Equals K
             file: knowledge/dsa/important_problems/hashing_and_grouping/subarray_sum_equals_k.yaml
-            status: planned
           - title: Top K Frequent Elements
             file: knowledge/dsa/important_problems/hashing_and_grouping/top_k_frequent_elements.yaml
-            status: planned
 
       - title: Pointers Windows And Search
         lessons:
           - title: Three Sum
             file: knowledge/dsa/important_problems/pointers_windows_and_search/three_sum.yaml
-            status: planned
           - title: Container With Most Water
             file: knowledge/dsa/important_problems/pointers_windows_and_search/container_with_most_water.yaml
-            status: planned
           - title: Longest Substring Without Repeating Characters
             file: knowledge/dsa/important_problems/pointers_windows_and_search/longest_substring_without_repeating.yaml
-            status: planned
           - title: Minimum Window Substring
             file: knowledge/dsa/important_problems/pointers_windows_and_search/minimum_window_substring.yaml
-            status: planned
           - title: Search In Rotated Sorted Array
             file: knowledge/dsa/important_problems/pointers_windows_and_search/search_rotated_sorted_array.yaml
-            status: planned
 
       - title: Linked List And Stack
         lessons:
           - title: Reverse Linked List
             file: knowledge/dsa/important_problems/linked_list_and_stack/reverse_linked_list.yaml
-            status: planned
           - title: Merge Two Sorted Lists
             file: knowledge/dsa/important_problems/linked_list_and_stack/merge_two_sorted_lists.yaml
-            status: planned
           - title: Linked List Cycle
             file: knowledge/dsa/important_problems/linked_list_and_stack/linked_list_cycle.yaml
-            status: planned
           - title: Daily Temperatures
             file: knowledge/dsa/important_problems/linked_list_and_stack/daily_temperatures.yaml
-            status: planned
           - title: Largest Rectangle In Histogram
             file: knowledge/dsa/important_problems/linked_list_and_stack/largest_rectangle_histogram.yaml
-            status: planned
 
       - title: Trees And Tries
         lessons:
           - title: Maximum Depth Of Binary Tree
             file: knowledge/dsa/important_problems/trees_and_tries/maximum_depth_binary_tree.yaml
-            status: planned
           - title: Validate Binary Search Tree
             file: knowledge/dsa/important_problems/trees_and_tries/validate_binary_search_tree.yaml
-            status: planned
           - title: Binary Tree Level Order Traversal
             file: knowledge/dsa/important_problems/trees_and_tries/binary_tree_level_order.yaml
-            status: planned
           - title: Lowest Common Ancestor
             file: knowledge/dsa/important_problems/trees_and_tries/lowest_common_ancestor.yaml
-            status: planned
           - title: Implement Trie
             file: knowledge/dsa/important_problems/trees_and_tries/implement_trie.yaml
-            status: planned
 
       - title: Graph Problems
         lessons:
           - title: Number Of Islands
             file: knowledge/dsa/important_problems/graph_problems/number_of_islands.yaml
-            status: planned
           - title: Clone Graph
             file: knowledge/dsa/important_problems/graph_problems/clone_graph.yaml
-            status: planned
           - title: Course Schedule
             file: knowledge/dsa/important_problems/graph_problems/course_schedule.yaml
-            status: planned
           - title: Pacific Atlantic Water Flow
             file: knowledge/dsa/important_problems/graph_problems/pacific_atlantic_water_flow.yaml
-            status: planned
           - title: Network Delay Time
             file: knowledge/dsa/important_problems/graph_problems/network_delay_time.yaml
-            status: planned
 
       - title: DP Problems
         lessons:
           - title: Climbing Stairs
             file: knowledge/dsa/important_problems/dp_problems/climbing_stairs.yaml
-            status: planned
           - title: House Robber
             file: knowledge/dsa/important_problems/dp_problems/house_robber.yaml
-            status: planned
           - title: Coin Change
             file: knowledge/dsa/important_problems/dp_problems/coin_change.yaml
-            status: planned
           - title: Longest Increasing Subsequence
             file: knowledge/dsa/important_problems/dp_problems/longest_increasing_subsequence.yaml
-            status: planned
           - title: Longest Common Subsequence
             file: knowledge/dsa/important_problems/dp_problems/longest_common_subsequence.yaml
-            status: planned
 
   - id: language_switch_drills
     title: Practical Language Switch Drills
@@ -514,46 +466,34 @@ chapters:
         lessons:
           - title: Python Dict To Java HashMap
             file: knowledge/dsa/language_switch_drills/python_to_java/python_dict_to_java_hashmap.yaml
-            status: planned
           - title: Python List To Java ArrayList And Arrays
             file: knowledge/dsa/language_switch_drills/python_to_java/python_list_to_java_arraylist.yaml
-            status: planned
           - title: Python Heapq To Java PriorityQueue
             file: knowledge/dsa/language_switch_drills/python_to_java/python_heapq_to_java_priorityqueue.yaml
-            status: planned
           - title: Python Tuple Keys To Java Records
             file: knowledge/dsa/language_switch_drills/python_to_java/python_tuple_keys_to_java_records.yaml
-            status: planned
 
       - title: Python To C++
         lessons:
           - title: Python List To C++ Vector
             file: knowledge/dsa/language_switch_drills/python_to_cpp/python_list_to_cpp_vector.yaml
-            status: planned
           - title: Python Dict To C++ unordered_map
             file: knowledge/dsa/language_switch_drills/python_to_cpp/python_dict_to_cpp_unordered_map.yaml
-            status: planned
           - title: Python Set To C++ unordered_set
             file: knowledge/dsa/language_switch_drills/python_to_cpp/python_set_to_cpp_unordered_set.yaml
-            status: planned
           - title: Python Heapq To C++ priority_queue
             file: knowledge/dsa/language_switch_drills/python_to_cpp/python_heapq_to_cpp_priority_queue.yaml
-            status: planned
 
       - title: Java To C++
         lessons:
           - title: Java HashMap To C++ unordered_map
             file: knowledge/dsa/language_switch_drills/java_to_cpp/java_hashmap_to_cpp_unordered_map.yaml
-            status: planned
           - title: Java PriorityQueue To C++ priority_queue
             file: knowledge/dsa/language_switch_drills/java_to_cpp/java_priorityqueue_to_cpp_priority_queue.yaml
-            status: planned
           - title: Java Objects To C++ Structs
             file: knowledge/dsa/language_switch_drills/java_to_cpp/java_objects_to_cpp_structs.yaml
-            status: planned
           - title: Java Comparators To C++ Comparators
             file: knowledge/dsa/language_switch_drills/java_to_cpp/java_comparators_to_cpp_comparators.yaml
-            status: planned
 
   - id: final_revision
     title: Final Revision
@@ -563,43 +503,31 @@ chapters:
         lessons:
           - title: Container Selection Table
             file: knowledge/dsa/final_revision/cheat_tables/container_selection_table.yaml
-            status: planned
           - title: Pattern Recognition Table
             file: knowledge/dsa/final_revision/cheat_tables/pattern_recognition_table.yaml
-            status: planned
           - title: Complexity Cheat Table
             file: knowledge/dsa/final_revision/cheat_tables/complexity_cheat_table.yaml
-            status: planned
           - title: Language Syntax Cheat Table
             file: knowledge/dsa/final_revision/cheat_tables/language_syntax_cheat_table.yaml
-            status: planned
 
       - title: Trap Lists
         lessons:
           - title: Python Interview Traps
             file: knowledge/dsa/final_revision/trap_lists/python_interview_traps.yaml
-            status: planned
           - title: C++ Interview Traps
             file: knowledge/dsa/final_revision/trap_lists/cpp_interview_traps.yaml
-            status: planned
           - title: Java Interview Traps
             file: knowledge/dsa/final_revision/trap_lists/java_interview_traps.yaml
-            status: planned
           - title: Cross-Language False Friends
             file: knowledge/dsa/final_revision/trap_lists/cross_language_false_friends.yaml
-            status: planned
 
       - title: Interview Execution
         lessons:
           - title: How To Explain Approach
             file: knowledge/dsa/final_revision/interview_execution/explain_approach.yaml
-            status: planned
           - title: How To Dry Run
             file: knowledge/dsa/final_revision/interview_execution/dry_run.yaml
-            status: planned
           - title: How To Test Edge Cases
             file: knowledge/dsa/final_revision/interview_execution/test_edge_cases.yaml
-            status: planned
           - title: When To Optimize
             file: knowledge/dsa/final_revision/interview_execution/when_to_optimize.yaml
-            status: planned

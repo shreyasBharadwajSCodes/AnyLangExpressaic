@@ -1,0 +1,191 @@
+id: longest_substring_without_repeating
+title: Longest Substring Without Repeating Characters
+category: dsa
+level: important_problem
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - important_problem
+  - interview
+  - pointers_windows_and_search
+goal: Teach Longest Substring Without Repeating Characters as an interview problem with recognition cue, approach, state tracking, edge cases, coordinated code, and language caveats.
+assets:
+  longest_substring_without_repeating_trace:
+    type: image
+    path: assets/dsa/longest_substring_without_repeating/longest-substring-without-repeating-trace.png
+    alt: Longest Substring Without Repeating Characters variable trace and interview dry run.
+lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given a string s, return the length of the longest substring without repeating
+        characters.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
+          - "A strong first thought is fixed window, variable window, frequency map, or monotonic deque."
+          - "Track what the window currently contains and shrink only when the invariant tells you to."
+        -
+          - "The answer changes when one boundary enters or leaves."
+          - ""
+          - ""
+        -
+          - "Recomputing each segment would repeat the same work."
+          - ""
+          - ""
+  - explain:
+      title: When To Use This
+      body: >
+        Bring this idea in when the problem is quietly asking for sliding window with last seen positions. Before
+        coding, say what the input shape is, what answer must be returned, and which
+        state proves progress.
+  - explain:
+      title: Approach And State
+      body: >
+        Track left boundary, right pointer, last index map. The important interview move is to explain when this state
+        changes, why that timing is safe, and which cases are intentionally skipped
+        or resolved.
+  - compare_table:
+      title: Variables And Edge Cases
+      columns:
+        - Variable Or Entity
+        - Meaning
+        - Interview Caveat
+      rows:
+        -
+          - "state"
+          - "left boundary, right pointer, last index map"
+          - "Name this before writing code."
+        -
+          - "update timing"
+          - "the line where progress becomes official"
+          - "Most bugs happen before or after this line."
+        -
+          - "edge case"
+          - "empty, one item, duplicates, boundary, or unreachable state"
+          - "Test it after the main dry run."
+  - language_lens:
+      language: python
+      title: Python Strategy
+      body: >
+        Keep the solution compact, but make the state variable names explicit enough for a dry run.
+      default_instincts:
+        - Use dictionaries, sets, deque, heapq, or lists based on the pattern.
+        - Prefer tuple state for immutable compound keys.
+        - Watch list aliasing and recursion depth.
+      avoid:
+        - Hiding an O n operation inside a loop.
+        - Using mutable objects as dictionary keys.
+        - Updating the answer before the state is valid.
+  - language_lens:
+      language: cpp
+      title: C++ Strategy
+      body: >
+        Choose containers and numeric types deliberately, and avoid copying large state inside helpers.
+      default_instincts:
+        - Pass large vectors, strings, and adjacency lists by reference.
+        - Use long long when counts, products, sums, or distances can grow.
+        - Configure comparators and heaps explicitly.
+      avoid:
+        - Passing vectors by value accidentally.
+        - Using unsafe int sentinels with addition.
+        - Dereferencing null pointers in linked-list or tree problems.
+  - language_lens:
+      language: java
+      title: Java Strategy
+      body: >
+        Use explicit arrays, initialized collections, helper methods, and safe comparator or equality choices.
+      default_instincts:
+        - Use primitive arrays for fixed-size state.
+        - Use ArrayDeque for queues and stacks.
+        - Initialize every nested collection before adding to it.
+      avoid:
+        - Comparator subtraction when values can be large.
+        - Double equals for string value comparison.
+        - Forgetting null checks on node references.
+examples:
+  - code_compare:
+      title: Longest Substring Without Repeating Characters Core Implementation
+      idea: sliding window with last seen positions.
+      python: |
+        last = {}
+        left = 0
+        best = 0
+        for right, ch in enumerate(s):
+            if ch in last and last[ch] >= left:
+                # Move left past the previous copy inside the current window.
+                left = last[ch] + 1
+            last[ch] = right
+            best = max(best, right - left + 1)
+      cpp: |
+        unordered_map<char,int> last;
+        int left = 0, best = 0;
+        for (int right = 0; right < s.size(); right++) {
+            char ch = s[right];
+            if (last.count(ch) && last[ch] >= left) {
+                // Move left past the previous copy inside the current window.
+                left = last[ch] + 1;
+            }
+            last[ch] = right;
+            best = max(best, right - left + 1);
+        }
+      java: |
+        Map<Character, Integer> last = new HashMap<>();
+        int left = 0, best = 0;
+        for (int right = 0; right < s.length(); right++) {
+            char ch = s.charAt(right);
+            if (last.containsKey(ch) && last.get(ch) >= left) {
+                // Move left past the previous copy inside the current window.
+                left = last.get(ch) + 1;
+            }
+            last.put(ch, right);
+            best = Math.max(best, right - left + 1);
+        }
+      note: >
+        Read the code by following left boundary, right pointer, last index map. The comments mark non-trivial state
+        changes only, so the explanation and implementation stay coordinated.
+interview_questions:
+  - question: What is the pattern clue for Longest Substring Without Repeating Characters?
+    answer: sliding window with last seen positions.
+  - question: What variables should you dry-run?
+    answer: Dry-run left boundary, right pointer, last index map, plus the answer variable and any boundary pointer.
+  - question: What edge cases should you test?
+    answer: Test empty or minimal input, duplicate values where relevant, boundary indices, and cases where no valid answer exists.
+revision:
+  quick_summary:
+    - "Longest Substring Without Repeating Characters is solved by sliding window with last seen positions."
+    - "Working idea: track left boundary, right pointer, last index map, update it at the safe moment, and dry-run the edge case that can break the invariant."
+  cheat_table:
+    title: Longest Substring Without Repeating Characters Quick Recall
+    columns:
+      - Remember
+      - Why
+    rows:
+      -
+        - "Name the state"
+        - "The code becomes readable immediately."
+      -
+        - "Explain update timing"
+        - "This proves correctness."
+      -
+        - "Test the smallest input"
+        - "This catches most boundary mistakes."
+  flashcards:
+    - question: What should you say if asked why this works?
+      answer: State the invariant and explain why each update preserves it.
+notes:
+  - Keep comments around meaningful state changes only.
+  - In interviews, explain the brute force briefly, then point to the repeated work removed by this pattern.
+tlm_hooks:
+  possible_tasks:
+    - trace_longest_substring_without_repeating
+    - generate_longest_substring_without_repeating_drills
+  context: Focus on left boundary, right pointer, last index map.

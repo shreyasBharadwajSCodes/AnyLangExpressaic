@@ -12,6 +12,30 @@ assets:
     alt: Recursive calls stacked with parameters, base case, and returned values.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem that asks to generate all valid choices, explore a decision tree while
+        undoing state after each branch.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem asks for all subsets, permutations, combinations, boards, paths, or valid configurations."
+          - "A strong first thought is recursion, backtracking, pruning, choose-explore-unchoose."
+          - "Name the decision at each level and the state that must be restored before the next branch."
+        -
+          - "You must try choices and reject invalid partial states."
+          - ""
+          - ""
+        -
+          - "The output size itself may be exponential."
+          - ""
+          - ""
+  - explain:
       title: Recursion Mental Model
       body: >
         A recursive function owns one frame of state. Each call receives parameters,
@@ -149,11 +173,11 @@ interview_questions:
     answer: Recursion depth grows too large before reaching base cases.
 revision:
   quick_summary:
-    - "Recursion is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Recursion is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Base case stops. state defines subproblem. return value serves caller. progress makes calls smaller."
   cheat_table:
     title: Recursion Cheat Table
-    columns: [Need, Reminder]
+    columns: [Question Type, Reminder]
     rows:
       - ["base", "smallest solved case"]
       - ["state", "parameters"]

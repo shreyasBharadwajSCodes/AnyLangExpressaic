@@ -12,6 +12,30 @@ assets:
     alt: Running current subarray sum and global best over an array.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given repeated range, subarray, or cumulative questions, convert repeated work into
+        prefix, suffix, or running-state updates.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the problem mentions subarray sums, range updates, product except self, maximum contiguous sum, or repeated queries."
+          - "A strong first thought is prefix sum, prefix count map, difference array, suffix pass, or Kadane state."
+          - "Define what the running value means before and after processing the current index."
+        -
+          - "The desired answer can be expressed as current cumulative state minus earlier state."
+          - ""
+          - ""
+        -
+          - "Nested loops are only recomputing totals."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         Kadane tracks the best subarray ending at the current index and the best
@@ -25,7 +49,7 @@ lesson:
         exactly here; best means best seen anywhere. Initializing from the first
         element is what makes all-negative arrays work correctly.
   - compare_table:
-      title: Key State
+      title: State To Watch
       columns: [Variable, Meaning]
       rows:
         - ["cur", "best sum ending at current index"]
@@ -176,7 +200,7 @@ interview_questions:
     answer: It correctly handles arrays where every value is negative.
 revision:
   quick_summary:
-    - "Kadane Algorithm is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Kadane Algorithm is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: cur is best ending here. best is best anywhere. restart when previous cur hurts."
   cheat_table:
     title: Kadane Cheat Table

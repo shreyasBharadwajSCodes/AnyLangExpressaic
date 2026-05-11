@@ -23,6 +23,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given an interview solution, use Copying And Cloning to explain the hidden cost, language
+        behavior, or correctness risk before finalizing code.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Copying creates another container or object. A shallow copy duplicates the
@@ -32,7 +56,7 @@ lesson:
   - compare_table:
       title: Copy Map
       columns:
-        - Need
+        - Operation Needed
         - Python
         - C++
         - Java
@@ -81,7 +105,7 @@ lesson:
         - Custom classes may need correct copy behavior if they own resources.
       avoid:
         - Passing containers by value accidentally.
-        - Thinking pointer copy clones the object.
+        - Assuming pointer copy clones the object.
         - Returning references to copied local objects.
   - language_lens:
       language: java
@@ -247,7 +271,7 @@ revision:
   cheat_table:
     title: Copying Revision
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

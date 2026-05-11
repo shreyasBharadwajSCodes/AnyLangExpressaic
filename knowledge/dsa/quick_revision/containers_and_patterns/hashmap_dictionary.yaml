@@ -23,6 +23,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Dictionary / HashMap / unordered_map as a quick
+        recognition and implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Hash maps store key-value pairs for fast average lookup. Interviews use them
@@ -41,7 +65,7 @@ lesson:
   - compare_table:
       title: First Mapping
       columns:
-        - Need
+        - Operation Needed
         - Python
         - C++
         - Java
@@ -366,12 +390,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Dictionary / HashMap / unordered_map is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Dictionary / HashMap / unordered_map is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Hash maps give fast average lookup. Missing-key behavior differs sharply across languages. Custom keys require correct hashing and equality. Hash map order is not sorted order."
   cheat_table:
     title: Hash Map Revision
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

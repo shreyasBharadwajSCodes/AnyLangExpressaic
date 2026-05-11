@@ -12,6 +12,30 @@ assets:
     alt: Answer range where false values come before true feasible values.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a sorted search space or a monotonic yes/no condition, find the boundary with
+        binary search.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer mentions sorted input, first or last occurrence, minimum feasible value, or rotated sorted array."
+          - "A strong first thought is binary search on index, value, boundary, or answer."
+          - "Define the true and false sides before choosing mid update rules."
+        -
+          - "For a candidate x, the answer to can we do it is monotonic."
+          - ""
+          - ""
+        -
+          - "Linear scan wastes the order or monotonic condition."
+          - ""
+          - ""
+  - explain:
       title: Pattern Mental Model
       body: >
         Binary search on answer works when answers have a monotonic shape: all values
@@ -142,11 +166,11 @@ interview_questions:
     answer: The smallest answer value that satisfies the predicate.
 revision:
   quick_summary:
-    - "Binary Search On Answer is an interview pattern: recognize the signal, maintain the right invariant or state, and justify why each update is correct."
+    - "Binary Search On Answer is an interview pattern: recognize the clue, maintain the right invariant or state, and justify why each update is correct."
     - "Working idea: Search answer values. prove monotonicity. use safe bounds and midpoint."
   cheat_table:
     title: Answer Search Cheat Table
-    columns: [Need, Rule]
+    columns: [Question Type, Rule]
     rows:
       - ["minimum feasible", "first true"]
       - ["maximum feasible", "last true"]

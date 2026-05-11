@@ -21,6 +21,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Print And Debug Quickly as a quick recognition and
+        implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Fast debugging is an interview skill. The goal is not to flood the screen;
@@ -296,12 +320,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Print And Debug Quickly is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Print And Debug Quickly is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Print one invariant, not the whole program. Python prints built-ins well. C++ needs loops or helpers for containers. Java collections print well, but arrays need Arrays helpers."
   cheat_table:
     title: Debug Print Cheat Table
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java

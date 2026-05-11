@@ -9,25 +9,49 @@ assets:
   builder_flow:
     type: image
     path: assets/dsa/string_builders_buffers/builder-flow.png
-    alt: Pieces appended into a buffer and converted into a final string.
+    alt: Parts appended into a buffer and converted into a final string.
 lesson:
+  - explain:
+      title: Solve
+      body: >
+        Solve: Given a problem that repeatedly builds, edits, or returns text, choose a safe
+        string-building strategy and avoid repeated full-string copies.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
   - explain:
       title: Builder Strategy
       body: >
-        A builder separates construction from final output. Track piece as the current
+        A builder separates construction from final output. Track part as the current
         text fragment, builder as the growing mutable buffer, and ans as the final
         immutable result. This avoids repeated full-string copies.
   - explain:
       title: Method Strategy
       body: >
-        Builder methods separate collecting pieces from creating the final string.
-        The strategy is to append small pieces into a mutable buffer and materialize
+        Builder methods separate collecting parts from creating the final string.
+        The strategy is to append small parts into a mutable buffer and materialize
         the final string once. This keeps the algorithm focused on what is accepted
         into the output instead of repeatedly copying the whole partial answer.
 
   - compare_table:
       title: Builder Choices
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Append char/string", "list.append", "string.push_back / +=", "StringBuilder.append"]
         - ["Final string", "''.join(parts)", "ans", "sb.toString()"]
@@ -35,24 +59,24 @@ lesson:
   - language_lens:
       language: python
       title: Python Strategy
-      body: Collect pieces in a list and join once; this keeps each append cheap and makes final construction explicit.
+      body: Collect parts in a list and join once; this keeps each append cheap and makes final construction explicit.
       default_instincts:
-        - Collect pieces in a list and join once at the end.
-        - Append only accepted pieces so the buffer mirrors output state.
+        - Collect parts in a list and join once at the end.
+        - Append only accepted parts so the buffer mirrors output state.
         - Use newline join for many output lines.
-      behind_the_scenes: ["''.join(parts) allocates the final string once.", "parts contains references to string pieces."]
+      behind_the_scenes: ["''.join(parts) allocates the final string once.", "parts contains references to string parts."]
       avoid:
-        - Using result += piece repeatedly for large outputs.
-        - Joining before all pieces are collected.
-        - Mixing non-string pieces into join without conversion.
+        - Using result += part repeatedly for large outputs.
+        - Joining before all parts are collected.
+        - Mixing non-string parts into join without conversion.
   - language_lens:
       language: cpp
       title: C++ Strategy
       body: std::string is mutable and push_back works for characters; reserve capacity when final size is predictable.
       default_instincts:
-        - Use string push_back for characters and += for string pieces.
+        - Use string push_back for characters and += for string parts.
         - Reserve capacity when final size is predictable.
-        - Use ostringstream when formatting many mixed pieces.
+        - Use ostringstream when formatting many mixed parts.
       behind_the_scenes: ["string can reallocate as it grows.", "reserve reduces reallocations."]
       avoid:
         - Assuming push_back accepts strings instead of single chars.
@@ -64,7 +88,7 @@ lesson:
       body: StringBuilder is the default for repeated string construction.
       default_instincts:
         - Use StringBuilder for repeated construction.
-        - Append pieces as state changes and call toString once at the end.
+        - Append parts as state changes and call toString once at the end.
         - Use char[] when direct indexed mutation is clearer.
       behind_the_scenes: ["String is immutable.", "StringBuilder grows an internal char/byte buffer."]
       avoid:
@@ -79,7 +103,7 @@ examples:
         parts = []
 
         for ch in s:
-            # parts is the mutable buffer; each append stores one accepted piece.
+            # parts is the mutable buffer; each append stores one accepted part.
             if ch.islower():
                 parts.append(ch)
 
@@ -104,7 +128,7 @@ examples:
 transitions:
   python_to_java:
     title: Python list-plus-join to Java StringBuilder
-    mindset_shift: [From collecting list pieces to mutating a builder object.]
+    mindset_shift: [From collecting list parts to mutating a builder object.]
     habit_swaps:
       - python: "parts.append(ch); ''.join(parts)"
         java: "sb.append(ch); sb.toString()"
@@ -126,10 +150,10 @@ interview_questions:
 revision:
   quick_summary:
     - "String Builders And Buffers is a data-structure topic: know what the structure stores, which operation it makes cheap, and what caveat can break a solution."
-    - "Interview working idea: Builders avoid repeated full-string copies. Track current piece and final output separately."
+    - "Interview working idea: Builders avoid repeated full-string copies. Track current part and final output separately."
   cheat_table:
     title: Builder Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["append", "parts.append(x)", "ans.push_back(c)", "sb.append(x)"]
       - ["finish", "''.join(parts)", "ans", "sb.toString()"]

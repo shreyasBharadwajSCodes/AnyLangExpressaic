@@ -20,6 +20,30 @@ assets:
     alt: Tree BFS Level Order trace showing the key state changes step by step.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a tree or prefix structure, solve by passing information down, collecting
+        information up, or traversing in the required order.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
+          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - "Say what each recursive call returns and what information is carried from ancestors."
+        -
+          - "A node answer depends on children, ancestors, or path state."
+          - ""
+          - ""
+        -
+          - "Null or terminal-node handling changes correctness."
+          - ""
+          - ""
+  - explain:
       title: Core Mental Model
       body: >
         Tree BFS uses a queue so nodes come out in breadth order. The level-size snapshot is the variable that prevents one depth from mixing with the next.
@@ -28,9 +52,9 @@ lesson:
       body: >
         Push the root, then while the queue has nodes, save the queue size. Pop exactly that many nodes into the current level and push their children for the next level.
   - compare_table:
-      title: State And Decision Map
+      title: Variables And Decisions
       columns:
-        - Piece
+        - Variable Or Entity
         - Meaning
         - Why It Matters
       rows:
@@ -103,7 +127,7 @@ examples:
       idea: Keep the state names visible so the dry run matches the explanation.
       python: |
         from collections import deque
-        
+
         q = deque([root]) if root else deque()
         levels = []
         while q:
@@ -177,7 +201,7 @@ transitions:
       - term: initialization
         warning: Java adjacency lists, queues, and helper arrays must be created before use.
 interview_questions:
-  - question: What problem signal points to Tree BFS Level Order?
+  - question: What problem clue points to Tree BFS Level Order?
     answer: processing tree nodes one depth at a time.
   - question: What state should you name before coding?
     answer: Name queue, level size, node, child pushes, and level output.
@@ -190,7 +214,7 @@ revision:
   cheat_table:
     title: Tree BFS Level Order Revision Table
     columns:
-      - Signal
+      - What You Notice
       - State To Track
       - Interview Caveat
     rows:

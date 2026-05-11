@@ -12,6 +12,30 @@ assets:
     alt: Matrix with r, c, nr, nc, rows, cols, and direction offsets marked.
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a grid or matrix problem, choose a row and column representation, guard boundaries
+        clearly, and update cells without confusing coordinates.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
+          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - "Name the operations you need first, then choose the structure whose costs match those operations."
+        -
+          - "The algorithm idea is simple but the wrong container changes complexity."
+          - ""
+          - ""
+        -
+          - "The interviewer asks how the same structure differs across Python, C++, and Java."
+          - ""
+          - ""
+  - explain:
       title: Grid Mental Model
       body: >
         Matrix problems are coordinate problems. Track rows, cols, current cell
@@ -27,7 +51,7 @@ lesson:
 
   - compare_table:
       title: 2D Structure Map
-      columns: [Need, Python, C++, Java]
+      columns: [Operation Needed, Python, C++, Java]
       rows:
         - ["Create r x c zeros", "comprehension", "vector<vector<int>>", "int[][]"]
         - ["Rows", "len(grid)", "grid.size()", "grid.length"]
@@ -141,7 +165,7 @@ revision:
     - "Interview working idea: Track coordinates visually. Bounds before access. Avoid Python row aliasing."
   cheat_table:
     title: Matrix Cheat Table
-    columns: [Need, Python, C++, Java]
+    columns: [Operation Needed, Python, C++, Java]
     rows:
       - ["rows", "len(grid)", "grid.size()", "grid.length"]
       - ["cols", "len(grid[0])", "grid[0].size()", "grid[0].length"]

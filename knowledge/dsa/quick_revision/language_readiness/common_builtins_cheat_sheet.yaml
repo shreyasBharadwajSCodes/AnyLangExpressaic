@@ -22,6 +22,30 @@ assets:
 
 lesson:
   - explain:
+      title: Solve
+      body: >
+        Solve: Given a timed interview problem, use Common Built-ins Cheat Sheet as a quick recognition
+        and implementation checklist before coding.
+  - compare_table:
+      title: When Should This Come To Mind?
+      columns:
+        - When The Problem Looks Like This
+        - Reach For
+        - First Coding Move
+      rows:
+        -
+          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
+        -
+          - "The algorithm idea is known but the implementation detail can break it."
+          - ""
+          - ""
+        -
+          - "The risk sits in references, copying, numeric type, comparison, parsing, or container semantics."
+          - ""
+          - ""
+  - explain:
       title: Core Idea
       body: >
         Built-ins are interview leverage. They reduce boilerplate, remove avoidable
@@ -31,7 +55,7 @@ lesson:
   - compare_table:
       title: Most Common Interview Moves
       columns:
-        - Need
+        - Operation Needed
         - Python
         - C++
         - Java
@@ -289,7 +313,7 @@ transitions:
       - term: contains
         warning: Python x in list is O(n); use a set for repeated membership checks.
       - term: string builder
-        warning: "Python often uses list append plus ''.join for many string pieces."
+        warning: "Python often uses list append plus ''.join for many string parts."
   cpp_to_java:
     title: Moving From C++ STL To Java Utilities
     mindset_shift:
@@ -343,12 +367,12 @@ interview_questions:
 
 revision:
   quick_summary:
-    - "Common Built-ins Cheat Sheet is a quick revision sheet: recall the interview signal, the safe implementation move, and the language-specific trap."
+    - "Common Built-ins Cheat Sheet is a quick revision sheet: recall the interview clue, the safe implementation move, and the language-specific trap."
     - "Working idea: Built-ins should make the algorithm clearer. Know whether an operation mutates or returns a copy. Hash maps differ most on missing keys and custom equality. Heaps have different defaults across languages. Comparator correctness matters in C++ and Java."
   cheat_table:
     title: Built-ins Interview Cheat Table
     columns:
-      - Need
+      - Operation Needed
       - Python
       - C++
       - Java
