@@ -8,3 +8,4 @@ __pycache__/
 dist/
 vis2.spec
 outputter/test/
+tests/*.js

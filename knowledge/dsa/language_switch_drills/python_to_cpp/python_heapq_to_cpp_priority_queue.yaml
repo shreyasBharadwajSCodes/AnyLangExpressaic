@@ -1,0 +1,119 @@
+id: python_heapq_to_cpp_priority_queue
+title: Python Heapq To C++ priority_queue
+category: dsa
+level: language_switch_drill
+languages:
+  - python
+  - cpp
+  - java
+tags:
+  - language_switch
+  - interview
+  - python_to_cpp
+goal: Help users switch python heapq to c++ priority_queue habits under interview pressure with direct mappings, caveats, and quick code shapes.
+lesson:
+  - explain:
+      title: Drill Purpose
+      body: >
+        This drill is for min heap habits to C++ priority_queue configuration. The goal is not to translate syntax word by
+        word; it is to preserve the same algorithmic state while using the target
+        language container correctly.
+  - compare_table:
+      title: Translation Map
+      columns:
+        - Concept
+        - Source Habit
+        - Target Habit
+        - Caveat
+      rows:
+        -
+          - "state"
+          - "compact source-language expression"
+          - "explicit target-language container"
+          - "heap direction, pair ordering, stale entries"
+        -
+          - "missing value"
+          - "often implicit"
+          - "usually explicit"
+          - "Handle absent keys before reading."
+        -
+          - "mutation"
+          - "short method call"
+          - "method plus type constraints"
+          - "Know whether the object is copied or shared."
+  - language_lens:
+      language: python
+      title: Python Habit To Preserve
+      body: >
+        Keep the algorithmic state clear: key, value, index, priority, or object identity.
+      default_instincts:
+        - Name the state before translating.
+        - Use tuples only when immutable compound state is intended.
+      avoid:
+        - Assuming target containers have Python defaults.
+  - language_lens:
+      language: cpp
+      title: C++ Target Checks
+      body: >
+        Check references, value copies, comparator contract, and heap direction.
+      default_instincts:
+        - Prefer references for large state.
+        - Use find or count when absence matters.
+      avoid:
+        - Letting operator access create keys accidentally.
+  - language_lens:
+      language: java
+      title: Java Target Checks
+      body: >
+        Check object construction, generic types, primitive arrays, Comparator helpers, and equality.
+      default_instincts:
+        - Use getOrDefault, computeIfAbsent, ArrayDeque, and PriorityQueue intentionally.
+        - Initialize collections before mutation.
+      avoid:
+        - Using null results without checking.
+examples:
+  - code_compare:
+      title: Compact State Translation
+      idea: Preserve the state while changing the container syntax.
+      python: |
+        # State first: key maps to count.
+        count[x] = count.get(x, 0) + 1
+      cpp: |
+        // State first: key maps to count.
+        count[x]++;
+      java: |
+        // State first: key maps to count.
+        count.put(x, count.getOrDefault(x, 0) + 1);
+      note: >
+        Even when syntax changes, the state sentence should stay the same.
+interview_questions:
+  - question: What should stay unchanged while switching languages?
+    answer: The algorithmic state and invariant should stay unchanged.
+  - question: What should change?
+    answer: Container initialization, mutation methods, equality rules, and numeric type choices may change.
+revision:
+  quick_summary:
+    - "Python Heapq To C++ priority_queue is a language switch drill for min heap habits to C++ priority_queue configuration."
+    - "Working idea: preserve heap direction, pair ordering, stale entries, then rewrite only the container operations safely."
+  cheat_table:
+    title: Switch Drill Recall
+    columns:
+      - Remember
+      - Why
+    rows:
+      -
+        - "State is language-independent"
+        - "It keeps the algorithm stable."
+      -
+        - "Containers are language-specific"
+        - "This is where interview bugs appear."
+  flashcards:
+    - question: What is the safest first sentence?
+      answer: I will keep the same state and translate the container operations carefully.
+notes:
+  - Use these drills after reading the main lesson for the data structure or pattern.
+tlm_hooks:
+  possible_tasks:
+    - drill_python_heapq_to_cpp_priority_queue
+    - compare_python_heapq_to_cpp_priority_queue_solutions
+  context: Focus on heap direction, pair ordering, stale entries.
