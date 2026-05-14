@@ -24,8 +24,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer gives intervals, ordering, custom ranking, minimum removals, overlap, schedule, or greedy choice."
-          - "A strong first thought is sorting, comparator, greedy, merge intervals, sweep line, or counting sort."
+          - "   gives intervals, ordering, custom ranking, minimum removals, overlap, schedule, or greedy choice."
+          - " sorting, comparator, greedy, merge intervals, sweep line, or counting sort."
           - "Explain why the sort key makes future choices safe and how ties are handled."
         -
           - "A local choice becomes safe after sorting by the right key."

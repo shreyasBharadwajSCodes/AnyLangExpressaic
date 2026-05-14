@@ -25,8 +25,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
-          - "A strong first thought is memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
+          - "   asks for count ways, min or max cost, choose or skip, subsequence, partition, or optimal value."
+          - " memoization, tabulation, one-dimensional DP, two-dimensional DP, knapsack, LIS, LCS, or interval DP."
           - "Write the state meaning in words before code, then verify the transition reads only already-known states."
         -
           - "The same suffix, prefix, index, capacity, or pair of indices repeats."

@@ -31,7 +31,7 @@ lesson:
       rows:
         -
           - "If the interviewer gives you root, child pointers, prefix words, ancestor relation, height, depth, or level order."
-          - "A strong first thought is DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
+          - " DFS, BFS, recursion with return value, BST bounds, trie path, or LCA."
           - "Say what each recursive call returns and what information is carried from ancestors."
         -
           - "A node answer depends on children, ancestors, or path state."

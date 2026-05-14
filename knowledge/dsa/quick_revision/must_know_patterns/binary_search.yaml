@@ -34,8 +34,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer mentions sorted input, first or last occurrence, minimum feasible value, or rotated sorted array."
-          - "A strong first thought is binary search on index, value, boundary, or answer."
+          - "   mentions sorted input, first or last occurrence, minimum feasible value, or rotated sorted array."
+          - " binary search on index, value, boundary, or answer."
           - "Define the true and false sides before choosing mid update rules."
         -
           - "For a candidate x, the answer to can we do it is monotonic."

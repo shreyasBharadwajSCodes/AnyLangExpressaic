@@ -9,3 +9,5 @@ dist/
 vis2.spec
 outputter/test/
 tests/*.js
+*/dsa2.0/
+*web-dsa2/

@@ -24,8 +24,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer asks for a pair, boundary, reversal, cycle, or in-place scan."
-          - "A strong first thought is two pointers, fast and slow pointers, or pointer rewiring."
+          - "   asks for a pair, boundary, reversal, cycle, or in-place scan."
+          - " two pointers, fast and slow pointers, or pointer rewiring."
           - "Name what each pointer means, why it moves, and what condition proves progress."
         -
           - "Sorted input, linked nodes, or opposite ends are useful."

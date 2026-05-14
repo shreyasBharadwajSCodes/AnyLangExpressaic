@@ -24,8 +24,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
-          - "A strong first thought is hash map, hash set, frequency map, compound key, or heap over counts."
+          - "   asks about existence, duplicates, grouping, frequency, complements, or fastest lookup."
+          - " hash map, hash set, frequency map, compound key, or heap over counts."
           - "Choose the key carefully and say whether the state stores count, first index, last index, or existence."
         -
           - "Order is not the main requirement, but identity or counts are."

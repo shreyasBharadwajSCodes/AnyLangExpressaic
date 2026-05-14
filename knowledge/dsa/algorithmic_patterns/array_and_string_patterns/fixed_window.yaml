@@ -24,8 +24,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
-          - "A strong first thought is fixed window, variable window, frequency map, or monotonic deque."
+          - "   says contiguous subarray, substring, at most, at least, exactly, longest, shortest, or window."
+          - " fixed window, variable window, frequency map, or monotonic deque."
           - "Track what the window currently contains and shrink only when the invariant tells you to."
         -
           - "The answer changes when one boundary enters or leaves."

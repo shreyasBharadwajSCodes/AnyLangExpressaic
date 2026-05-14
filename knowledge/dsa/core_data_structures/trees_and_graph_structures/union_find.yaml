@@ -24,8 +24,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
-          - "A strong first thought is BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
+          - "   mentions reachability, connected groups, prerequisites, shortest path, cycle, grid neighbors, or components."
+          - " BFS, DFS, topological sort, union find, Dijkstra, Bellman-Ford, Floyd-Warshall, or MST."
           - "Define the graph representation, when a node becomes visited, and what each edge update means."
         -
           - "The same state can be reached from multiple directions."

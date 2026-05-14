@@ -25,7 +25,7 @@ lesson:
       rows:
         -
           - "If the problem asks for all subsets, permutations, combinations, boards, paths, or valid configurations."
-          - "A strong first thought is recursion, backtracking, pruning, choose-explore-unchoose."
+          - " recursion, backtracking, pruning, choose-explore-unchoose."
           - "Name the decision at each level and the state that must be restored before the next branch."
         -
           - "You must try choices and reject invalid partial states."

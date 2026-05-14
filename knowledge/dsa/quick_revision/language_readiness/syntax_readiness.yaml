@@ -50,8 +50,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
-          - "A strong first thought is language mechanics, edge cases, complexity cost, and interview implementation discipline."
+          - "   asks why code is slow, why two versions differ, why equality fails, why overflow occurs, or how to port code across languages."
+          - " language mechanics, edge cases, complexity cost, and interview implementation discipline."
           - "State the hidden operation or memory behavior, then choose the safest language-specific construct."
         -
           - "The algorithm idea is known but the implementation detail can break it."

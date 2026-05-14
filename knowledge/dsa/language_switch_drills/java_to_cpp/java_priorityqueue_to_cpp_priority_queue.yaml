@@ -27,7 +27,7 @@ lesson:
       rows:
         -
           - "If the problem asks for top k, kth, minimum cost next step, earliest finishing item, or shortest weighted path."
-          - "A strong first thought is heap, priority queue, or Dijkstra-style frontier."
+          - " heap, priority queue, or Dijkstra-style frontier."
           - "State what the priority is and how stale heap entries are ignored or avoided."
         -
           - "Sorting everything each time would be wasteful."

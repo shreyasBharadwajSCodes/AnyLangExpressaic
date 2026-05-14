@@ -25,7 +25,7 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer asks what you would say, how to dry run, which edge cases to test, or when to optimize."
+          - "   asks what you would say, how to dry run, which edge cases to test, or when to optimize."
           - "Use the final interview execution checklist."
           - "Give brute force, optimized idea, invariant, edge cases, and complexity in that order."
         -

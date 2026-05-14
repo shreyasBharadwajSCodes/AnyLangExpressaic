@@ -32,7 +32,7 @@ lesson:
       rows:
         -
           - "If the problem mentions subarray sums, range updates, product except self, maximum contiguous sum, or repeated queries."
-          - "A strong first thought is prefix sum, prefix count map, difference array, suffix pass, or Kadane state."
+          - " prefix sum, prefix count map, difference array, suffix pass, or Kadane state."
           - "Define what the running value means before and after processing the current index."
         -
           - "The desired answer can be expressed as current cumulative state minus earlier state."

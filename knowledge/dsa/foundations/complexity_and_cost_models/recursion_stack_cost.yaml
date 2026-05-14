@@ -34,8 +34,8 @@ lesson:
         - First Coding Move
       rows:
         -
-          - "If your interviewer gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
-          - "A strong first thought is stack or monotonic stack."
+          - "   gives nested structure, previous greater or smaller, histogram boundaries, or undo-like behavior."
+          - " stack or monotonic stack."
           - "Store indices when distance, width, or stale position matters; state the stack invariant."
         -
           - "The current item resolves earlier items in last-in-first-out order."

@@ -36,7 +36,7 @@ lesson:
       rows:
         -
           - "If your problem needs storage with lookup, order, queueing, indexing, or repeated updates."
-          - "A strong first thought is container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
+          - " container choice: array or list, hash map, set, stack, queue, deque, heap, or tree map."
           - "Name the operations you need first, then choose the structure whose costs match those operations."
         -
           - "The algorithm idea is simple but the wrong container changes complexity."
